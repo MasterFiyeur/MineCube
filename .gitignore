@@ -1,0 +1,3 @@
+#CLion config and build files
+CMakeLists.txt
+cmake-build-debug/
