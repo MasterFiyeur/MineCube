@@ -11,7 +11,7 @@
 
 #include "raylib.h"
 
-#include "first-world.h"
+#include "./classes/first-world.h"
 
 int main()
 {

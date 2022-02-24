@@ -7,7 +7,7 @@
 #include "raylib.h"
 
 #include "first-world.h"
-#include "mc/Block.h"
+#include "Block.h"
 
 #define initial_square 8
 
