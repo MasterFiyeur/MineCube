@@ -1,38 +1,18 @@
-cmake_minimum_required(VERSION 3.11) # FetchContent is available in 3.11+
+cmake_minimum_required(VERSION 3.0)
 project(raylib-kelawin)
 
-# Dependencies
-find_package(raylib 4.0.0 QUIET) # QUIET or REQUIRED
-if (NOT raylib_FOUND) # If there's none, fetch and build raylib
-  include(FetchContent)
-  FetchContent_Declare(
-    raylib
-    URL https://github.com/raysan5/raylib/archive/refs/tags/4.0.0.tar.gz
-  )
-  FetchContent_GetProperties(raylib)
-  if (NOT raylib_POPULATED) # Have we downloaded raylib yet?
-    set(FETCHCONTENT_QUIET NO)
-    FetchContent_Populate(raylib)
-    set(BUILD_EXAMPLES OFF CACHE BOOL "" FORCE) # don't build the supplied examples
-    add_subdirectory(${raylib_SOURCE_DIR} ${raylib_BINARY_DIR})
-  endif()
-endif()
+set(CMAKE_CXX_STANDARD 17)
 
-# Our Project
+# Setting parameters for raylib
+set(BUILD_EXAMPLES OFF CACHE BOOL "" FORCE) # don't build the supplied examples
+set(BUILD_GAMES    OFF CACHE BOOL "" FORCE) # or games
 
-add_executable(${PROJECT_NAME} src/main.cpp src/classes/Block.cpp src/classes/first-world.cpp)
-#set(raylib_VERBOSE 1)
-target_link_libraries(${PROJECT_NAME} raylib)
+# Adding Raylib
+include(FetchContent)
+FetchContent_Declare(raylib GIT_REPOSITORY https://github.com/raysan5/raylib.git GIT_TAG master)
+FetchContent_MakeAvailable(raylib)
 
-# Web Configurations
-if (${PLATFORM} STREQUAL "Web")
-    # Tell Emscripten to build an example.html file.
-    set_target_properties(${PROJECT_NAME} PROPERTIES SUFFIX ".html")
-endif()
+add_executable(${PROJECT_NAME} src/main.cpp src/classes/first-world.cpp src/classes/Block.cpp)
 
-# Checks if OSX and links appropriate frameworks (Only required on MacOS)
-if (APPLE)
-    target_link_libraries(${PROJECT_NAME} "-framework IOKit")
-    target_link_libraries(${PROJECT_NAME} "-framework Cocoa")
-    target_link_libraries(${PROJECT_NAME} "-framework OpenGL")
-endif()
+target_link_libraries(${PROJECT_NAME} PRIVATE raylib)
+target_compile_definitions(${PROJECT_NAME} PUBLIC ASSETS_PATH="${CMAKE_CURRENT_SOURCE_DIR}/assets/")
