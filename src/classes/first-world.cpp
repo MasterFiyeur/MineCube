@@ -4,6 +4,7 @@
 
 #include <string>
 #include <list>
+#include <algorithm>
 #include "raylib.h"
 
 #include "first-world.h"

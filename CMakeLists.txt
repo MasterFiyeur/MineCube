@@ -20,7 +20,7 @@ endif()
 
 # Our Project
 
-add_executable(${PROJECT_NAME} src/main.cpp)
+add_executable(${PROJECT_NAME} src/main.cpp src/classes/Block.cpp src/classes/first-world.cpp)
 #set(raylib_VERBOSE 1)
 target_link_libraries(${PROJECT_NAME} raylib)
 
