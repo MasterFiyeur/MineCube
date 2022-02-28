@@ -5,15 +5,14 @@
 #pragma once
 
 #include <string>
-
+#include "raylib.h"
 
 class Block {
 private:
     std::string _name;
-    Texture2D _texture;
-    Vector3 _position;
 public:
-    explicit Block(std::string name, float x, float y, float z);
-    ~Block();
-    void draw() const;
+    Block(): Block("stone") {}
+    explicit Block(std::string name);
+    void draw(Vector3 position) const;
+    [[nodiscard]] std::string getName() const;
 };
