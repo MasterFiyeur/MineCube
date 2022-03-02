@@ -18,11 +18,11 @@ private:
 	const unsigned short bar_size = 6;
 
 	//Graphic informations
-	const int screenWidth = 960;
-	const int screenHeight = 540;
-	const int itemSquare = 50;
-	const int inventoryMarge = 10;
-
+	const int g_screenWidth = 960;
+	const int g_screenHeight = 540;
+	const int g_inventoryMargin = 10;
+	const int g_itemSquare = 50;
+	const int g_itemMargin = 10;
 public:
 	Inventory();
 	virtual ~Inventory();

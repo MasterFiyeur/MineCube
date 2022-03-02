@@ -35,5 +35,12 @@ const unsigned short Inventory::getBarSize() const {
 }
 
 void Inventory::drawInventory() {
-	DrawRectangle((screenWidth/2), 50, 50, 50, ColorAlpha(LIGHTGRAY,0.7));
+	//Inventory background
+	DrawRectangle(
+		(g_screenWidth-(bar_size*g_itemSquare+(bar_size-1)*g_itemMargin+2*g_inventoryMargin))/2,
+		g_screenHeight-(g_itemSquare+2*g_inventoryMargin),
+		bar_size*g_itemSquare+(bar_size-1)*g_itemMargin+2*g_inventoryMargin,
+		g_itemSquare+2*g_inventoryMargin,
+		ColorAlpha(LIGHTGRAY,0.7)
+	);
 }
