@@ -49,14 +49,28 @@ void Inventory::drawInventory() {
 	Texture2D item_texture;
 	for (int i = 0; i < bar_size; ++i) {
 		//Items border
-		DrawRectangleLines(
-			(g_screenWidth-(bar_size*g_itemSquare+(bar_size-1)*g_itemMargin+2*g_inventoryMargin))/2 + g_inventoryMargin + i * (g_itemSquare+g_itemMargin)-1,
-			g_screenHeight-(g_itemSquare+g_inventoryMargin)-1,
-			g_itemSquare+2,
-			g_itemSquare+2,
-			DARKGRAY
-		);
-
+		if(getCurrentItem()==getItem(i)) {
+			//Selected Item
+			DrawRectangleLinesEx(
+					(Rectangle){
+							(float) ((g_screenWidth-(bar_size*g_itemSquare+(bar_size-1)*g_itemMargin+2*g_inventoryMargin))/2 + g_inventoryMargin + i * (g_itemSquare+g_itemMargin)-4),
+							(float) (g_screenHeight-(g_itemSquare+g_inventoryMargin)-4),
+							(float) (g_itemSquare+8),
+							(float) (g_itemSquare+8)
+					},
+					3,
+					BLACK
+			);
+		}else{
+			DrawRectangleLines(
+					(g_screenWidth-(bar_size*g_itemSquare+(bar_size-1)*g_itemMargin+2*g_inventoryMargin))/2 + g_inventoryMargin + i * (g_itemSquare+g_itemMargin)-1,
+					g_screenHeight-(g_itemSquare+g_inventoryMargin)-1,
+					g_itemSquare+2,
+					g_itemSquare+2,
+					DARKGRAY
+			);
+		}
+		ShowCursor();
 		//Items inventory
 		item_texture = TexturesManager::getTexture(getItem(i)->block.getName());
 		item_texture.height = g_itemSquare;
