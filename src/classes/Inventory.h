@@ -15,6 +15,7 @@ private:
 	//Inventory
 	Item items[6];
 	Item* currentItem;
+	bool inventoryMenu = false;
 	const unsigned short bar_size = 6;
 
 	//Graphic informations
@@ -32,13 +33,15 @@ public:
 	Item* getItem(unsigned short position);
 	unsigned short getBarSize() const{return bar_size;};
 	const Item *getItems() const;
-
-	void setCurrentItem(Item *currentItem);
+	bool isInventoryMenu() const;
+	void setInventoryMenu(bool inventoryMenu);
 
 	//Peripheral device management (keyboard,mouse)
-	void deviceManagement();
+	void changeSelectedItem();
+	void deviceManagement();//Global management
 
 	//Drawing, graphic part
-	void drawInventory();
+	void inGameInventory();
+	void drawInventory();//Global drawing
 
 };

@@ -7,20 +7,16 @@
 #include "raylib.h"
 #include "TexturesManager.h"
 
-Inventory::Inventory() : items{{Block("dirt")},{Block("stone")},{Block("glass")},{Block("sponge")},{Block("dirt")},{Block("stone")}}{
+Inventory::Inventory() : items{{Block("dirt"),5},{Block("stone"),5},{Block("glass"),5},{Block("sponge"),5},{Block("dirt"),5},{Block("stone"),5}}{
 	currentItem = &items[0];
 }
 
 Inventory::~Inventory() {
-	setCurrentItem(nullptr);
+	currentItem = nullptr;
 }
 
 Item *Inventory::getCurrentItem() const {
 	return currentItem;
-}
-
-void Inventory::setCurrentItem(Item *currentItem) {
-	currentItem = currentItem;
 }
 
 Item* Inventory::getItem(unsigned short position){
@@ -35,14 +31,55 @@ const Item *Inventory::getItems() const {
 	return items;
 }
 
-void Inventory::drawInventory() {
+bool Inventory::isInventoryMenu() const {
+	return inventoryMenu;
+}
+
+void Inventory::setInventoryMenu(bool inventoryMenu) {
+	Inventory::inventoryMenu = inventoryMenu;
+}
+
+void Inventory::changeSelectedItem() {
+	if (GetMouseWheelMove() < 0) {
+		if (getItem(getBarSize() - 1) == getCurrentItem()) {
+			currentItem = &items[0];
+		} else {
+			*currentItem++;
+		}
+	} else {
+		if (getItem(0) == getCurrentItem()) {
+			currentItem = &items[getBarSize() - 1];
+		} else {
+			*currentItem--;
+		}
+	}
+}
+
+void Inventory::deviceManagement() {
+	//Mouse management
+	if(GetMouseWheelMove()) {
+		changeSelectedItem();
+	}
+
+	if(IsKeyPressed(KEY_I)){
+		setInventoryMenu(isInventoryMenu()?false:true);
+		if(isInventoryMenu()){
+			//Freeze camera and open menu et afficher le curseur
+		}else{
+			//Close menu and resume camera et cacher le curseur
+		}
+		std::cout << "Menu opened : " << isInventoryMenu() << std::endl;
+	}
+}
+
+void Inventory::inGameInventory() {
 	//Inventory background
 	DrawRectangle(
-		(g_screenWidth-(bar_size*g_itemSquare+(bar_size-1)*g_itemMargin+2*g_inventoryMargin))/2,
-		g_screenHeight-(g_itemSquare+2*g_inventoryMargin),
-		bar_size*g_itemSquare+(bar_size-1)*g_itemMargin+2*g_inventoryMargin,
-		g_itemSquare+2*g_inventoryMargin,
-		ColorAlpha(LIGHTGRAY,0.7)
+			(g_screenWidth-(bar_size*g_itemSquare+(bar_size-1)*g_itemMargin+2*g_inventoryMargin))/2,
+			g_screenHeight-(g_itemSquare+2*g_inventoryMargin),
+			bar_size*g_itemSquare+(bar_size-1)*g_itemMargin+2*g_inventoryMargin,
+			g_itemSquare+2*g_inventoryMargin,
+			ColorAlpha(LIGHTGRAY,0.7)
 	);
 
 	Texture2D item_texture;
@@ -74,32 +111,15 @@ void Inventory::drawInventory() {
 		item_texture.height = g_itemSquare;
 		item_texture.width = g_itemSquare;
 		DrawTexture(
-			item_texture,
-			(g_screenWidth-(bar_size*g_itemSquare+(bar_size-1)*g_itemMargin+2*g_inventoryMargin))/2 + g_inventoryMargin + i * (g_itemSquare+g_itemMargin),
-			g_screenHeight-(g_itemSquare+g_inventoryMargin),
-			WHITE
+				item_texture,
+				(g_screenWidth-(bar_size*g_itemSquare+(bar_size-1)*g_itemMargin+2*g_inventoryMargin))/2 + g_inventoryMargin + i * (g_itemSquare+g_itemMargin),
+				g_screenHeight-(g_itemSquare+g_inventoryMargin),
+				WHITE
 		);
-
-	}
-
-}
-
-void Inventory::deviceManagement() {
-	//Mouse management
-	if(GetMouseWheelMove()) {
-		if (GetMouseWheelMove() < 0) {
-			if (getItem(getBarSize() - 1) == getCurrentItem()) {
-				currentItem = &items[0];
-			} else {
-				*currentItem++;
-			}
-		} else {
-			if (getItem(0) == getCurrentItem()) {
-				currentItem = &items[getBarSize() - 1];
-			} else {
-				*currentItem--;
-			}
-		}
 	}
 }
 
+
+void Inventory::drawInventory() {
+	inGameInventory();
+}
