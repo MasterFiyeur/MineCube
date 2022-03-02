@@ -7,8 +7,8 @@
 #include "raylib.h"
 #include "TexturesManager.h"
 
-Inventory::Inventory() : Items{{Block("dirt")},{Block("stone")},{Block("glass")},{Block("sponge")},{Block("dirt")},{Block("stone")}}{
-	current_Item = &Items[0];
+Inventory::Inventory() : items{{Block("dirt")},{Block("stone")},{Block("glass")},{Block("sponge")},{Block("dirt")},{Block("stone")}}{
+	currentItem = &items[0];
 }
 
 Inventory::~Inventory() {
@@ -16,19 +16,23 @@ Inventory::~Inventory() {
 }
 
 Item *Inventory::getCurrentItem() const {
-	return current_Item;
+	return currentItem;
 }
 
 void Inventory::setCurrentItem(Item *currentItem) {
-	current_Item = currentItem;
+	currentItem = currentItem;
 }
 
 Item* Inventory::getItem(unsigned short position){
 	if(position > bar_size-1){
 		std::cout << "The biggest position is " << getBarSize()-1 << std::endl;
 	}else{
-		return &Items[position];
+		return &items[position];
 	}
+}
+
+const Item *Inventory::getItems() const {
+	return items;
 }
 
 void Inventory::drawInventory() {
@@ -40,11 +44,6 @@ void Inventory::drawInventory() {
 		g_itemSquare+2*g_inventoryMargin,
 		ColorAlpha(LIGHTGRAY,0.7)
 	);
-	/*for (int i = 0; i < MAX_FRAME_SPEED; i++)
-	{
-		if (i < framesSpeed) DrawRectangle(250 + 21*i, 205, 20, 20, RED);
-		DrawRectangleLines(250 + 21*i, 205, 20, 20, MAROON);
-	}*/
 
 	Texture2D item_texture;
 	for (int i = 0; i < bar_size; ++i) {
@@ -70,7 +69,6 @@ void Inventory::drawInventory() {
 					DARKGRAY
 			);
 		}
-		ShowCursor();
 		//Items inventory
 		item_texture = TexturesManager::getTexture(getItem(i)->block.getName());
 		item_texture.height = g_itemSquare;
@@ -85,3 +83,23 @@ void Inventory::drawInventory() {
 	}
 
 }
+
+void Inventory::deviceManagement() {
+	//Mouse management
+	if(GetMouseWheelMove()) {
+		if (GetMouseWheelMove() < 0) {
+			if (getItem(getBarSize() - 1) == getCurrentItem()) {
+				currentItem = &items[0];
+			} else {
+				*currentItem++;
+			}
+		} else {
+			if (getItem(0) == getCurrentItem()) {
+				currentItem = &items[getBarSize() - 1];
+			} else {
+				*currentItem--;
+			}
+		}
+	}
+}
+

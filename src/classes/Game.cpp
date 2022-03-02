@@ -51,6 +51,10 @@ void Game::start() {
         if (IsKeyDown(KEY_LEFT_SHIFT)){
             playerPosition.y -= 0.1f;
         }
+
+		//Inventory keyboard and mouse management
+		inventory.deviceManagement();
+
         camera.position.y = playerPosition.y;
 
         // Draw

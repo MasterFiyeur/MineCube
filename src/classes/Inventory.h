@@ -13,8 +13,8 @@ struct Item{
 class Inventory {
 private:
 	//Inventory
-	Item Items[6];
-	Item* current_Item;
+	Item items[6];
+	Item* currentItem;
 	const unsigned short bar_size = 6;
 
 	//Graphic informations
@@ -27,12 +27,18 @@ public:
 	Inventory();
 	virtual ~Inventory();
 
+	//Getters and Setters
 	Item *getCurrentItem() const;
 	Item* getItem(unsigned short position);
 	unsigned short getBarSize() const{return bar_size;};
+	const Item *getItems() const;
 
 	void setCurrentItem(Item *currentItem);
 
+	//Peripheral device management (keyboard,mouse)
+	void deviceManagement();
+
+	//Drawing, graphic part
 	void drawInventory();
 
 };
