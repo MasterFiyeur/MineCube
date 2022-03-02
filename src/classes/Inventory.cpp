@@ -43,4 +43,21 @@ void Inventory::drawInventory() {
 		g_itemSquare+2*g_inventoryMargin,
 		ColorAlpha(LIGHTGRAY,0.7)
 	);
+	/*for (int i = 0; i < MAX_FRAME_SPEED; i++)
+	{
+		if (i < framesSpeed) DrawRectangle(250 + 21*i, 205, 20, 20, RED);
+		DrawRectangleLines(250 + 21*i, 205, 20, 20, MAROON);
+	}*/
+
+	//Items border
+	for (int i = 0; i < bar_size; ++i) {
+		DrawRectangleLines(
+			(g_screenWidth-(bar_size*g_itemSquare+(bar_size-1)*g_itemMargin+2*g_inventoryMargin))/2 + g_inventoryMargin + i * (g_itemSquare+g_itemMargin),
+			g_screenHeight-(g_itemSquare+g_inventoryMargin),
+			g_itemSquare+2,
+			g_itemSquare+2,
+			DARKGRAY
+		);
+	}
+
 }
