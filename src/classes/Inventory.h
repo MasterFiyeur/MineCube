@@ -27,9 +27,9 @@ public:
 	Inventory();
 	virtual ~Inventory();
 
-	const unsigned short getBarSize() const;
 	Item *getCurrentItem() const;
 	Item* getItem(unsigned short position);
+	unsigned short getBarSize() const{return bar_size;};
 
 	void setCurrentItem(Item *currentItem);
 
