@@ -7,6 +7,7 @@
 
 #include "Game.h"
 #include "Block.h"
+#include "Inventory.h"
 
 #define initial_square 8
 
@@ -25,6 +26,9 @@ Game::Game() {
 void Game::start() {
     // fill world with static blocks
     world.fill(Block("stone"), {-initial_square, 0, -initial_square}, {initial_square, 0, initial_square});
+
+	//Inventory initialization
+	Inventory inventory = Inventory();
 
     Block dirt = Block("dirt");
     world.add_block(dirt, {0, 1, 0});
@@ -61,6 +65,9 @@ void Game::start() {
         DrawCubeWires(camera.target, 0.1f, 0.1f, 0.1f, WHITE);
 
         EndMode3D();
+
+		//Inventory bar
+		inventory.drawInventory();
 
         sprintf(upperText, "Position: %.1f, %.1f, %.1f\nLooking at: %.1f, %.1f, %.1f",
                 camera.position.x, camera.position.y, camera.position.z,
