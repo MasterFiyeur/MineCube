@@ -38,6 +38,7 @@ public:
 
 	//Peripheral device management (keyboard,mouse)
 	void changeSelectedItem();
+	void inventoryDisplay();
 	void deviceManagement();//Global management
 
 	//Drawing, graphic part

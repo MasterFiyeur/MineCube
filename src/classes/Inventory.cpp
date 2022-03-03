@@ -22,6 +22,7 @@ Item *Inventory::getCurrentItem() const {
 Item* Inventory::getItem(unsigned short position){
 	if(position > bar_size-1){
 		std::cout << "The biggest position is " << getBarSize()-1 << std::endl;
+		return nullptr;
 	}else{
 		return &items[position];
 	}
@@ -55,6 +56,18 @@ void Inventory::changeSelectedItem() {
 	}
 }
 
+void Inventory::inventoryDisplay() {
+	setInventoryMenu(isInventoryMenu()?false:true);
+	if(isInventoryMenu()){
+		EnableCursor();
+		std::cout << "Menu opened" << std::endl;
+	}else{
+		DisableCursor();
+		std::cout << "Menu closed" << std::endl;
+		//Close menu and resume camera et cacher le curseur
+	}
+}
+
 void Inventory::deviceManagement() {
 	//Mouse management
 	if(GetMouseWheelMove()) {
@@ -62,13 +75,7 @@ void Inventory::deviceManagement() {
 	}
 
 	if(IsKeyPressed(KEY_I)){
-		setInventoryMenu(isInventoryMenu()?false:true);
-		if(isInventoryMenu()){
-			//Freeze camera and open menu et afficher le curseur
-		}else{
-			//Close menu and resume camera et cacher le curseur
-		}
-		std::cout << "Menu opened : " << isInventoryMenu() << std::endl;
+		inventoryDisplay();
 	}
 }
 
