@@ -7,12 +7,14 @@
 #include "raylib.h"
 #include "TexturesManager.h"
 
-Inventory::Inventory() : items{{Block("dirt"),5},{Block("stone"),5},{Block("glass"),5},{Block("sponge"),5},{Block("dirt"),5},{Block("stone"),5}}{
-	currentItem = &items[0];
-	changingItemPosition = nullptr;
+Inventory::Inventory() :
+items{{Block("dirt"),5},{Block("stone"),5},{Block("glass"),5},{Block("sponge"),5},{Block("dirt"),5},{Block("stone"),5}},
+tempItemOldPosition({0,0}),
+currentItem{&items[0]},
+changingItemPosition{nullptr}{
 	for (int i = 0; i < bar_size; ++i) {
-		items[i].g_position.x = (g_screenWidth-(bar_size*g_itemSquare+(bar_size-1)*g_itemMargin+2*g_inventoryMargin))/2 + g_inventoryMargin + i * (g_itemSquare+g_itemMargin);
-		items[i].g_position.y = g_screenHeight-(g_itemSquare+g_inventoryMargin);
+		items[i].g_position.x = (float) ((float) (g_screenWidth-(bar_size*g_itemSquare+(bar_size-1)*g_itemMargin+2*g_inventoryMargin))/2 + (float) g_inventoryMargin + (float) i * (float)(g_itemSquare+g_itemMargin));
+		items[i].g_position.y = (float) (g_screenHeight-(g_itemSquare+g_inventoryMargin));
 	}
 }
 
@@ -42,8 +44,8 @@ bool Inventory::isInventoryMenu() const {
 	return inventoryMenu;
 }
 
-void Inventory::setInventoryMenu(bool inventoryMenu) {
-	Inventory::inventoryMenu = inventoryMenu;
+void Inventory::setInventoryMenu(bool p_inventoryMenu) {
+	Inventory::inventoryMenu = p_inventoryMenu;
 }
 
 void Inventory::changeSelectedItem() {
@@ -94,13 +96,11 @@ void Inventory::changeItem() {
 			if (changingItemPosition == nullptr){
 				changingItemPosition = &items[i];
 				tempItemOldPosition = {getItem(i)->g_position.x, getItem(i)->g_position.y};
-				std::cout << "Element " << i << " pressed !" << std::endl;
 			}else{
 				changingItemPosition->g_position = tempItemOldPosition;
 				::std::swap(items[i].g_position,changingItemPosition->g_position);
 				::std::swap(items[i],*changingItemPosition);
 				changingItemPosition = nullptr;
-				std::cout << "Element " << i << " pressed !" << std::endl;
 			}
 			break;
 		}
@@ -109,7 +109,7 @@ void Inventory::changeItem() {
 
 void Inventory::deviceManagement() {
 	//Mouse management
-	if (GetMouseWheelMove()) {
+	if (GetMouseWheelMove() != 0) {
 		changeSelectedItem();
 	}
 
@@ -124,8 +124,8 @@ void Inventory::deviceManagement() {
 
 
 void Inventory::updateSelectedItemPos() {
-	(*changingItemPosition).g_position.x = GetMouseX()-g_itemSquare/2;
-	(*changingItemPosition).g_position.y = GetMouseY()-g_itemSquare/2;
+	(*changingItemPosition).g_position.x = (float) ((float) (GetMouseX())-((float) g_itemSquare)/2);
+	(*changingItemPosition).g_position.y = (float) ((float) (GetMouseY())-((float) g_itemSquare)/2);
 }
 
 void Inventory::inGameInventory() {
@@ -145,7 +145,7 @@ void Inventory::inGameInventory() {
 			//Selected Item
 			DrawRectangleLinesEx(
 					(Rectangle){
-							(float) ((g_screenWidth-(bar_size*g_itemSquare+(bar_size-1)*g_itemMargin+2*g_inventoryMargin))/2 + g_inventoryMargin + i * (g_itemSquare+g_itemMargin)-4),
+							(float) ((float) (g_screenWidth-(bar_size*g_itemSquare+(bar_size-1)*g_itemMargin+2*g_inventoryMargin))/2 + (float) g_inventoryMargin + (float) i * (float) (g_itemSquare+g_itemMargin)-4),
 							(float) (g_screenHeight-(g_itemSquare+g_inventoryMargin)-4),
 							(float) (g_itemSquare+8),
 							(float) (g_itemSquare+8)
@@ -168,8 +168,8 @@ void Inventory::inGameInventory() {
 		item_texture.width = g_itemSquare;
 		DrawTexture(
 				item_texture,
-				getItem(i)->g_position.x,
-				getItem(i)->g_position.y,
+				(int) getItem(i)->g_position.x,
+				(int) getItem(i)->g_position.y,
 				WHITE
 		);
 	}
