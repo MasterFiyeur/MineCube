@@ -1,5 +1,5 @@
 //
-// Created by cytech on 27/02/2022.
+// Created by Arthur on 27/02/2022.
 //
 
 #pragma once
@@ -23,5 +23,5 @@ public:
         static TexturesManager manager;
         return manager;
     }
-    static Texture2D getTexture(std::string name);
+    static Texture2D getTexture(const std::string& name);
 };

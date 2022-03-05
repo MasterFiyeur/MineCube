@@ -19,7 +19,7 @@ void World::add_block(Block block, Vector3 position) {
     this->blocks[position] = std::move(block);
 }
 
-void World::fill(Block block, Vector3 start, Vector3 end) {
+void World::fill(const Block& block, Vector3 start, Vector3 end) {
     int xmin, xmax, ymin, ymax, zmin, zmax;
     xmin = (int) std::min(start.x, end.x);
     xmax = (int) std::max(start.x, end.x);
@@ -75,5 +75,5 @@ bool operator<(const Vector3& o1, const Vector3 o2) {
 }
 
 bool operator==(const Vector3& o1, const Vector3 o2) {
-    return o1.x == o2.x && o1.y == o2.y == o1.z == o2.z;
+    return o1.x == o2.x && o1.y == o2.y && o1.z == o2.z;
 }

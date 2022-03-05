@@ -22,7 +22,7 @@ Game::Game() {
     camera.fovy = 40.0f;                                // Camera field-of-view Y
     camera.projection = CAMERA_PERSPECTIVE;                   // Camera mode type
     this->world = WorldSave::load();
-};
+}
 
 
 void Game::start() {

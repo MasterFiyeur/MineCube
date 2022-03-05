@@ -1,5 +1,5 @@
 //
-// Created by cytech on 27/02/2022.
+// Created by Arthur on 27/02/2022.
 //
 
 #include <iostream>
@@ -17,7 +17,7 @@ void TexturesManager::loadTexture(const std::string& name) {
     this->textures[name] = LoadTexture(asset.c_str());
 }
 
-Texture2D TexturesManager::getTexture(std::string name) {
+Texture2D TexturesManager::getTexture(const std::string& name) {
     if (instance().unknownTextures.count(name) == 1) {
         return instance().defaultTexture;
     }
