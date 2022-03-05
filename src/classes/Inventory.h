@@ -35,11 +35,11 @@ public:
 
 	//Getters and Setters
 	Item *getCurrentItem() const;
-	Item* getItem(unsigned short position);
+	Item* getItem(unsigned short p_position);
 	unsigned short getBarSize() const{return bar_size;};
 	const Item *getItems() const;
 	bool isInventoryMenu() const;
-	void setInventoryMenu(bool inventoryMenu);
+	void setInventoryMenu(bool p_inventoryMenu);
 
 	//Peripheral device management (keyboard,mouse)
 	void changeSelectedItem();

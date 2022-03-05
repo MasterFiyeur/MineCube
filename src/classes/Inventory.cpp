@@ -27,12 +27,12 @@ Item *Inventory::getCurrentItem() const {
 	return currentItem;
 }
 
-Item* Inventory::getItem(unsigned short position){
-	if (position > bar_size-1){
+Item* Inventory::getItem(unsigned short p_position){
+	if (p_position > bar_size-1){
 		std::cout << "The biggest position is " << getBarSize()-1 << std::endl;
 		return nullptr;
 	}else{
-		return &items[position];
+		return &items[p_position];
 	}
 }
 
