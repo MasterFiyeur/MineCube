@@ -32,7 +32,7 @@ void WorldSave::save(World* world) {
 
     // write prettified JSON to another file
     std::ofstream o("world.json");
-    o << std::setw(4) << data << std::endl;
+    o << data << std::endl;
 }
 
 World WorldSave::load() {
