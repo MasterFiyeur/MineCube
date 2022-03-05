@@ -14,5 +14,6 @@ public:
     Game();
 
     void start();
+    std::string getCameraDirection() const;
 };
 
