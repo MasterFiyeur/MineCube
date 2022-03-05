@@ -63,7 +63,7 @@ void Inventory::changeSelectedItem() {
 }
 
 void Inventory::inventoryDisplay() {
-	setInventoryMenu(isInventoryMenu()?false:true);
+	setInventoryMenu(!isInventoryMenu());
 	if (isInventoryMenu()){
 		EnableCursor();
 		std::cout << "Menu opened" << std::endl;
@@ -75,14 +75,14 @@ void Inventory::inventoryDisplay() {
 		}
 		DisableCursor();
 		std::cout << "Menu closed" << std::endl;
-		//Close menu and resume camera et cacher le curseur
 	}
 }
 
 void Inventory::changeItem() {
 	for (int i = 0; i < bar_size; ++i) {
 		//Check if Click on item in the item bar
-		if(CheckCollisionPointRec(
+		if( getItem(i)!=changingItemPosition
+			&& CheckCollisionPointRec(
 			{(float) GetMouseX(),(float) GetMouseY()},
 			{
 				getItem(i)->g_position.x,
@@ -92,10 +92,17 @@ void Inventory::changeItem() {
 			}
 		)){
 			if (changingItemPosition == nullptr){
-			changingItemPosition = &items[i];
-			tempItemOldPostition = {getItem(i)->g_position.x, getItem(i)->g_position.y};
-			std::cout << "Element " << i << " pressed !" << std::endl;
+				changingItemPosition = &items[i];
+				tempItemOldPostition = {getItem(i)->g_position.x, getItem(i)->g_position.y};
+				std::cout << "Element " << i << " pressed !" << std::endl;
+			}else{
+				changingItemPosition->g_position = tempItemOldPostition;
+				::std::swap(items[i].g_position,changingItemPosition->g_position);
+				::std::swap(items[i],*changingItemPosition);
+				changingItemPosition = nullptr;
+				std::cout << "Element " << i << " pressed !" << std::endl;
 			}
+			break;
 		}
 	}
 }
