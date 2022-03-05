@@ -8,11 +8,12 @@
 #include "TexturesManager.h"
 
 Inventory::Inventory() :
-items{{Block("dirt"),5},{Block("stone"),5},{Block("glass"),5},{Block("sponge"),5},{Block("dirt"),5},{Block("stone"),5}},
+items{{Block("dirt")},{Block("stone")},{Block("glass")},{Block("sponge")},{Block("dirt")},{Block("stone")}},
 tempItemOldPosition({0,0}),
 currentItem{&items[0]},
 changingItemPosition{nullptr}{
 	for (int i = 0; i < bar_size; ++i) {
+		//Block in inventory position init
 		items[i].g_position.x = (float) ((float) (g_screenWidth-(bar_size*g_itemSquare+(bar_size-1)*g_itemMargin+2*g_inventoryMargin))/2 + (float) g_inventoryMargin + (float) i * (float)(g_itemSquare+g_itemMargin));
 		items[i].g_position.y = (float) (g_screenHeight-(g_itemSquare+g_inventoryMargin));
 	}
@@ -49,6 +50,7 @@ void Inventory::setInventoryMenu(bool p_inventoryMenu) {
 }
 
 void Inventory::changeSelectedItem() {
+	//Item selection in item bar
 	if (GetMouseWheelMove() < 0) {
 		if (getItem(getBarSize() - 1) == getCurrentItem()) {
 			currentItem = &items[0];
@@ -65,6 +67,7 @@ void Inventory::changeSelectedItem() {
 }
 
 void Inventory::inventoryDisplay() {
+	//Inventory menu for change item position in item bar
 	setInventoryMenu(!isInventoryMenu());
 	if (isInventoryMenu()){
 		EnableCursor();
@@ -81,6 +84,7 @@ void Inventory::inventoryDisplay() {
 }
 
 void Inventory::changeItem() {
+	//Changing item position in item bar
 	for (int i = 0; i < bar_size; ++i) {
 		//Check if Click on item in the item bar
 		if( getItem(i)!=changingItemPosition
@@ -113,21 +117,24 @@ void Inventory::deviceManagement() {
 		changeSelectedItem();
 	}
 
+	//Keyboard management
 	if (IsKeyPressed(KEY_I)){
 		inventoryDisplay();
 	}
 
+	//In menu mouse management
 	if(isInventoryMenu() && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){
 		changeItem();
 	}
 }
 
-
+//Graphic item which follow mouse when selected in inventory menu
 void Inventory::updateSelectedItemPos() {
 	(*changingItemPosition).g_position.x = (float) ((float) (GetMouseX())-((float) g_itemSquare)/2);
 	(*changingItemPosition).g_position.y = (float) ((float) (GetMouseY())-((float) g_itemSquare)/2);
 }
 
+//Inventory drawing
 void Inventory::inGameInventory() {
 	//Inventory background
 	DrawRectangle(
@@ -141,7 +148,9 @@ void Inventory::inGameInventory() {
 	Texture2D item_texture;
 	for (int i = 0; i < bar_size; ++i) {
 		//Items border
-		if (getCurrentItem()==getItem(i)) {
+		Item* item;
+		item = getItem(i);
+		if (getCurrentItem()==item) {
 			//Selected Item
 			DrawRectangleLinesEx(
 					(Rectangle){
@@ -163,19 +172,19 @@ void Inventory::inGameInventory() {
 			);
 		}
 		//Items inventory
-		item_texture = TexturesManager::getTexture(getItem(i)->block.getName());
+		item_texture = TexturesManager::getTexture(item->block.getName());
 		item_texture.height = g_itemSquare;
 		item_texture.width = g_itemSquare;
 		DrawTexture(
 				item_texture,
-				(int) getItem(i)->g_position.x,
-				(int) getItem(i)->g_position.y,
+				(int) item->g_position.x,
+				(int) item->g_position.y,
 				WHITE
 		);
 	}
 }
 
-
+//Global function for draw inventory in game
 void Inventory::drawInventory() {
 	if (isInventoryMenu() && changingItemPosition != nullptr) {
 		updateSelectedItemPos();

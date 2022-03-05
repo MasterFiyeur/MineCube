@@ -7,26 +7,25 @@
 
 struct Item{
 	Block block;
-	int number;
-	Vector2 g_position;
+	Vector2 g_position; //Graphic position in item bar
 };
 
 class Inventory {
 private:
 	//Inventory
-	Item items[6];
-	Item* currentItem;
-	bool inventoryMenu = false;
-	const unsigned short bar_size = 6;
+	Item items[6]; //Array of item (item bar)
+	Item* currentItem; //Selected item
+	bool inventoryMenu = false; //Menu opened
+	const unsigned short bar_size = 6; //Size of the item bar
 
 	//Graphic informations
 	const int g_screenWidth = 960;
 	const int g_screenHeight = 540;
-	const int g_inventoryMargin = 10;
-	const int g_itemSquare = 40;
-	const int g_itemMargin = 10;
-	Vector2 tempItemOldPosition;
-	Item* changingItemPosition;
+	const int g_inventoryMargin = 10; //Margin around all items in item bar
+	const int g_itemSquare = 40; //Item size
+	const int g_itemMargin = 10; //Margin between items
+	Vector2 tempItemOldPosition; //Position (x,y) of a selected item in inventory menu
+	Item* changingItemPosition; //pointer on the selected item
 
 
 public:
