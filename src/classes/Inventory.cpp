@@ -18,6 +18,7 @@ Inventory::Inventory() : items{{Block("dirt"),5},{Block("stone"),5},{Block("glas
 
 Inventory::~Inventory() {
 	currentItem = nullptr;
+	changingItemPosition = nullptr;
 }
 
 Item *Inventory::getCurrentItem() const {
@@ -79,7 +80,24 @@ void Inventory::inventoryDisplay() {
 }
 
 void Inventory::changeItem() {
-
+	for (int i = 0; i < bar_size; ++i) {
+		//Check if Click on item in the item bar
+		if(CheckCollisionPointRec(
+			{(float) GetMouseX(),(float) GetMouseY()},
+			{
+				getItem(i)->g_position.x,
+				getItem(i)->g_position.y,
+				(float) g_itemSquare,
+				(float) g_itemSquare
+			}
+		)){
+			if (changingItemPosition == nullptr){
+			changingItemPosition = &items[i];
+			tempItemOldPostition = {getItem(i)->g_position.x, getItem(i)->g_position.y};
+			std::cout << "Element " << i << " pressed !" << std::endl;
+			}
+		}
+	}
 }
 
 void Inventory::deviceManagement() {
@@ -92,24 +110,8 @@ void Inventory::deviceManagement() {
 		inventoryDisplay();
 	}
 
-	if(isInventoryMenu() && IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && changingItemPosition == nullptr){
-		for (int i = 0; i < bar_size; ++i) {
-			//Check if Click on item in the item bar
-			if(CheckCollisionPointRec(
-				{(float) GetMouseX(),(float) GetMouseY()},
-				{
-					getItem(i)->g_position.x,
-					getItem(i)->g_position.y,
-					(float) g_itemSquare,
-					(float) g_itemSquare
-				}
-				)
-			){
-				changingItemPosition = &items[i];
-				tempItemOldPostition = {getItem(i)->g_position.x, getItem(i)->g_position.y};
-				std::cout << "Element " << i << " pressed !" << std::endl;
-			}
-		}
+	if(isInventoryMenu() && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){
+		changeItem();
 	}
 }
 
