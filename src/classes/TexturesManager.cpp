@@ -1,11 +1,11 @@
 //
-// Created by cytech on 27/02/2022.
+// Created by Arthur on 27/02/2022.
 //
 
 #include <iostream>
-#include <sys/stat.h>
 
 #include "TexturesManager.h"
+#include "Utils.h"
 
 TexturesManager::TexturesManager() {
     loadTexture("missing_texture");
@@ -17,12 +17,7 @@ void TexturesManager::loadTexture(const std::string& name) {
     this->textures[name] = LoadTexture(asset.c_str());
 }
 
-inline bool file_exists(const std::string& name) {
-    struct stat buffer;
-    return (stat (name.c_str(), &buffer) == 0);
-}
-
-Texture2D TexturesManager::getTexture(std::string name) {
+Texture2D TexturesManager::getTexture(const std::string& name) {
     if (instance().unknownTextures.count(name) == 1) {
         return instance().defaultTexture;
     }

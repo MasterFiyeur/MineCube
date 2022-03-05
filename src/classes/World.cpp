@@ -3,7 +3,9 @@
 //
 
 #include <iostream>
+#include <utility>
 #include "World.h"
+#include "WorldSave.h"
 
 World::World() {
     this->last_save = std::time(nullptr);
@@ -13,11 +15,11 @@ World::~World() {
     this->blocks.clear();
 }
 
-void World::add_block(Block& block, Vector3 position) {
-    this->blocks[position] = block;
+void World::add_block(Block block, Vector3 position) {
+    this->blocks[position] = std::move(block);
 }
 
-void World::fill(Block block, Vector3 start, Vector3 end) {
+void World::fill(const Block& block, Vector3 start, Vector3 end) {
     int xmin, xmax, ymin, ymax, zmin, zmax;
     xmin = (int) std::min(start.x, end.x);
     xmax = (int) std::max(start.x, end.x);
@@ -43,6 +45,10 @@ Block* World::get_block(Vector3 position) {
     return &this->blocks.at(position);
 }
 
+std::map<Vector3, Block> World::get_blocks() {
+    return this->blocks;
+}
+
 void World::draw() const {
     auto
         mit (blocks.begin()),
@@ -54,7 +60,12 @@ void World::draw() const {
 
 void World::save() {
     std::cout << "Saving world..." << std::endl;
+    WorldSave::save(this);
     this->last_save = std::time(nullptr);
+}
+
+bool World::isempty() {
+    return this->blocks.empty();
 }
 
 bool operator<(const Vector3& o1, const Vector3 o2) {
@@ -64,5 +75,5 @@ bool operator<(const Vector3& o1, const Vector3 o2) {
 }
 
 bool operator==(const Vector3& o1, const Vector3 o2) {
-    return o1.x == o2.x && o1.y == o2.y == o1.z == o2.z;
+    return o1.x == o2.x && o1.y == o2.y && o1.z == o2.z;
 }
