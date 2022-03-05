@@ -4,6 +4,7 @@
 
 #include <iostream>
 #include "World.h"
+#include "WorldSave.h"
 
 World::World() {
     this->last_save = std::time(nullptr);
@@ -43,6 +44,10 @@ Block* World::get_block(Vector3 position) {
     return &this->blocks.at(position);
 }
 
+std::map<Vector3, Block> World::get_blocks() {
+    return this->blocks;
+}
+
 void World::draw() const {
     auto
         mit (blocks.begin()),
@@ -54,6 +59,7 @@ void World::draw() const {
 
 void World::save() {
     std::cout << "Saving world..." << std::endl;
+    WorldSave::save(this);
     this->last_save = std::time(nullptr);
 }
 

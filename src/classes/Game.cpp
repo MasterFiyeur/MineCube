@@ -7,6 +7,7 @@
 
 #include "Game.h"
 #include "Block.h"
+#include "WorldSave.h"
 
 #define initial_square 8
 
@@ -19,6 +20,7 @@ Game::Game() {
     camera.up = (Vector3){ 0.0f, 1.0f, 0.0f };          // Camera up vector (rotation towards target)
     camera.fovy = 40.0f;                                // Camera field-of-view Y
     camera.projection = CAMERA_PERSPECTIVE;                   // Camera mode type
+    this->world = WorldSave::load();
 };
 
 
@@ -69,4 +71,6 @@ void Game::start() {
 
         EndDrawing();
     }
+
+    this->world.save();
 }
