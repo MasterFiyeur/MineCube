@@ -8,6 +8,7 @@
 struct Item{
 	Block block;
 	int number;
+	Vector2 g_position;
 };
 
 class Inventory {
@@ -24,6 +25,10 @@ private:
 	const int g_inventoryMargin = 10;
 	const int g_itemSquare = 40;
 	const int g_itemMargin = 10;
+	Vector2 tempItemOldPostition;
+	Item* changingItemPosition;
+
+
 public:
 	Inventory();
 	virtual ~Inventory();
@@ -39,9 +44,11 @@ public:
 	//Peripheral device management (keyboard,mouse)
 	void changeSelectedItem();
 	void inventoryDisplay();
+	void changeItem();
 	void deviceManagement();//Global management
 
 	//Drawing, graphic part
+	void updateSelectedItemPos();
 	void inGameInventory();
 	void drawInventory();//Global drawing
 

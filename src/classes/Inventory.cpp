@@ -9,6 +9,11 @@
 
 Inventory::Inventory() : items{{Block("dirt"),5},{Block("stone"),5},{Block("glass"),5},{Block("sponge"),5},{Block("dirt"),5},{Block("stone"),5}}{
 	currentItem = &items[0];
+	changingItemPosition = nullptr;
+	for (int i = 0; i < bar_size; ++i) {
+		items[i].g_position.x = (g_screenWidth-(bar_size*g_itemSquare+(bar_size-1)*g_itemMargin+2*g_inventoryMargin))/2 + g_inventoryMargin + i * (g_itemSquare+g_itemMargin);
+		items[i].g_position.y = g_screenHeight-(g_itemSquare+g_inventoryMargin);
+	}
 }
 
 Inventory::~Inventory() {
@@ -20,7 +25,7 @@ Item *Inventory::getCurrentItem() const {
 }
 
 Item* Inventory::getItem(unsigned short position){
-	if(position > bar_size-1){
+	if (position > bar_size-1){
 		std::cout << "The biggest position is " << getBarSize()-1 << std::endl;
 		return nullptr;
 	}else{
@@ -58,25 +63,60 @@ void Inventory::changeSelectedItem() {
 
 void Inventory::inventoryDisplay() {
 	setInventoryMenu(isInventoryMenu()?false:true);
-	if(isInventoryMenu()){
+	if (isInventoryMenu()){
 		EnableCursor();
 		std::cout << "Menu opened" << std::endl;
 	}else{
+		//Check if an item was selected for changing position
+		if(changingItemPosition != nullptr){
+			changingItemPosition->g_position = tempItemOldPostition;
+			changingItemPosition = nullptr;
+		}
 		DisableCursor();
 		std::cout << "Menu closed" << std::endl;
 		//Close menu and resume camera et cacher le curseur
 	}
 }
 
+void Inventory::changeItem() {
+
+}
+
 void Inventory::deviceManagement() {
 	//Mouse management
-	if(GetMouseWheelMove()) {
+	if (GetMouseWheelMove()) {
 		changeSelectedItem();
 	}
 
-	if(IsKeyPressed(KEY_I)){
+	if (IsKeyPressed(KEY_I)){
 		inventoryDisplay();
 	}
+
+	if(isInventoryMenu() && IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && changingItemPosition == nullptr){
+		for (int i = 0; i < bar_size; ++i) {
+			//Check if Click on item in the item bar
+			if(CheckCollisionPointRec(
+				{(float) GetMouseX(),(float) GetMouseY()},
+				{
+					getItem(i)->g_position.x,
+					getItem(i)->g_position.y,
+					(float) g_itemSquare,
+					(float) g_itemSquare
+				}
+				)
+			){
+				changingItemPosition = &items[i];
+				tempItemOldPostition = {getItem(i)->g_position.x, getItem(i)->g_position.y};
+				std::cout << "Element " << i << " pressed !" << std::endl;
+			}
+		}
+	}
+}
+
+
+void Inventory::updateSelectedItemPos() {
+	(*changingItemPosition).g_position.x = GetMouseX()-g_itemSquare/2;
+	(*changingItemPosition).g_position.y = GetMouseY()-g_itemSquare/2;
 }
 
 void Inventory::inGameInventory() {
@@ -92,7 +132,7 @@ void Inventory::inGameInventory() {
 	Texture2D item_texture;
 	for (int i = 0; i < bar_size; ++i) {
 		//Items border
-		if(getCurrentItem()==getItem(i)) {
+		if (getCurrentItem()==getItem(i)) {
 			//Selected Item
 			DrawRectangleLinesEx(
 					(Rectangle){
@@ -119,8 +159,8 @@ void Inventory::inGameInventory() {
 		item_texture.width = g_itemSquare;
 		DrawTexture(
 				item_texture,
-				(g_screenWidth-(bar_size*g_itemSquare+(bar_size-1)*g_itemMargin+2*g_inventoryMargin))/2 + g_inventoryMargin + i * (g_itemSquare+g_itemMargin),
-				g_screenHeight-(g_itemSquare+g_inventoryMargin),
+				getItem(i)->g_position.x,
+				getItem(i)->g_position.y,
 				WHITE
 		);
 	}
@@ -128,5 +168,8 @@ void Inventory::inGameInventory() {
 
 
 void Inventory::drawInventory() {
-	inGameInventory();
+	if (isInventoryMenu() && changingItemPosition != nullptr) {
+		updateSelectedItemPos();
+	}
+		inGameInventory();
 }
