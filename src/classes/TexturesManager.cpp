@@ -3,9 +3,9 @@
 //
 
 #include <iostream>
-#include <sys/stat.h>
 
 #include "TexturesManager.h"
+#include "Utils.h"
 
 TexturesManager::TexturesManager() {
     loadTexture("missing_texture");
@@ -15,11 +15,6 @@ TexturesManager::TexturesManager() {
 void TexturesManager::loadTexture(const std::string& name) {
     std::string asset = "../assets/"+name+".png";
     this->textures[name] = LoadTexture(asset.c_str());
-}
-
-inline bool file_exists(const std::string& name) {
-    struct stat buffer;
-    return (stat (name.c_str(), &buffer) == 0);
 }
 
 Texture2D TexturesManager::getTexture(std::string name) {

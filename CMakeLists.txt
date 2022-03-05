@@ -20,7 +20,7 @@ if(NOT json_POPULATED)
     add_subdirectory(${json_SOURCE_DIR} ${json_BINARY_DIR} EXCLUDE_FROM_ALL)
 endif()
 
-add_executable(${PROJECT_NAME} src/main.cpp src/classes/Game.cpp src/classes/Block.cpp src/classes/World.cpp src/classes/TexturesManager.cpp src/classes/TexturesManager.h src/classes/WorldSave.cpp src/classes/WorldSave.h)
+add_executable(${PROJECT_NAME} src/main.cpp src/classes/Game.cpp src/classes/Block.cpp src/classes/World.cpp src/classes/TexturesManager.cpp src/classes/TexturesManager.h src/classes/WorldSave.cpp src/classes/WorldSave.h src/classes/Utils.h)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE raylib)
 target_link_libraries(${PROJECT_NAME} PRIVATE nlohmann_json::nlohmann_json)

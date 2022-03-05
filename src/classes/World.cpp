@@ -3,6 +3,7 @@
 //
 
 #include <iostream>
+#include <utility>
 #include "World.h"
 #include "WorldSave.h"
 
@@ -14,8 +15,8 @@ World::~World() {
     this->blocks.clear();
 }
 
-void World::add_block(Block& block, Vector3 position) {
-    this->blocks[position] = block;
+void World::add_block(Block block, Vector3 position) {
+    this->blocks[position] = std::move(block);
 }
 
 void World::fill(Block block, Vector3 start, Vector3 end) {
@@ -61,6 +62,10 @@ void World::save() {
     std::cout << "Saving world..." << std::endl;
     WorldSave::save(this);
     this->last_save = std::time(nullptr);
+}
+
+bool World::isempty() {
+    return this->blocks.empty();
 }
 
 bool operator<(const Vector3& o1, const Vector3 o2) {

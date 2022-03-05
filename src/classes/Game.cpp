@@ -3,6 +3,7 @@
 //
 
 #include <string>
+#include <iostream>
 #include "raylib.h"
 
 #include "Game.h"
@@ -25,11 +26,14 @@ Game::Game() {
 
 
 void Game::start() {
-    // fill world with static blocks
-    world.fill(Block("stone"), {-initial_square, 0, -initial_square}, {initial_square, 0, initial_square});
+    if (world.isempty()) {
+        std::cout << "Initializing world...." << std::endl;
+        // fill world with static blocks
+        world.fill(Block("stone"), {-initial_square, 0, -initial_square}, {initial_square, 0, initial_square});
 
-    Block dirt = Block("dirt");
-    world.add_block(dirt, {0, 1, 0});
+        Block dirt = Block("dirt");
+        world.add_block(dirt, {0, 1, 0});
+    }
 
     // setup camera and max FPS
     SetCameraMode(camera, CAMERA_FIRST_PERSON);
