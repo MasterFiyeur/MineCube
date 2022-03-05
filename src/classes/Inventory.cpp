@@ -1,5 +1,5 @@
 //
-// Created by cytech on 02/03/2022.
+// Created by Theo Julien on 02/03/2022.
 //
 
 #include <iostream>
@@ -8,18 +8,21 @@
 #include "TexturesManager.h"
 
 Inventory::Inventory() :
-items{{Block("dirt")},{Block("stone")},{Block("glass")},{Block("sponge")},{Block("dirt")},{Block("stone")}},
 tempItemOldPosition({0,0}),
 currentItem{&items[0]},
 changingItemPosition{nullptr}{
 	for (int i = 0; i < bar_size; ++i) {
 		//Block in inventory position init
+		items[i].block = nullptr;
 		items[i].g_position.x = (float) ((float) (g_screenWidth-(bar_size*g_itemSquare+(bar_size-1)*g_itemMargin+2*g_inventoryMargin))/2 + (float) g_inventoryMargin + (float) i * (float)(g_itemSquare+g_itemMargin));
 		items[i].g_position.y = (float) (g_screenHeight-(g_itemSquare+g_inventoryMargin));
 	}
 }
 
 Inventory::~Inventory() {
+	for (int i = 0; i < getBarSize(); ++i) {
+		delete items[i].block;
+	}
 	currentItem = nullptr;
 	changingItemPosition = nullptr;
 }
@@ -34,6 +37,15 @@ Item* Inventory::getItem(unsigned short p_position){
 		return nullptr;
 	}else{
 		return &items[p_position];
+	}
+}
+
+void Inventory::setItem(unsigned short p_position, Block &block){
+	if (p_position > bar_size-1){
+		std::cerr << "Error : The biggest position is " << getBarSize()-1 << std::endl;
+	}else{
+		if (items[p_position].block != nullptr) delete items[p_position].block;
+		items[p_position].block = &block;
 	}
 }
 
@@ -74,7 +86,7 @@ void Inventory::inventoryDisplay() {
 		std::cout << "Menu opened" << std::endl;
 	}else{
 		//Check if an item was selected for changing position
-		if(changingItemPosition != nullptr){
+		if (changingItemPosition != nullptr){
 			changingItemPosition->g_position = tempItemOldPosition;
 			changingItemPosition = nullptr;
 		}
@@ -87,7 +99,7 @@ void Inventory::changeItem() {
 	//Changing item position in item bar
 	for (int i = 0; i < bar_size; ++i) {
 		//Check if Click on item in the item bar
-		if( getItem(i)!=changingItemPosition
+		if (getItem(i)!=changingItemPosition
 			&& CheckCollisionPointRec(
 			{(float) GetMouseX(),(float) GetMouseY()},
 			{
@@ -98,6 +110,7 @@ void Inventory::changeItem() {
 			}
 		)){
 			if (changingItemPosition == nullptr){
+				if (items[i].block == nullptr) return; //Don't select empty item in item bar
 				changingItemPosition = &items[i];
 				tempItemOldPosition = {getItem(i)->g_position.x, getItem(i)->g_position.y};
 			}else{
@@ -153,34 +166,36 @@ void Inventory::inGameInventory() {
 		if (getCurrentItem()==item) {
 			//Selected Item
 			DrawRectangleLinesEx(
-					(Rectangle){
-							(float) ((float) (g_screenWidth-(bar_size*g_itemSquare+(bar_size-1)*g_itemMargin+2*g_inventoryMargin))/2 + (float) g_inventoryMargin + (float) i * (float) (g_itemSquare+g_itemMargin)-4),
-							(float) (g_screenHeight-(g_itemSquare+g_inventoryMargin)-4),
-							(float) (g_itemSquare+8),
-							(float) (g_itemSquare+8)
-					},
-					3,
-					BLACK
+				(Rectangle){
+					(float) ((float) (g_screenWidth-(bar_size*g_itemSquare+(bar_size-1)*g_itemMargin+2*g_inventoryMargin))/2 + (float) g_inventoryMargin + (float) i * (float) (g_itemSquare+g_itemMargin)-4),
+					(float) (g_screenHeight-(g_itemSquare+g_inventoryMargin)-4),
+					(float) (g_itemSquare+8),
+					(float) (g_itemSquare+8)
+				},
+				3,
+				BLACK
 			);
 		}else{
 			DrawRectangleLines(
-					(g_screenWidth-(bar_size*g_itemSquare+(bar_size-1)*g_itemMargin+2*g_inventoryMargin))/2 + g_inventoryMargin + i * (g_itemSquare+g_itemMargin)-1,
-					g_screenHeight-(g_itemSquare+g_inventoryMargin)-1,
-					g_itemSquare+2,
-					g_itemSquare+2,
-					DARKGRAY
+				(g_screenWidth-(bar_size*g_itemSquare+(bar_size-1)*g_itemMargin+2*g_inventoryMargin))/2 + g_inventoryMargin + i * (g_itemSquare+g_itemMargin)-1,
+				g_screenHeight-(g_itemSquare+g_inventoryMargin)-1,
+				g_itemSquare+2,
+				g_itemSquare+2,
+				DARKGRAY
 			);
 		}
 		//Items inventory
-		item_texture = TexturesManager::getTexture(item->block.getName());
-		item_texture.height = g_itemSquare;
-		item_texture.width = g_itemSquare;
-		DrawTexture(
+		if(item->block != nullptr) {
+			item_texture = TexturesManager::getTexture(item->block->getName());
+			item_texture.height = g_itemSquare;
+			item_texture.width = g_itemSquare;
+			DrawTexture(
 				item_texture,
 				(int) item->g_position.x,
 				(int) item->g_position.y,
 				WHITE
-		);
+			);
+		}
 	}
 }
 
@@ -189,5 +204,5 @@ void Inventory::drawInventory() {
 	if (isInventoryMenu() && changingItemPosition != nullptr) {
 		updateSelectedItemPos();
 	}
-		inGameInventory();
+	inGameInventory();
 }

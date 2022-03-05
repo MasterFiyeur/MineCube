@@ -6,7 +6,7 @@
 #include "Block.h"
 
 struct Item{
-	Block block;
+	Block* block;
 	Vector2 g_position; //Graphic position in item bar
 };
 
@@ -35,6 +35,7 @@ public:
 	//Getters and Setters
 	Item *getCurrentItem() const;
 	Item* getItem(unsigned short p_position);
+	void setItem(unsigned short p_position, Block &block);
 	unsigned short getBarSize() const{return bar_size;};
 	const Item *getItems() const;
 	bool isInventoryMenu() const;

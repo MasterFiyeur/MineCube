@@ -30,6 +30,12 @@ void Game::start() {
 
 	//Inventory initialization
 	Inventory inventory = Inventory();
+	//Inventory blocks init
+	inventory.setItem(0,*(new Block("dirt")));
+	inventory.setItem(1,*(new Block("stone")));
+	inventory.setItem(2,*(new Block("glass")));
+	inventory.setItem(4,*(new Block("sponge")));
+	inventory.setItem(5,*(new Block("soul_soil")));
 
     Block dirt = Block("dirt");
     world.add_block(dirt, {0, 1, 0});
