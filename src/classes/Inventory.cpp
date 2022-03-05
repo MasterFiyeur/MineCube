@@ -70,7 +70,7 @@ void Inventory::inventoryDisplay() {
 	}else{
 		//Check if an item was selected for changing position
 		if(changingItemPosition != nullptr){
-			changingItemPosition->g_position = tempItemOldPostition;
+			changingItemPosition->g_position = tempItemOldPosition;
 			changingItemPosition = nullptr;
 		}
 		DisableCursor();
@@ -93,10 +93,10 @@ void Inventory::changeItem() {
 		)){
 			if (changingItemPosition == nullptr){
 				changingItemPosition = &items[i];
-				tempItemOldPostition = {getItem(i)->g_position.x, getItem(i)->g_position.y};
+				tempItemOldPosition = {getItem(i)->g_position.x, getItem(i)->g_position.y};
 				std::cout << "Element " << i << " pressed !" << std::endl;
 			}else{
-				changingItemPosition->g_position = tempItemOldPostition;
+				changingItemPosition->g_position = tempItemOldPosition;
 				::std::swap(items[i].g_position,changingItemPosition->g_position);
 				::std::swap(items[i],*changingItemPosition);
 				changingItemPosition = nullptr;

@@ -25,7 +25,7 @@ private:
 	const int g_inventoryMargin = 10;
 	const int g_itemSquare = 40;
 	const int g_itemMargin = 10;
-	Vector2 tempItemOldPostition;
+	Vector2 tempItemOldPosition;
 	Item* changingItemPosition;
 
 
