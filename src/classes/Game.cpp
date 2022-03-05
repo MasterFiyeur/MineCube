@@ -87,10 +87,11 @@ void Game::start() {
 
         EndMode3D();
 
-        sprintf(upperText, "Position: %.1f, %.1f, %.1f\nLooking at: %.1f, %.1f, %.1f (%s)",
+        sprintf(upperText, "Position: %.1f, %.1f, %.1f\nLooking at: %.1f, %.1f, %.1f (%s)\nFPS: %d",
                 camera.position.x, camera.position.y, camera.position.z,
-                camera.target.x, camera.target.y, camera.target.z, this->getCameraDirection().c_str());
+                camera.target.x, camera.target.y, camera.target.z, this->getCameraDirection().c_str(), GetFPS());
         DrawText(upperText, 10, 10, 15, DARKGRAY);
+
 
         EndDrawing();
     }
