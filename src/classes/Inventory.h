@@ -22,7 +22,7 @@ private:
 	const int g_screenWidth = 960;
 	const int g_screenHeight = 540;
 	const int g_inventoryMargin = 10; //Margin around all items in item bar
-	const int g_itemSquare = 40; //Item size
+	const int g_itemSquare = (int) (g_screenWidth/24); //Item size
 	const int g_itemMargin = 10; //Margin between items
 	Vector2 tempItemOldPosition; //Position (x,y) of a selected item in inventory menu
 	Item* changingItemPosition; //pointer on the selected item
