@@ -24,6 +24,12 @@ Game::Game() {
     this->world = WorldSave::load();
 }
 
+void Game::drawCursor() {
+    const int size = 15;
+    DrawLine(GetScreenWidth()/2-size, GetScreenHeight()/2, GetScreenWidth()/2+size, GetScreenHeight()/2, WHITE);
+    DrawLine(GetScreenWidth()/2, GetScreenHeight()/2-size, GetScreenWidth()/2, GetScreenHeight()/2+size, WHITE);
+}
+
 std::string Game::getCameraDirection() const {
     std::string n_s, e_w;
     if (std::abs(camera.target.x - camera.position.x) < 0.01) {
@@ -43,6 +49,44 @@ std::string Game::getCameraDirection() const {
     return n_s + e_w;
 }
 
+const std::pair<const Vector3, Block>* Game::getTargetedBlock() const {
+    const std::pair<const Vector3, Block>* selected_block = nullptr;
+    float selection_distance = 15.0f;
+
+    Ray mouseRay = {
+            camera.position,
+            (Vector3){camera.target.x - camera.position.x, camera.target.y - camera.position.y, camera.target.z - camera.position.z}
+    };
+    for (const auto& block : world.get_blocks())
+    {
+        Vector3 p1 = {block.first.x - 0.5f, block.first.y - 0.5f, block.first.z - 0.5f};
+        Vector3 p2 = {block.first.x + 0.5f, block.first.y + 0.5f, block.first.z + 0.5f};
+        BoundingBox object_bounding_box = {p1, p2};
+        RayCollision collision = GetRayCollisionBox(mouseRay, object_bounding_box);
+        if (collision.hit && collision.distance < selection_distance)
+        {
+            selected_block = &block;
+            selection_distance = collision.distance;
+        }
+    }
+
+    return selected_block;
+}
+
+void Game::drawDebugText(const std::pair<const Vector3, Block>* selected_block) const {
+    char upperText[200];
+    sprintf(upperText, "FPS: %d\nPosition: %.1f, %.1f, %.1f\nLooking at: %.1f, %.1f, %.1f (%s)",
+            GetFPS(),
+            camera.position.x, camera.position.y, camera.position.z,
+            camera.target.x, camera.target.y, camera.target.z, this->getCameraDirection().c_str()
+            );
+    if (selected_block != nullptr) {
+        sprintf(upperText, "%s\nTargeted block: %.1f %.1f %.1f (%s)",upperText,
+                selected_block->first.x,  selected_block->first.y,  selected_block->first.z, selected_block->second.getName().c_str());
+    }
+    DrawText(upperText, 10, 10, 15, DARKGRAY);
+}
+
 
 void Game::start() {
     if (world.isempty()) {
@@ -59,8 +103,7 @@ void Game::start() {
     SetTargetFPS(60);
 
     Vector3 playerPosition = camera.position;
-
-    char upperText[200];
+    const std::pair<const Vector3, Block>* selected_block;
 
     while (!WindowShouldClose()) {
         // Update
@@ -83,15 +126,16 @@ void Game::start() {
 
         DrawGrid(15, 1.0f);
 
-        DrawCubeWires(camera.target, 0.1f, 0.1f, 0.1f, WHITE);
+        // check for block highlighting
+        selected_block = getTargetedBlock();
+        if (selected_block != nullptr) {
+            DrawCubeWires(selected_block->first, 1.0f, 1.0f, 1.0f, WHITE);
+        }
 
         EndMode3D();
 
-        sprintf(upperText, "Position: %.1f, %.1f, %.1f\nLooking at: %.1f, %.1f, %.1f (%s)\nFPS: %d",
-                camera.position.x, camera.position.y, camera.position.z,
-                camera.target.x, camera.target.y, camera.target.z, this->getCameraDirection().c_str(), GetFPS());
-        DrawText(upperText, 10, 10, 15, DARKGRAY);
-
+        drawDebugText(selected_block);
+        drawCursor();
 
         EndDrawing();
     }

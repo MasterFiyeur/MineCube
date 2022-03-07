@@ -45,7 +45,7 @@ Block* World::get_block(Vector3 position) {
     return &this->blocks.at(position);
 }
 
-std::map<Vector3, Block> World::get_blocks() {
+std::map<Vector3, Block> World::get_blocks() const {
     return this->blocks;
 }
 
