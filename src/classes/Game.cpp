@@ -102,20 +102,27 @@ void Game::start() {
     SetCameraMode(camera, CAMERA_FIRST_PERSON);
     SetTargetFPS(60);
 
-    Vector3 playerPosition = camera.position;
+    player.setPosition(camera.position);
+
     const std::pair<const Vector3, Block>* selected_block;
 
     while (!WindowShouldClose()) {
         // Update
-        UpdateCamera(&camera);
+        if (!player.hasInventoryOpen()) {
+            UpdateCamera(&camera);
+        }
 
         if (IsKeyDown(KEY_SPACE)){
-            playerPosition.y += 0.1f;
+            player.move(0, 0.1f, 0);
         }
         if (IsKeyDown(KEY_LEFT_SHIFT)){
-            playerPosition.y -= 0.1f;
+            player.move(0, -0.1f, 0);
         }
-        camera.position.y = playerPosition.y;
+
+        //Inventory keyboard and mouse management
+        player.handleInventoryGestures();
+
+        camera.position.y = player.getPosition().y;
 
         // Draw
         BeginDrawing();
@@ -133,6 +140,9 @@ void Game::start() {
         }
 
         EndMode3D();
+
+		    //Inventory bar
+		    player.drawInventory();
 
         drawDebugText(selected_block);
         drawCursor();
