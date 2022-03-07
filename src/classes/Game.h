@@ -5,11 +5,13 @@
 #pragma once
 
 #include "World.h"
+#include "Player.h"
 
 class Game {
 private:
     Camera3D camera;
     World world;
+    Player player;
 public:
     Game();
 
