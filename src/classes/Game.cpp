@@ -107,16 +107,22 @@ void Game::start() {
     const std::pair<const Vector3, Block>* selected_block;
 
     while (!WindowShouldClose()) {
-        // Update
+        // Update camera and player position
+        Vector3 oldpos = camera.position;
         if (!player.hasInventoryOpen()) {
             UpdateCamera(&camera);
         }
-
         if (IsKeyDown(KEY_SPACE)){
             player.move(0, 0.1f, 0);
         }
         if (IsKeyDown(KEY_LEFT_SHIFT)){
             player.move(0, -0.1f, 0);
+        }
+        if (oldpos.x != camera.position.x) {
+            player.move(camera.position.x - oldpos.x, 0, 0);
+        }
+        if (oldpos.z != camera.position.z) {
+            player.move(0, 0, camera.position.z - oldpos.z);
         }
 
         //Inventory keyboard and mouse management
@@ -124,8 +130,7 @@ void Game::start() {
 
         player.checkCollisions(world);
 
-        camera.position.y = player.getPosition().y;
-        player.setPosition(camera.position);
+        camera.position = player.getPosition();
 
         // Draw
         BeginDrawing();
