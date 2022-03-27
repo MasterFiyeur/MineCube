@@ -11,7 +11,7 @@ class Block {
 private:
     std::string _name;
 public:
-    Block(): Block("stone") {}
+    Block(): Block("dirt") {}
     explicit Block(std::string name);
     void draw(Vector3 position) const;
     [[nodiscard]] std::string getName() const;
