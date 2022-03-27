@@ -22,6 +22,7 @@ public:
     void remove_block(Vector3 position);
     Block* get_block(Vector3 position);
     std::map<Vector3, Block> get_blocks() const;
+    std::map<Vector3, Block> get_blocks(Vector3 start, Vector3 end) const;
     bool isempty();
     void draw() const;
     void save();
@@ -29,3 +30,5 @@ public:
 
 bool operator<(const Vector3& o1, Vector3 o2);
 bool operator==(const Vector3& o1, Vector3 o2);
+Vector3 operator+(const Vector3& o1, Vector3 o2);
+Vector3 operator-(const Vector3& o1, Vector3 o2);

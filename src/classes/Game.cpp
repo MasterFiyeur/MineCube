@@ -77,7 +77,7 @@ void Game::drawDebugText(const std::pair<const Vector3, Block>* selected_block) 
     char upperText[200];
     sprintf(upperText, "FPS: %d\nPosition: %.1f, %.1f, %.1f\nLooking at: %.1f, %.1f, %.1f (%s)",
             GetFPS(),
-            camera.position.x, camera.position.y, camera.position.z,
+            player.getPosition().x, player.getPosition().y, player.getPosition().z,
             camera.target.x, camera.target.y, camera.target.z, this->getCameraDirection().c_str()
             );
     if (selected_block != nullptr) {
@@ -122,7 +122,10 @@ void Game::start() {
         //Inventory keyboard and mouse management
         player.handleInventoryGestures();
 
+        player.checkCollisions(world);
+
         camera.position.y = player.getPosition().y;
+        player.setPosition(camera.position);
 
         // Draw
         BeginDrawing();
@@ -130,6 +133,8 @@ void Game::start() {
         BeginMode3D(camera);
 
         world.draw();
+
+        DrawBoundingBox(player.getBoundingBox(), RED);
 
         DrawGrid(15, 1.0f);
 
@@ -141,8 +146,8 @@ void Game::start() {
 
         EndMode3D();
 
-		    //Inventory bar
-		    player.drawInventory();
+        //Inventory bar
+        player.drawInventory();
 
         drawDebugText(selected_block);
         drawCursor();

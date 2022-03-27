@@ -3,7 +3,9 @@
 //
 
 #pragma once
+#include <map>
 #include "Inventory.h"
+class World;
 
 class Player {
 private:
@@ -15,7 +17,9 @@ public:
     void handleInventoryGestures();
     bool hasInventoryOpen();
 
-    Vector3 getPosition();
+    [[nodiscard]] BoundingBox getBoundingBox() const;
+    bool checkCollisions(World world);
+    [[nodiscard]] Vector3 getPosition() const;
     void setPosition(Vector3 pos);
     void move(float x, float y, float z);
 };
