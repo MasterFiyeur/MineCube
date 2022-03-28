@@ -17,3 +17,18 @@ void Block::draw(Vector3 position) const {
 std::string Block::getName() const {
     return this->_name;
 }
+
+BoundingBox Block::getBoundingBox(Vector3 position) const {
+    return (BoundingBox) {
+            (Vector3) {
+                    position.x - 0.5f,
+                    position.y - 0.5f,
+                    position.z - 0.5f
+            },
+            (Vector3) {
+                    position.x + 0.5f,
+                    position.y + 0.5f,
+                    position.z + 0.5f
+            }
+    };
+}
