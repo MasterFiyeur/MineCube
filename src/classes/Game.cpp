@@ -10,7 +10,7 @@
 #include "Block.h"
 #include "WorldSave.h"
 
-#define initial_square 8
+#define initial_square 16
 
 
 Game::Game() {
@@ -150,5 +150,5 @@ void Game::start() {
         EndDrawing();
     }
 
-    this->world.save();
+    //this->world.save();
 }

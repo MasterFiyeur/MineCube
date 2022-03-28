@@ -10,9 +10,11 @@
 class Block {
 private:
     std::string _name;
+    bool _multipleFaces;
 public:
-    Block(): Block("dirt") {}
-    explicit Block(std::string name);
+    Block(): Block("stone", 0) {}
+    explicit Block(std::string name, bool multipleFaces = 0);
     void draw(Vector3 position) const;
     [[nodiscard]] std::string getName() const;
+    [[nodiscard]] bool getMultipleFaces() const;
 };

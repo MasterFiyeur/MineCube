@@ -6,8 +6,9 @@
 #include "TexturesManager.h"
 #include <utility>
 
-Block::Block(std::string name) {
+Block::Block(std::string name, bool multipleFaces) {
     this->_name = std::move(name);
+    this->_multipleFaces = multipleFaces;
 }
 
 void Block::draw(Vector3 position) const {
@@ -16,4 +17,8 @@ void Block::draw(Vector3 position) const {
 
 std::string Block::getName() const {
     return this->_name;
+}
+
+bool Block::getMultipleFaces() const {
+    return this->_multipleFaces;
 }

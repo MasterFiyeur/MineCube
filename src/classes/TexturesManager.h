@@ -15,6 +15,7 @@ private:
     std::unordered_map<std::string, Texture2D> textures;
     std::set<std::string> unknownTextures;
     Texture2D defaultTexture{};
+    TextureCubemap defaultTextureCube{};
     void loadTexture(const std::string& name);
 public:
     TexturesManager(const TexturesManager&) = delete;
@@ -24,4 +25,7 @@ public:
         return manager;
     }
     static Texture2D getTexture(const std::string& name);
+    static TextureCubemap getTextureCube(const std::string& name);
+
+
 };
