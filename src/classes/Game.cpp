@@ -60,10 +60,7 @@ const std::pair<const Vector3, Block>* Game::getTargetedBlock() const {
     };
     for (const auto& block : world.get_blocks())
     {
-        Vector3 p1 = {block.first.x - 0.5f, block.first.y - 0.5f, block.first.z - 0.5f};
-        Vector3 p2 = {block.first.x + 0.5f, block.first.y + 0.5f, block.first.z + 0.5f};
-        BoundingBox object_bounding_box = {p1, p2};
-        RayCollision collision = GetRayCollisionBox(mouseRay, object_bounding_box);
+        RayCollision collision = GetRayCollisionBox(mouseRay, block.second.getBoundingBox(block.first));
         if (collision.hit && collision.distance < selection_distance)
         {
             selected_block = &block;
