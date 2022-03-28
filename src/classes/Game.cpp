@@ -9,6 +9,7 @@
 #include "Game.h"
 #include "Block.h"
 #include "WorldSave.h"
+#include "Player.h"
 
 #define initial_square 8
 
@@ -97,12 +98,14 @@ void Game::start() {
         Block dirt = Block("dirt");
         world.add_block(dirt, {0, 1, 0});
     }
-
     // setup camera and max FPS
     SetCameraMode(camera, CAMERA_FIRST_PERSON);
     SetTargetFPS(60);
 
-    player.setPosition(camera.position);
+	Player player;
+	player.setPosition(camera.position);
+
+	Vector3 saved_position;
 
     const std::pair<const Vector3, Block>* selected_block;
 
@@ -112,6 +115,7 @@ void Game::start() {
         if (!player.hasInventoryOpen()) {
             UpdateCamera(&camera);
         }
+
         if (IsKeyDown(KEY_SPACE)){
             player.move(0, 0.1f, 0);
         }
@@ -125,6 +129,11 @@ void Game::start() {
             player.move(0, 0, camera.position.z - oldpos.z);
         }
 
+		/*
+		 * TODO: Check y axe for know if this is useful to check or not
+		 * TODO: Check 2D collision like this example (https://github.com/raysan5/raylib/blob/master/examples/models/models_first_person_maze.c)
+		 * TODO: Check then the y axe (up and down)
+		 */
         //Inventory keyboard and mouse management
         player.handleInventoryGestures();
 
