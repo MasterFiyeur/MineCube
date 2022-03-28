@@ -18,7 +18,7 @@ public:
     bool hasInventoryOpen();
 
     [[nodiscard]] BoundingBox getBoundingBox() const;
-    bool checkCollisions(World world);
+    void checkCollisions(World world);
     [[nodiscard]] Vector3 getPosition() const;
     void setPosition(Vector3 pos);
     void move(float x, float y, float z);

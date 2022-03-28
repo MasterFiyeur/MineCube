@@ -16,7 +16,7 @@ Player::Player() {
     inventory.setItem(5,*(new Block("soul_soil")));
 }
 
-bool Player::checkCollisions(World world) {
+void Player::checkCollisions(World world) {
     BoundingBox playerBox = this->getBoundingBox();
     std::map<Vector3,Block> blocks = world.get_blocks({position.x-2,position.y-3,position.z-2},{position.x+2,position.y+2,position.z+2});
     for (auto &block : blocks) {
@@ -51,10 +51,9 @@ bool Player::checkCollisions(World world) {
             if (penetration == 0) {
                 continue;
             }
-//            std::cout << "penetration: " << penetration << " " << bestAxis.x << " " << bestAxis.y << " " << bestAxis.z << std::endl;
             move(bestAxis.x*penetration, bestAxis.y*penetration, bestAxis.z*penetration);
+            playerBox = this->getBoundingBox();
 
-            return true;
         }
     }
 }
@@ -74,14 +73,14 @@ bool Player::hasInventoryOpen() {
 BoundingBox Player::getBoundingBox() const {
     return (BoundingBox) {
             (Vector3) {
-                    position.x - 0.5f,
+                    position.x - 0.3f,
                     position.y - 1.5f,
-                    position.z - 0.5f
+                    position.z - 0.3f
             },
             (Vector3) {
-                    position.x + 0.5f,
+                    position.x + 0.3f,
                     position.y + 0.3f,
-                    position.z + 0.5f
+                    position.z + 0.3f
             }
     };
 }

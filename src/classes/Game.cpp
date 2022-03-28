@@ -102,7 +102,6 @@ void Game::start() {
     SetCameraMode(camera, CAMERA_FIRST_PERSON);
     SetTargetFPS(60);
 
-	Player player;
 	player.setPosition(camera.position);
 
 	Vector3 saved_position;
