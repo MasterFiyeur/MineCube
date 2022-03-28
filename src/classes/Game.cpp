@@ -133,7 +133,7 @@ void Game::start() {
         // check for block highlighting
         selected_block = getTargetedBlock();
         if (selected_block != nullptr) {
-            DrawCubeWires(selected_block->first, 1.0f, 1.0f, 1.0f, WHITE);
+            DrawBoundingBox(selected_block->second.getBoundingBox(selected_block->first), WHITE);
         }
 
         EndMode3D();
