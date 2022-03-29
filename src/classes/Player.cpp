@@ -6,6 +6,7 @@
 #include "World.h"
 
 #include <iostream>
+#include <cmath>
 
 
 Player::Player() {
@@ -53,7 +54,6 @@ void Player::checkCollisions(World world) {
             }
             move(bestAxis.x*penetration, bestAxis.y*penetration, bestAxis.z*penetration);
             playerBox = this->getBoundingBox();
-
         }
     }
 }
@@ -97,4 +97,27 @@ void Player::move(float x, float y, float z) {
     position.x += x;
     position.y += y;
     position.z += z;
+}
+
+float Player::isOnGround(World world) {
+
+	return 0.0f;
+}
+
+void Player::gravity(World world) {
+	float ground;
+	bool isGound = false;
+	BoundingBox playerBox = this->getBoundingBox();
+
+	std::map<Vector3,Block> blocks = world.get_blocks({position.x-1,position.y-3,position.z-1},{position.x+1,position.y+2,position.z+1});
+	for (const auto& block : blocks) {
+		if (CheckCollisionBoxes(playerBox, block.second.getBoundingBox(block.first)))
+			isGound = true;//Nous touchons le sol
+	}
+	// TODO : Si y a rien en dessous on tombe sinon il faut check si on descend pas plus bas que le block sinon on enlève pile ce qu'il faut
+	//x = (floor(position.x+0.5));
+	ground = (floor(position.y-2))+0.5;
+	//z = (floor(position.z+0.5));
+
+	std::cout << "Position du bloc d'en dessous : y = " << ground << world.get_blocks({position.x-1,position.y-2,position.z-1},{position.x+1,position.y+1,position.z+1}).size() << std::endl;
 }

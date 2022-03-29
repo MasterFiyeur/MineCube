@@ -22,4 +22,6 @@ public:
     [[nodiscard]] Vector3 getPosition() const;
     void setPosition(Vector3 pos);
     void move(float x, float y, float z);
+	float isOnGround(World world);
+	void gravity(World world);
 };

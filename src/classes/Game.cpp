@@ -95,6 +95,10 @@ void Game::start() {
         Block dirt = Block("dirt");
         world.add_block(dirt, {0, 1, 0});
     }
+
+	world.add_block(Block("dirt"), {0, 2, 1});
+	world.add_block(Block("dirt"), {0, 3, 2});
+	world.add_block(Block("dirt"), {0, 4, 3});
     // setup camera and max FPS
     SetCameraMode(camera, CAMERA_FIRST_PERSON);
     SetTargetFPS(60);
@@ -125,11 +129,9 @@ void Game::start() {
             player.move(0, 0, camera.position.z - oldpos.z);
         }
 
-		/*
-		 * TODO: Check y axe for know if this is useful to check or not
-		 * TODO: Check 2D collision like this example (https://github.com/raysan5/raylib/blob/master/examples/models/models_first_person_maze.c)
-		 * TODO: Check then the y axe (up and down)
-		 */
+		player.gravity(world);
+
+
         //Inventory keyboard and mouse management
         player.handleInventoryGestures();
 
@@ -144,7 +146,8 @@ void Game::start() {
 
         world.draw();
 
-        DrawBoundingBox(player.getBoundingBox(), RED);
+		Vector3 position = player.getPosition();
+        DrawBoundingBox({position.x-1,position.y-2,position.z-1,position.x+1,position.y-1,position.z+1}, RED);
 
         DrawGrid(15, 1.0f);
 
@@ -153,7 +156,6 @@ void Game::start() {
         if (selected_block != nullptr) {
             DrawBoundingBox(selected_block->second.getBoundingBox(selected_block->first), WHITE);
         }
-
         EndMode3D();
 
         //Inventory bar
