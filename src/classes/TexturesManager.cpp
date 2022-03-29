@@ -3,6 +3,7 @@
 //
 
 #include <iostream>
+#include "raylib.h"
 
 #include "TexturesManager.h"
 #include "Utils.h"
