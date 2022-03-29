@@ -105,19 +105,24 @@ float Player::isOnGround(World world) {
 }
 
 void Player::gravity(World world) {
-	float ground;
-	bool isGound = false;
-	BoundingBox playerBox = this->getBoundingBox();
+	float ground = 1, distance_feet_block = 1;
 
-	std::map<Vector3,Block> blocks = world.get_blocks({position.x-1,position.y-3,position.z-1},{position.x+1,position.y+2,position.z+1});
+
+	//Position entre -1.5 et 2.8 sachant qu'il faut 0.5 pour prendre en compte le block
+	//je ne garantie pas la bonne gestion pour des descentes à plus de 0.8f par frame
+	std::map<Vector3,Block> blocks = world.get_blocks({position.x-0.7f,position.y-2.8f,position.z-0.7f},{position.x+0.7f,position.y-1.5f,position.z+0.7f});
 	for (const auto& block : blocks) {
-		if (CheckCollisionBoxes(playerBox, block.second.getBoundingBox(block.first)))
-			isGound = true;//Nous touchons le sol
+		if (CheckCollisionBoxes({position.x-0.7f,position.y-2.8f,position.z-0.7f,position.x+0.7f,position.y-1.5f,position.z+0.7f}, block.second.getBoundingBox(block.first)))
+		{
+			//Distance between player's feet and compared block
+			distance_feet_block = ((position.y-1.5f)-(block.second.getBoundingBox(block.first).max.y));
+			if(ground>distance_feet_block){
+				ground = distance_feet_block;
+			}
+		}
 	}
-	// TODO : Si y a rien en dessous on tombe sinon il faut check si on descend pas plus bas que le block sinon on enlève pile ce qu'il faut
-	//x = (floor(position.x+0.5));
-	ground = (floor(position.y-2))+0.5;
-	//z = (floor(position.z+0.5));
 
-	std::cout << "Position du bloc d'en dessous : y = " << ground << world.get_blocks({position.x-1,position.y-2,position.z-1},{position.x+1,position.y+1,position.z+1}).size() << std::endl;
+	// TODO : Si y a rien en dessous on tombe sinon il faut check si on descend pas plus bas que le block sinon on enlève pile ce qu'il faut
+
+	std::cout << "Distance entre les pieds et le bloc d'en dessous : " << ground << std::endl;
 }

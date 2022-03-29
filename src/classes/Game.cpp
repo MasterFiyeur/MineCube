@@ -146,10 +146,7 @@ void Game::start() {
 
         world.draw();
 
-		Vector3 position = player.getPosition();
-        DrawBoundingBox({position.x-1,position.y-2,position.z-1,position.x+1,position.y-1,position.z+1}, RED);
-
-        DrawGrid(15, 1.0f);
+		DrawGrid(15, 1.0f);
 
         // check for block highlighting
         selected_block = getTargetedBlock();
