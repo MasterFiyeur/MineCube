@@ -58,11 +58,10 @@ const std::pair<const Vector3, Block>* Game::getTargetedBlock() const {
             camera.position,
             (Vector3){camera.target.x - camera.position.x, camera.target.y - camera.position.y, camera.target.z - camera.position.z}
     };
-    for (const auto& block : world.get_blocks())
-    {
+    for (const auto& block : world.get_blocks({camera.position.x - selection_distance, camera.position.y - selection_distance, camera.position.z - selection_distance},
+                                              {camera.position.x + selection_distance, camera.position.y + selection_distance, camera.position.z + selection_distance})) {
         RayCollision collision = GetRayCollisionBox(mouseRay, block.second.getBoundingBox(block.first));
-        if (collision.hit && collision.distance < selection_distance)
-        {
+        if (collision.hit && collision.distance < selection_distance) {
             selected_block = &block;
             selection_distance = collision.distance;
         }
@@ -125,11 +124,6 @@ void Game::start() {
             player.move(0, 0, camera.position.z - oldpos.z);
         }
 
-		/*
-		 * TODO: Check y axe for know if this is useful to check or not
-		 * TODO: Check 2D collision like this example (https://github.com/raysan5/raylib/blob/master/examples/models/models_first_person_maze.c)
-		 * TODO: Check then the y axe (up and down)
-		 */
         //Inventory keyboard and mouse management
         player.handleInventoryGestures();
 
