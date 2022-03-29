@@ -49,12 +49,25 @@ std::map<Vector3, Block> World::get_blocks() const {
     return this->blocks;
 }
 
+std::map<Vector3, Block> World::get_blocks(Vector3 start, Vector3 end) const {
+    std::map<Vector3, Block> blocks_in_range;
+    for (auto &block : this->blocks) {
+        if (block.first.x >= start.x && block.first.x <= end.x &&
+            block.first.y >= start.y && block.first.y <= end.y &&
+            block.first.z >= start.z && block.first.z <= end.z) {
+            blocks_in_range[block.first] = block.second;
+        }
+    }
+    return blocks_in_range;
+}
+
 void World::draw() const {
     auto
         mit (blocks.begin()),
         mend(blocks.end());
     for(; mit!=mend; ++mit) {
         mit->second.draw(mit->first);
+//        DrawBoundingBox(mit->second.getBoundingBox(mit->first), YELLOW);
     }
 }
 
@@ -76,4 +89,12 @@ bool operator<(const Vector3& o1, const Vector3 o2) {
 
 bool operator==(const Vector3& o1, const Vector3 o2) {
     return o1.x == o2.x && o1.y == o2.y && o1.z == o2.z;
+}
+
+Vector3 operator+(const Vector3& o1, const Vector3 o2) {
+    return (Vector3) {o1.x + o2.x, o1.y + o2.y, o1.z + o2.z};
+}
+
+Vector3 operator-(const Vector3& o1, const Vector3 o2) {
+    return (Vector3) {o1.x - o2.x, o1.y - o2.y, o1.z - o2.z};
 }

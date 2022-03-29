@@ -9,6 +9,7 @@
 #include "Game.h"
 #include "Block.h"
 #include "WorldSave.h"
+#include "Player.h"
 
 #define initial_square 8
 
@@ -74,7 +75,7 @@ void Game::drawDebugText(const std::pair<const Vector3, Block>* selected_block) 
     char upperText[200];
     sprintf(upperText, "FPS: %d\nPosition: %.1f, %.1f, %.1f\nLooking at: %.1f, %.1f, %.1f (%s)",
             GetFPS(),
-            camera.position.x, camera.position.y, camera.position.z,
+            player.getPosition().x, player.getPosition().y, player.getPosition().z,
             camera.target.x, camera.target.y, camera.target.z, this->getCameraDirection().c_str()
             );
     if (selected_block != nullptr) {
@@ -94,17 +95,19 @@ void Game::start() {
         Block dirt = Block("dirt");
         world.add_block(dirt, {0, 1, 0});
     }
-
     // setup camera and max FPS
     SetCameraMode(camera, CAMERA_FIRST_PERSON);
     SetTargetFPS(60);
 
-    player.setPosition(camera.position);
+	player.setPosition(camera.position);
+
+	Vector3 saved_position;
 
     const std::pair<const Vector3, Block>* selected_block;
 
     while (!WindowShouldClose()) {
-        // Update
+        // Update camera and player position
+        Vector3 oldpos = camera.position;
         if (!player.hasInventoryOpen()) {
             UpdateCamera(&camera);
         }
@@ -115,11 +118,24 @@ void Game::start() {
         if (IsKeyDown(KEY_LEFT_SHIFT)){
             player.move(0, -0.1f, 0);
         }
+        if (oldpos.x != camera.position.x) {
+            player.move(camera.position.x - oldpos.x, 0, 0);
+        }
+        if (oldpos.z != camera.position.z) {
+            player.move(0, 0, camera.position.z - oldpos.z);
+        }
 
+		/*
+		 * TODO: Check y axe for know if this is useful to check or not
+		 * TODO: Check 2D collision like this example (https://github.com/raysan5/raylib/blob/master/examples/models/models_first_person_maze.c)
+		 * TODO: Check then the y axe (up and down)
+		 */
         //Inventory keyboard and mouse management
         player.handleInventoryGestures();
 
-        camera.position.y = player.getPosition().y;
+        player.checkCollisions(world);
+
+        camera.position = player.getPosition();
 
         // Draw
         BeginDrawing();
@@ -127,6 +143,8 @@ void Game::start() {
         BeginMode3D(camera);
 
         world.draw();
+
+        DrawBoundingBox(player.getBoundingBox(), RED);
 
         DrawGrid(15, 1.0f);
 
@@ -138,8 +156,8 @@ void Game::start() {
 
         EndMode3D();
 
-		    //Inventory bar
-		    player.drawInventory();
+        //Inventory bar
+        player.drawInventory();
 
         drawDebugText(selected_block);
         drawCursor();
