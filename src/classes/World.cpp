@@ -2,14 +2,10 @@
 // Created by Arthur on 26/02/2022.
 //
 
-#include <iostream>
 #include <utility>
 #include "World.h"
-#include "WorldSave.h"
 
-World::World() {
-    this->last_save = std::time(nullptr);
-}
+World::World() {}
 
 World::~World() {
     this->blocks.clear();
@@ -71,13 +67,7 @@ void World::draw() const {
     }
 }
 
-void World::save() {
-    std::cout << "Saving world..." << std::endl;
-    WorldSave::save(this);
-    this->last_save = std::time(nullptr);
-}
-
-bool World::isempty() {
+bool World::isempty() const {
     return this->blocks.empty();
 }
 

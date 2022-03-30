@@ -8,12 +8,12 @@
 #include <ctime>
 #include "Block.h"
 #include "raylib.h"
+#include "Player.h"
+
 
 class World {
 private:
     std::map<Vector3, Block> blocks;
-    std::time_t last_save;
-
 public:
     World();
     ~World();
@@ -21,11 +21,10 @@ public:
     void fill(const Block& block, Vector3 start, Vector3 end);
     void remove_block(Vector3 position);
     Block* get_block(Vector3 position);
-    std::map<Vector3, Block> get_blocks() const;
-    std::map<Vector3, Block> get_blocks(Vector3 start, Vector3 end) const;
-    bool isempty();
+    [[nodiscard]] std::map<Vector3, Block> get_blocks() const;
+    [[nodiscard]] std::map<Vector3, Block> get_blocks(Vector3 start, Vector3 end) const;
+    [[nodiscard]] bool isempty() const;
     void draw() const;
-    void save();
 };
 
 bool operator<(const Vector3& o1, Vector3 o2);
