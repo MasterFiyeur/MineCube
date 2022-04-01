@@ -10,6 +10,7 @@
 TexturesManager::TexturesManager() {
     loadTexture("missing_texture");
     this->defaultTexture = this->textures["missing_texture"];
+    this->defaultTextureCube = this->texturesCube["missing_texture"];
 }
 
 void TexturesManager::loadTexture(const std::string& name) {

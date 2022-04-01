@@ -13,6 +13,13 @@ Block::Block(std::string name, bool multipleFaces) {
 
 void Block::draw(Vector3 position) const {
     DrawCubeTexture(TexturesManager::getTexture(_name), position, 1.0f, 1.0f, 1.0f, WHITE);
+    if(_multipleFaces) {
+        Vector3 position1 = position;
+        position1.y = 3*position1.y/2;
+        DrawCubeTexture(TexturesManager::getTexture("grass_block_top"), position1, 1.0f, 0, 1.0f, WHITE);
+
+    }
+
 }
 
 std::string Block::getName() const {

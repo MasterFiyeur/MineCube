@@ -11,6 +11,7 @@
 #include "WorldSave.h"
 
 #define initial_square 16
+#define initial_chunk 1
 
 
 Game::Game() {
@@ -92,9 +93,10 @@ void Game::start() {
     if (world.isempty()) {
         std::cout << "Initializing world...." << std::endl;
         // fill world with static blocks
-        world.fill(Block("stone"), {-initial_square, 0, -initial_square}, {initial_square, 0, initial_square});
 
-        Block dirt = Block("dirt");
+        world.fill(Block("stone"), {-initial_square * initial_chunk, 0, -initial_square * initial_chunk}, {initial_square * initial_chunk, 0, initial_square * initial_chunk});
+
+        Block dirt = Block("dirt", 1);
         world.add_block(dirt, {0, 1, 0});
     }
 
@@ -150,5 +152,5 @@ void Game::start() {
         EndDrawing();
     }
 
-    //this->world.save();
+//    this->world.save();
 }

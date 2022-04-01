@@ -13,6 +13,7 @@ class TexturesManager {
 private:
     TexturesManager();
     std::unordered_map<std::string, Texture2D> textures;
+    std::unordered_map<std::string, TextureCubemap> texturesCube;
     std::set<std::string> unknownTextures;
     Texture2D defaultTexture{};
     TextureCubemap defaultTextureCube{};
