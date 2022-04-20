@@ -23,7 +23,7 @@ public:
     void start();
     void save();
     [[nodiscard]] std::string getCameraDirection() const;
-    [[nodiscard]] Player getPlayer() const;
+    [[nodiscard]] Player* getPlayer();
     [[nodiscard]] World getWorld() const;
 };
 

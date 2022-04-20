@@ -171,8 +171,8 @@ void Game::start() {
     this->save();
 }
 
-Player Game::getPlayer() const {
-    return this->player;
+Player* Game::getPlayer() {
+    return &(this->player);
 }
 
 World Game::getWorld() const {
