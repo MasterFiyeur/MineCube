@@ -116,7 +116,6 @@ void Game::start() {
 
 	Vector3 saved_position;
 
-//    player.applyGravity(false);
 
     const std::pair<const Vector3, Block>* selected_block;
     while (!WindowShouldClose()) {
@@ -126,6 +125,13 @@ void Game::start() {
             UpdateCamera(&camera);
         }
 
+        // double press SPACE to enter/leave fly mode
+        if (IsKeyPressed(KEY_SPACE)) {
+            if (GetTime() - last_key_space_pressed < 0.2) {
+                player.applyGravity(!player.shouldApplyGravity());
+            }
+            last_key_space_pressed = GetTime();
+        }
         if (IsKeyDown(KEY_SPACE)) {
             if (player.shouldApplyGravity())
                 player.jump(&world);
