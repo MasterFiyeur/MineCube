@@ -10,6 +10,7 @@
 #include "Block.h"
 #include "WorldSave.h"
 #include "Player.h"
+#include "Utils.h"
 
 #define initial_square 8
 
@@ -61,11 +62,11 @@ std::string Game::getCameraDirection() const {
 
 const std::pair<const Vector3, Block>* Game::getTargetedBlock() const {
     const std::pair<const Vector3, Block>* selected_block = nullptr;
-    float selection_distance = 15.0f;
+    float selection_distance = 7.0f;
 
     Ray mouseRay = {
             camera.position,
-            (Vector3){camera.target.x - camera.position.x, camera.target.y - camera.position.y, camera.target.z - camera.position.z}
+            normalize({camera.target.x - camera.position.x, camera.target.y - camera.position.y, camera.target.z - camera.position.z})
     };
     for (const auto& block : world.get_blocks({camera.position.x - selection_distance, camera.position.y - selection_distance, camera.position.z - selection_distance},
                                               {camera.position.x + selection_distance, camera.position.y + selection_distance, camera.position.z + selection_distance})) {
