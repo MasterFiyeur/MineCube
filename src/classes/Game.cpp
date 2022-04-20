@@ -106,9 +106,6 @@ void Game::start() {
         player.setPosition({0, 3, 0});
     }
 
-	world.add_block(Block("dirt"), {0, 2, 1});
-	world.add_block(Block("dirt"), {0, 3, 2});
-	world.add_block(Block("dirt"), {0, 4, 3});
     // setup camera and max FPS
     SetCameraMode(camera, CAMERA_FIRST_PERSON);
     SetTargetFPS(60);
