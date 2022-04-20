@@ -45,14 +45,14 @@ public:
 	*
 	*\return Item* Pointer on the item selectionned
 	*/
-	Item *getCurrentItem() const;
+	[[nodiscard]] Item *getCurrentItem() const;
 	/**
 	*\brief Get an item using its inventory bar position
 	*
 	*\param p_position Position of the item in the inventory bar
 	*\return Item* Pointer on the item
 	*/
-	Item* getItem(unsigned short p_position);
+	[[nodiscard]] Item *getItem(unsigned short p_position);
 	/**
 	*\brief Add an item to the inventory bar
 	*
@@ -65,20 +65,20 @@ public:
 	*
 	*\return unsigned short size of inventory bar
 	*/
-	unsigned short getBarSize() const{return bar_size;};
+	[[nodiscard]] unsigned short getBarSize() const {return bar_size;};
 	/**
 	*\brief Get all items from the inventory bar
 	*
 	*\return const Item* Array that contains all items stored in the inventory bar
 	*/
-	const Item *getItems() const;
+	[[nodiscard]] const Item *getItems() const;
 	/**
 	*\brief Boolean that indicates if the menu is opened
 	*
 	*\return true if opened
 	*\return false if closed
 	*/
-	bool isInventoryMenu() const;
+	[[nodiscard]] bool isInventoryMenu() const;
 	/**
 	*\brief Open of close the inventory menu
 	*
@@ -107,7 +107,7 @@ public:
 	*\brief Management between inventory and Keyboard/Mouse
 	*
 	*/
-	void deviceManagement();//Global management
+	void deviceManagement();
 
 	//Drawing, graphic part
 

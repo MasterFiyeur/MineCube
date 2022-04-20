@@ -10,6 +10,7 @@
 #include "Block.h"
 #include "WorldSave.h"
 #include "Player.h"
+#include "Utils.h"
 
 #define initial_square 8
 
@@ -61,11 +62,11 @@ std::string Game::getCameraDirection() const {
 
 const std::pair<const Vector3, Block>* Game::getTargetedBlock() const {
     const std::pair<const Vector3, Block>* selected_block = nullptr;
-    float selection_distance = 15.0f;
+    float selection_distance = 7.0f;
 
     Ray mouseRay = {
             camera.position,
-            (Vector3){camera.target.x - camera.position.x, camera.target.y - camera.position.y, camera.target.z - camera.position.z}
+            normalize({camera.target.x - camera.position.x, camera.target.y - camera.position.y, camera.target.z - camera.position.z})
     };
     for (const auto& block : world.get_blocks({camera.position.x - selection_distance, camera.position.y - selection_distance, camera.position.z - selection_distance},
                                               {camera.position.x + selection_distance, camera.position.y + selection_distance, camera.position.z + selection_distance})) {
@@ -112,6 +113,7 @@ void Game::start() {
 
 	Vector3 saved_position;
 
+
     const std::pair<const Vector3, Block>* selected_block;
     while (!WindowShouldClose()) {
         // Update camera and player position
@@ -120,8 +122,21 @@ void Game::start() {
             UpdateCamera(&camera);
         }
 
-        if (IsKeyDown(KEY_SPACE)){
-            player.jump(world);
+        // double press SPACE to enter/leave fly mode
+        if (IsKeyPressed(KEY_SPACE)) {
+            if (GetTime() - last_key_space_pressed < 0.2) {
+                player.applyGravity(!player.shouldApplyGravity());
+            }
+            last_key_space_pressed = GetTime();
+        }
+        if (IsKeyDown(KEY_SPACE)) {
+            if (player.shouldApplyGravity())
+                player.jump(&world);
+            else
+                player.move(0, 0.1f, 0);
+        }
+        if (IsKeyDown(KEY_LEFT_SHIFT) && !player.shouldApplyGravity()) {
+            player.move(0, -0.1f, 0);
         }
         if (oldpos.x != camera.position.x) {
             player.move(camera.position.x - oldpos.x, 0, 0);
@@ -130,13 +145,13 @@ void Game::start() {
             player.move(0, 0, camera.position.z - oldpos.z);
         }
 
-		player.gravity(world);
+		player.gravity(&world);
 
 
         //Inventory keyboard and mouse management
         player.handleInventoryGestures();
 
-        player.checkCollisions(world);
+        player.checkCollisions(&world);
 
         camera.position = player.getPosition();
 
@@ -168,8 +183,8 @@ void Game::start() {
     this->save();
 }
 
-Player Game::getPlayer() const {
-    return this->player;
+Player* Game::getPlayer() {
+    return &(this->player);
 }
 
 World Game::getWorld() const {

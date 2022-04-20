@@ -9,9 +9,10 @@ class World;
 
 class Player {
 private:
-    Inventory inventory; //Inventory of the player
-    Vector3 position; //Position of the player
-	int jump_credit = 0; //Jump credit for gain Y position
+    Inventory inventory; // Inventory of the player
+    Vector3 position; // Position of the player
+    int jump_credit = 0; // Jump credit for gain Y position
+    bool apply_gravity = true; // If player should jump or fly
 
 	const int added_jump_credit = 13; //Number of frame that the player.y will up
 	const float jump_force = 0.1f; //Y-axis number the player will gain for each jump credit
@@ -51,7 +52,7 @@ public:
     *
     *\param world World where are the player
     */
-    void checkCollisions(World world);
+    void checkCollisions(World *world);
     /**
     *\brief Get the player position
     *
@@ -79,17 +80,22 @@ public:
     *\param world World where are the player
     *\return float [0;1] Distance with the floor
     */
-	float distance_ground_block(World world);
+	[[nodiscard]] float distance_ground_block(World *world) const;
+  
+  void applyGravity(bool apply);
+  
+  [[nodiscard]] bool shouldApplyGravity() const;
+  
     /**
     *\brief Management of the player gravity and jump credit to move the player on Y-axis
     *
     *\param world World where are the player
     */
-	void gravity(World world);
+	void gravity(World *world);
     /**
     *\brief Make the player jump (by adding jump credit)
     *
     *\param world World where are the player
     */
-	void jump(World world);
+	void jump(World *world);
 };
