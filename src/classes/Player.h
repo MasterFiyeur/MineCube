@@ -11,6 +11,11 @@ class Player {
 private:
     Inventory inventory;
     Vector3 position;
+	int jump_credit = 0;
+
+	const int added_jump_credit = 13;
+	const float jump_force = 0.1f;
+	const float gravity_force = -0.07f;
 public:
     Player();
     void drawInventory();
@@ -22,4 +27,7 @@ public:
     [[nodiscard]] Vector3 getPosition() const;
     void setPosition(Vector3 pos);
     void move(float x, float y, float z);
+	float distance_ground_block(World world);
+	void gravity(World world);
+	void jump(World world);
 };
