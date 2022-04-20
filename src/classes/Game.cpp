@@ -17,12 +17,21 @@
 Game::Game() {
     // Define the camera to look into our 3d world
     this->camera = { 0 };
-    camera.position = (Vector3){ 0.0f, 3.0f, 0.0f }; // Camera position
     camera.target = (Vector3){ -1.0f, 0.0f, 0.0f };      // Camera looking at point
     camera.up = (Vector3){ 0.0f, 1.0f, 0.0f };          // Camera up vector (rotation towards target)
     camera.fovy = 40.0f;                                // Camera field-of-view Y
     camera.projection = CAMERA_PERSPECTIVE;                   // Camera mode type
-    this->world = WorldSave::load();
+    auto save = WorldSave::load();
+    this->world = save.first;
+    this->player.setPosition(save.second);
+    this->last_save = std::time(nullptr);
+}
+
+void Game::save() {
+    std::cout << "Saving world..." << std::endl;
+    WorldSave::save(this);
+    this->last_save = std::time(nullptr);
+    std::cout << "World saved!" << std::endl;
 }
 
 void Game::drawCursor() {
@@ -58,11 +67,10 @@ const std::pair<const Vector3, Block>* Game::getTargetedBlock() const {
             camera.position,
             (Vector3){camera.target.x - camera.position.x, camera.target.y - camera.position.y, camera.target.z - camera.position.z}
     };
-    for (const auto& block : world.get_blocks())
-    {
+    for (const auto& block : world.get_blocks({camera.position.x - selection_distance, camera.position.y - selection_distance, camera.position.z - selection_distance},
+                                              {camera.position.x + selection_distance, camera.position.y + selection_distance, camera.position.z + selection_distance})) {
         RayCollision collision = GetRayCollisionBox(mouseRay, block.second.getBoundingBox(block.first));
-        if (collision.hit && collision.distance < selection_distance)
-        {
+        if (collision.hit && collision.distance < selection_distance) {
             selected_block = &block;
             selection_distance = collision.distance;
         }
@@ -94,6 +102,8 @@ void Game::start() {
 
         Block dirt = Block("dirt");
         world.add_block(dirt, {0, 1, 0});
+        // init player position above the dirt block
+        player.setPosition({0, 3, 0});
     }
 
 	world.add_block(Block("dirt"), {0, 2, 1});
@@ -102,8 +112,6 @@ void Game::start() {
     // setup camera and max FPS
     SetCameraMode(camera, CAMERA_FIRST_PERSON);
     SetTargetFPS(60);
-
-	player.setPosition(camera.position);
 
 	Vector3 saved_position;
 
@@ -160,5 +168,13 @@ void Game::start() {
         EndDrawing();
     }
 
-    this->world.save();
+    this->save();
+}
+
+Player Game::getPlayer() const {
+    return this->player;
+}
+
+World Game::getWorld() const {
+    return this->world;
 }
