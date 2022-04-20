@@ -12,6 +12,7 @@ private:
     Inventory inventory;
     Vector3 position;
 	int jump_credit = 0;
+	bool apply_gravity = true;
 
 	const int added_jump_credit = 13;
 	const float jump_force = 0.1f;
@@ -23,11 +24,13 @@ public:
     bool hasInventoryOpen();
 
     [[nodiscard]] BoundingBox getBoundingBox() const;
-    void checkCollisions(World world);
+    void checkCollisions(World *world);
     [[nodiscard]] Vector3 getPosition() const;
     void setPosition(Vector3 pos);
     void move(float x, float y, float z);
-	float distance_ground_block(World world);
-	void gravity(World world);
-	void jump(World world);
+	[[nodiscard]] float distance_ground_block(World *world) const;
+	void applyGravity(bool apply);
+	[[nodiscard]] bool shouldApplyGravity() const;
+	void gravity(World *world);
+	void jump(World *world);
 };

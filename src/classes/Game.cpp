@@ -116,6 +116,8 @@ void Game::start() {
 
 	Vector3 saved_position;
 
+//    player.applyGravity(false);
+
     const std::pair<const Vector3, Block>* selected_block;
     while (!WindowShouldClose()) {
         // Update camera and player position
@@ -124,8 +126,14 @@ void Game::start() {
             UpdateCamera(&camera);
         }
 
-        if (IsKeyDown(KEY_SPACE)){
-            player.jump(world);
+        if (IsKeyDown(KEY_SPACE)) {
+            if (player.shouldApplyGravity())
+                player.jump(&world);
+            else
+                player.move(0, 0.1f, 0);
+        }
+        if (IsKeyDown(KEY_LEFT_SHIFT) && !player.shouldApplyGravity()) {
+            player.move(0, -0.1f, 0);
         }
         if (oldpos.x != camera.position.x) {
             player.move(camera.position.x - oldpos.x, 0, 0);
@@ -134,13 +142,13 @@ void Game::start() {
             player.move(0, 0, camera.position.z - oldpos.z);
         }
 
-		player.gravity(world);
+		player.gravity(&world);
 
 
         //Inventory keyboard and mouse management
         player.handleInventoryGestures();
 
-        player.checkCollisions(world);
+        player.checkCollisions(&world);
 
         camera.position = player.getPosition();
 
