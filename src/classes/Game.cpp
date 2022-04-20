@@ -105,6 +105,10 @@ void Game::start() {
         // init player position above the dirt block
         player.setPosition({0, 3, 0});
     }
+
+	world.add_block(Block("dirt"), {0, 2, 1});
+	world.add_block(Block("dirt"), {0, 3, 2});
+	world.add_block(Block("dirt"), {0, 4, 3});
     // setup camera and max FPS
     SetCameraMode(camera, CAMERA_FIRST_PERSON);
     SetTargetFPS(60);
@@ -112,7 +116,6 @@ void Game::start() {
 	Vector3 saved_position;
 
     const std::pair<const Vector3, Block>* selected_block;
-
     while (!WindowShouldClose()) {
         // Update camera and player position
         Vector3 oldpos = camera.position;
@@ -121,10 +124,7 @@ void Game::start() {
         }
 
         if (IsKeyDown(KEY_SPACE)){
-            player.move(0, 0.1f, 0);
-        }
-        if (IsKeyDown(KEY_LEFT_SHIFT)){
-            player.move(0, -0.1f, 0);
+            player.jump(world);
         }
         if (oldpos.x != camera.position.x) {
             player.move(camera.position.x - oldpos.x, 0, 0);
@@ -132,6 +132,9 @@ void Game::start() {
         if (oldpos.z != camera.position.z) {
             player.move(0, 0, camera.position.z - oldpos.z);
         }
+
+		player.gravity(world);
+
 
         //Inventory keyboard and mouse management
         player.handleInventoryGestures();
@@ -147,16 +150,13 @@ void Game::start() {
 
         world.draw();
 
-        DrawBoundingBox(player.getBoundingBox(), RED);
-
-        DrawGrid(15, 1.0f);
+		DrawGrid(15, 1.0f);
 
         // check for block highlighting
         selected_block = getTargetedBlock();
         if (selected_block != nullptr) {
             DrawBoundingBox(selected_block->second.getBoundingBox(selected_block->first), WHITE);
         }
-
         EndMode3D();
 
         //Inventory bar
