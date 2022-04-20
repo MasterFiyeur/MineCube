@@ -108,7 +108,6 @@ void Game::start() {
 	Vector3 saved_position;
 
     const std::pair<const Vector3, Block>* selected_block;
-
     while (!WindowShouldClose()) {
         // Update camera and player position
         Vector3 oldpos = camera.position;
@@ -117,10 +116,7 @@ void Game::start() {
         }
 
         if (IsKeyDown(KEY_SPACE)){
-            player.move(0, 0.1f, 0);
-        }
-        if (IsKeyDown(KEY_LEFT_SHIFT)){
-            player.move(0, -0.1f, 0);
+            player.jump(world);
         }
         if (oldpos.x != camera.position.x) {
             player.move(camera.position.x - oldpos.x, 0, 0);

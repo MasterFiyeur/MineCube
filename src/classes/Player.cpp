@@ -119,14 +119,24 @@ float Player::distance_ground_block(World world) {
 }
 
 void Player::gravity(World world) {
-	float ground = distance_ground_block(world);
+	if(jump_credit == 0){
+		float ground = distance_ground_block(world);
 
-	// TODO : Si y a rien en dessous on tombe sinon (si il y a plus que la gravity du perso on tombe sinon on enlève pile ce qu'il faut)
-	if(ground > 0){ //Player isn't on the ground
-		if(ground<(-gravity_force)){
-			this->move(0,-ground,0);
-		}else{
-			this->move(0,gravity_force,0);
+		if(ground > 0){ //Player isn't on the ground
+			if(ground<(-gravity_force)){
+				this->move(0,-ground,0);
+			}else{
+				this->move(0,gravity_force,0);
+			}
 		}
+	}else{
+		jump_credit--;
+		this->move(0,jump_force,0);
+	}
+}
+
+void Player::jump(World world){
+	if (jump_credit==0 && distance_ground_block(world)<=0){
+		jump_credit = added_jump_credit;
 	}
 }
