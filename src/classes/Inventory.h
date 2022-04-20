@@ -33,23 +33,24 @@ public:
 	virtual ~Inventory();
 
 	//Getters and Setters
-	Item *getCurrentItem() const;
-	Item* getItem(unsigned short p_position);
+    [[nodiscard]] Item *getCurrentItem() const;
+    [[nodiscard]] Item *getItem(unsigned short p_position);
 	void setItem(unsigned short p_position, Block &block);
-	unsigned short getBarSize() const{return bar_size;};
-	const Item *getItems() const;
-	bool isInventoryMenu() const;
+
+    [[nodiscard]] unsigned short getBarSize() const{return bar_size;};
+    [[nodiscard]] const Item *getItems() const;
+    [[nodiscard]] bool isInventoryMenu() const;
 	void setInventoryMenu(bool p_inventoryMenu);
 
-	//Peripheral device management (keyboard,mouse)
+	// Peripheral device management (keyboard, mouse)
 	void changeSelectedItem();
 	void inventoryDisplay();
 	void changeItem();
-	void deviceManagement();//Global management
+	void deviceManagement(); // Global management
 
-	//Drawing, graphic part
+	// Drawing, graphic part
 	void updateSelectedItemPos();
 	void inGameInventory();
-	void drawInventory();//Global drawing
+	void drawInventory(); // draw everything
 
 };

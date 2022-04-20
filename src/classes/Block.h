@@ -15,5 +15,5 @@ public:
     explicit Block(std::string name);
     void draw(Vector3 position) const;
     [[nodiscard]] std::string getName() const;
-    BoundingBox getBoundingBox(Vector3 position) const;
+    [[nodiscard]] BoundingBox getBoundingBox(Vector3 position) const;
 };
