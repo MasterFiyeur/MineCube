@@ -19,6 +19,14 @@ changingItemPosition{nullptr}{
 	}
 }
 
+Inventory::~Inventory() {
+	for (int i = 0; i < getBarSize(); ++i) {
+		delete items[i].block;
+	}
+	currentItem = nullptr;
+	changingItemPosition = nullptr;
+}
+
 Item *Inventory::getCurrentItem() const {
 	return currentItem;
 }

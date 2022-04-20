@@ -33,6 +33,10 @@ public:
 	*\brief Construct a new Inventory object
 	*/
 	Inventory();
+	/**
+	 *\brief Destroy the Inventory object
+	 */
+	virtual ~Inventory();
 
 	//Getters and Setters
 
