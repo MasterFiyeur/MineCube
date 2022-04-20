@@ -99,14 +99,8 @@ void Player::move(float x, float y, float z) {
     position.z += z;
 }
 
-float Player::isOnGround(World world) {
-
-	return 0.0f;
-}
-
-void Player::gravity(World world) {
+float Player::distance_ground_block(World world) {
 	float ground = 1, distance_feet_block = 1;
-
 
 	//Position entre -1.5 et 2.8 sachant qu'il faut 0.5 pour prendre en compte le block
 	//je ne garantie pas la bonne gestion pour des descentes à plus de 0.8f par frame
@@ -121,8 +115,18 @@ void Player::gravity(World world) {
 			}
 		}
 	}
+	return ground;
+}
 
-	// TODO : Si y a rien en dessous on tombe sinon il faut check si on descend pas plus bas que le block sinon on enlève pile ce qu'il faut
+void Player::gravity(World world) {
+	float ground = distance_ground_block(world);
 
-	std::cout << "Distance entre les pieds et le bloc d'en dessous : " << ground << std::endl;
+	// TODO : Si y a rien en dessous on tombe sinon (si il y a plus que la gravity du perso on tombe sinon on enlève pile ce qu'il faut)
+	if(ground > 0){ //Player isn't on the ground
+		if(ground<(-gravity_force)){
+			this->move(0,-ground,0);
+		}else{
+			this->move(0,gravity_force,0);
+		}
+	}
 }

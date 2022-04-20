@@ -11,6 +11,8 @@ class Player {
 private:
     Inventory inventory;
     Vector3 position;
+
+	const float gravity_force = -0.05f;
 public:
     Player();
     void drawInventory();
@@ -22,6 +24,6 @@ public:
     [[nodiscard]] Vector3 getPosition() const;
     void setPosition(Vector3 pos);
     void move(float x, float y, float z);
-	float isOnGround(World world);
+	float distance_ground_block(World world);
 	void gravity(World world);
 };
