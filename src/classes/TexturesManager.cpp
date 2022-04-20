@@ -16,10 +16,10 @@ TexturesManager::TexturesManager() {
 void TexturesManager::loadTexture(const std::string& name) {
     std::string asset = "../assets/"+name+".png";
     this->textures[name] = LoadTexture(asset.c_str());
+    SetTextureFilter(this->textures[name], TEXTURE_FILTER_ANISOTROPIC_16X);
 //    if (name == "stone") {
 //        GenTextureMipmaps(&this->textures[name]);
 //    }
-//    std::cout << this->textures[name].mipmaps << std::endl;
 }
 
 Texture2D TexturesManager::getTexture(const std::string& name) {
