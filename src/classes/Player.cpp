@@ -7,13 +7,40 @@
 #include "Utils.h"
 
 
-
 Player::Player() {
     inventory.setItem(0,*(new Block("dirt")));
     inventory.setItem(1,*(new Block("stone")));
     inventory.setItem(2,*(new Block("glass")));
     inventory.setItem(4,*(new Block("sponge")));
     inventory.setItem(5,*(new Block("soul_soil")));
+}
+
+
+void Player::drawInventory() {
+    inventory.drawInventory();
+}
+
+void Player::handleInventoryGestures() {
+    inventory.deviceManagement();
+}
+
+bool Player::hasInventoryOpen() {
+    return inventory.isInventoryMenu();
+}
+
+BoundingBox Player::getBoundingBox() const {
+    return (BoundingBox) {
+            (Vector3) {
+                    position.x - 0.3f,
+                    position.y - 1.5f,
+                    position.z - 0.3f
+            },
+            (Vector3) {
+                    position.x + 0.3f,
+                    position.y + 0.3f,
+                    position.z + 0.3f
+            }
+    };
 }
 
 void Player::checkCollisions(World *world) {
@@ -55,33 +82,6 @@ void Player::checkCollisions(World *world) {
             playerBox = this->getBoundingBox();
         }
     }
-}
-
-void Player::drawInventory() {
-    inventory.drawInventory();
-}
-
-void Player::handleInventoryGestures() {
-    inventory.deviceManagement();
-}
-
-bool Player::hasInventoryOpen() {
-    return inventory.isInventoryMenu();
-}
-
-BoundingBox Player::getBoundingBox() const {
-    return (BoundingBox) {
-            (Vector3) {
-                    position.x - 0.3f,
-                    position.y - 1.5f,
-                    position.z - 0.3f
-            },
-            (Vector3) {
-                    position.x + 0.3f,
-                    position.y + 0.3f,
-                    position.z + 0.3f
-            }
-    };
 }
 
 Vector3 Player::getPosition() const {
