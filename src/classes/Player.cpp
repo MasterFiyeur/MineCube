@@ -4,6 +4,7 @@
 
 #include "Player.h"
 #include "World.h"
+#include "Utils.h"
 
 #include <iostream>
 #include <cmath>

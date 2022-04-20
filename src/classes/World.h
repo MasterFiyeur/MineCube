@@ -26,8 +26,3 @@ public:
     [[nodiscard]] bool isempty() const;
     void draw() const;
 };
-
-bool operator<(const Vector3& o1, Vector3 o2);
-bool operator==(const Vector3& o1, Vector3 o2);
-Vector3 operator+(const Vector3& o1, Vector3 o2);
-Vector3 operator-(const Vector3& o1, Vector3 o2);

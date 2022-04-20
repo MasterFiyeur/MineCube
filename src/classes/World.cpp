@@ -4,6 +4,7 @@
 
 #include <utility>
 #include "World.h"
+#include "Utils.h"
 
 World::World() {}
 
@@ -69,22 +70,4 @@ void World::draw() const {
 
 bool World::isempty() const {
     return this->blocks.empty();
-}
-
-bool operator<(const Vector3& o1, const Vector3 o2) {
-    if (o1.x != o2.x) return o1.x < o2.x;
-    if (o1.y != o2.y) return o1.y < o2.y;
-    return o1.z < o2.z;
-}
-
-bool operator==(const Vector3& o1, const Vector3 o2) {
-    return o1.x == o2.x && o1.y == o2.y && o1.z == o2.z;
-}
-
-Vector3 operator+(const Vector3& o1, const Vector3 o2) {
-    return (Vector3) {o1.x + o2.x, o1.y + o2.y, o1.z + o2.z};
-}
-
-Vector3 operator-(const Vector3& o1, const Vector3 o2) {
-    return (Vector3) {o1.x - o2.x, o1.y - o2.y, o1.z - o2.z};
 }
