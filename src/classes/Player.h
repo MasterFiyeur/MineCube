@@ -18,4 +18,6 @@ public:
     Vector3 getPosition();
     void setPosition(Vector3 pos);
     void move(float x, float y, float z);
+
+    Item *getCurrentItem();
 };

@@ -21,5 +21,9 @@ public:
 
     void start();
     [[nodiscard]] std::string getCameraDirection() const;
+
+    void blockBreak(const std::pair<const Vector3, Block> *target);
+
+    void blockPlace(const std::pair<const Vector3, Block> *target);
 };
 

@@ -38,3 +38,7 @@ void Player::move(float x, float y, float z) {
     position.y += y;
     position.z += z;
 }
+
+Item *Player::getCurrentItem(){
+    return inventory.getCurrentItem();
+}
