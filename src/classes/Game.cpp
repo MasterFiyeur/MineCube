@@ -115,6 +115,9 @@ void Game::start() {
 
 	Vector3 saved_position;
 
+	// Sky clouds image
+	Texture2D clouds = LoadTextureFromImage(LoadImage("../assets/clouds.png"));
+
     const std::pair<const Vector3, Block>* selected_block;
     while (!WindowShouldClose()) {
         // Update camera and player position
@@ -148,7 +151,11 @@ void Game::start() {
         ClearBackground(SKYBLUE);
         BeginMode3D(camera);
 
-        world.draw();
+		//Drawing coulds in sky
+		DrawCubeTexture(clouds, {0,100,0}, 1000.0, 0.1, 1000.0, WHITE); // Draw cube textured
+
+
+		world.draw();
 
 		DrawGrid(15, 1.0f);
 
