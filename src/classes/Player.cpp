@@ -132,7 +132,7 @@ void Player::gravity(World *world) {
     }
     if (jump_credit == 0) {
         float ground = distance_ground_block(world);
-
+		if(this->getPosition().y<-50) this->setPosition({0,8,0});
         if (ground > 0) { // Player isn't on the ground
             if (ground < (-gravity_force)) {
                 this->move(0, -ground, 0);
