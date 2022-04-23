@@ -228,6 +228,7 @@ void Game::start() {
         EndDrawing();
     }
 
+	UnloadTexture(clouds);
     this->save();
 }
 
