@@ -105,10 +105,13 @@ void Game::start() {
 
         //Vector3 positionPlayer = player.getPosition();
 
-        world.fill(Block("grass", 1), {-initial_square, 0, -initial_square}, {initial_square, 0, initial_square});
+        world.fill(Grass("grass"), {-initial_square, 0, -initial_square}, {initial_square, 0, initial_square});
 
         Block stone = Block("stone");
         world.add_block(stone, {0, 1, 0});
+
+        Flower tulip = Flower("white_tulip");
+        world.add_block(tulip, {0, 2, 0});
     }
 
     // setup camera and max FPS

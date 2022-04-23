@@ -8,13 +8,25 @@
 #include "raylib.h"
 
 class Block {
-private:
+protected:
     std::string _name;
-    bool _multipleFaces;
 public:
-    Block(): Block("stone", 0) {}
-    explicit Block(std::string name, bool multipleFaces = 0);
-    void draw(Vector3 position) const;
+    Block(): Block("stone") {}
+    explicit Block(std::string name);
+    virtual void draw(Vector3 position) const;
     [[nodiscard]] std::string getName() const;
-    [[nodiscard]] bool getMultipleFaces() const;
+};
+
+class Grass : public Block {
+public:
+    Grass(): Grass("stone") {}
+    explicit Grass(std::string name);
+    void draw(Vector3 position) const override;
+};
+
+class Flower : public Block {
+public:
+    Flower(): Flower("stone") {}
+    explicit Flower(std::string name);
+    void draw(Vector3 position) const override;
 };
