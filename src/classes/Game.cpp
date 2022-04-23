@@ -10,6 +10,7 @@
 #include "Block.h"
 #include "WorldSave.h"
 #include "Player.h"
+#include "Utils.h"
 
 #define initial_square 8
 
@@ -61,11 +62,11 @@ std::string Game::getCameraDirection() const {
 
 const std::pair<const Vector3, Block>* Game::getTargetedBlock() const {
     const std::pair<const Vector3, Block>* selected_block = nullptr;
-    float selection_distance = 15.0f;
+    float selection_distance = 7.0f;
 
     Ray mouseRay = {
             camera.position,
-            (Vector3){camera.target.x - camera.position.x, camera.target.y - camera.position.y, camera.target.z - camera.position.z}
+            normalize({camera.target.x - camera.position.x, camera.target.y - camera.position.y, camera.target.z - camera.position.z})
     };
     for (const auto& block : world.get_blocks({camera.position.x - selection_distance, camera.position.y - selection_distance, camera.position.z - selection_distance},
                                               {camera.position.x + selection_distance, camera.position.y + selection_distance, camera.position.z + selection_distance})) {
@@ -93,6 +94,48 @@ void Game::drawDebugText(const std::pair<const Vector3, Block>* selected_block) 
     DrawText(upperText, 10, 10, 15, DARKGRAY);
 }
 
+void Game::blockPlace(const std::pair<const Vector3, Block>* target) {
+    if (target != nullptr) {
+        Vector3 place;
+        RayCollision collision;
+        Ray mouseRay{
+                camera.position,
+                (Vector3) {camera.target.x - camera.position.x, camera.target.y - camera.position.y,
+                           camera.target.z - camera.position.z}
+        };
+        Vector3 p1 = {target->first.x - 0.5f, target->first.y - 0.5f, target->first.z - 0.5f};
+        Vector3 p2 = {target->first.x + 0.5f, target->first.y + 0.5f, target->first.z + 0.5f};
+        BoundingBox object_bounding_box = {p1, p2};
+        collision = GetRayCollisionBox(mouseRay, object_bounding_box);
+        if (collision.point.x == target->first.x - 0.5f) {
+            place = {target->first.x - 1, target->first.y, target->first.z};
+        }
+        if (collision.point.x == target->first.x + 0.5f) {
+            place = {target->first.x + 1, target->first.y, target->first.z};
+        }
+        if (collision.point.y == target->first.y - 0.5f) {
+            place = {target->first.x, target->first.y - 1, target->first.z};
+        }
+        if (collision.point.y == target->first.y + 0.5f) {
+            place = {target->first.x, target->first.y + 1, target->first.z};
+        }
+        if (collision.point.z == target->first.z - 0.5f) {
+            place = {target->first.x, target->first.y, target->first.z - 1};
+        }
+        if (collision.point.z == target->first.z + 0.5f) {
+            place = {target->first.x, target->first.y, target->first.z + 1};
+        }
+        if (IsMouseButtonPressed(MOUSE_RIGHT_BUTTON)) {
+            world.add_block(Block(player.getCurrentItem()->block->getName()), place);
+        }
+    }
+}
+
+void Game::blockBreak(const std::pair<const Vector3, Block>* target) {
+    if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && (target != nullptr)){
+        world.remove_block(target->first);
+    }
+}
 
 void Game::start() {
     if (world.isempty()) {
@@ -106,9 +149,6 @@ void Game::start() {
         player.setPosition({0, 3, 0});
     }
 
-	world.add_block(Block("dirt"), {0, 2, 1});
-	world.add_block(Block("dirt"), {0, 3, 2});
-	world.add_block(Block("dirt"), {0, 4, 3});
     // setup camera and max FPS
     SetCameraMode(camera, CAMERA_FIRST_PERSON);
     SetTargetFPS(60);
@@ -126,8 +166,21 @@ void Game::start() {
             UpdateCamera(&camera);
         }
 
-        if (IsKeyDown(KEY_SPACE)){
-            player.jump(world);
+        // double press SPACE to enter/leave fly mode
+        if (IsKeyPressed(KEY_SPACE)) {
+            if (GetTime() - last_key_space_pressed < 0.2) {
+                player.applyGravity(!player.shouldApplyGravity());
+            }
+            last_key_space_pressed = GetTime();
+        }
+        if (IsKeyDown(KEY_SPACE)) {
+            if (player.shouldApplyGravity())
+                player.jump(&world);
+            else
+                player.move(0, 0.1f, 0);
+        }
+        if (IsKeyDown(KEY_LEFT_SHIFT) && !player.shouldApplyGravity()) {
+            player.move(0, -0.1f, 0);
         }
         if (oldpos.x != camera.position.x) {
             player.move(camera.position.x - oldpos.x, 0, 0);
@@ -136,13 +189,15 @@ void Game::start() {
             player.move(0, 0, camera.position.z - oldpos.z);
         }
 
-		player.gravity(world);
+		    player.gravity(&world);
 
+        blockBreak(getTargetedBlock());
+        blockPlace(getTargetedBlock());
 
         //Inventory keyboard and mouse management
         player.handleInventoryGestures();
 
-        player.checkCollisions(world);
+        player.checkCollisions(&world);
 
         camera.position = player.getPosition();
 
@@ -178,8 +233,8 @@ void Game::start() {
     this->save();
 }
 
-Player Game::getPlayer() const {
-    return this->player;
+Player* Game::getPlayer() {
+    return &(this->player);
 }
 
 World Game::getWorld() const {

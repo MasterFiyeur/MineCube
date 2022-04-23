@@ -35,7 +35,7 @@ void WorldSave::save(Game* game) {
         snprintf(pos, sizeof pos, "%.1f,%.1f,%.1f", kv.first.x, kv.first.y, kv.first.z);
         data["blocks"].emplace(pos, kv.second.getName());
     }
-    Vector3 position = game->getPlayer().getPosition();
+    Vector3 position = game->getPlayer()->getPosition();
     snprintf(pos, sizeof pos, "%.1f,%.1f,%.1f", position.x, position.y, position.z);
     data["player"] = {
             {"position", pos}
