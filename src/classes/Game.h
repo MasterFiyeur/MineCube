@@ -26,5 +26,9 @@ public:
     [[nodiscard]] std::string getCameraDirection() const;
     [[nodiscard]] Player* getPlayer();
     [[nodiscard]] World getWorld() const;
+
+    void blockBreak(const std::pair<const Vector3, Block> *target);
+
+    void blockPlace(const std::pair<const Vector3, Block> *target);
 };
 

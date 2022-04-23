@@ -151,3 +151,7 @@ void Player::jump(World *world){
 		jump_credit = added_jump_credit;
 	}
 }
+
+Item *Player::getCurrentItem(){
+    return inventory.getCurrentItem();
+}

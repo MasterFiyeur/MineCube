@@ -73,6 +73,7 @@ public:
     *\param z Z-axis move
     */
     void move(float x, float y, float z);
+
     /**
     *\brief Get distance betweek player's foot and floor
     * Result is between 0 and 1 (if there is no block, it will be 1)
@@ -98,4 +99,6 @@ public:
     *\param world World where are the player
     */
 	void jump(World *world);
+
+    Item *getCurrentItem();
 };
