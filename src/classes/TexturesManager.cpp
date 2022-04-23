@@ -3,6 +3,7 @@
 //
 
 #include <iostream>
+#include "raylib.h"
 
 #include "TexturesManager.h"
 #include "Utils.h"
@@ -15,6 +16,8 @@ TexturesManager::TexturesManager() {
 void TexturesManager::loadTexture(const std::string& name) {
     std::string asset = "../assets/"+name+".png";
     this->textures[name] = LoadTexture(asset.c_str());
+    GenTextureMipmaps(&this->textures[name]);
+    SetTextureFilter(this->textures[name], TEXTURE_FILTER_POINT);
 }
 
 Texture2D TexturesManager::getTexture(const std::string& name) {

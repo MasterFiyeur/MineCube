@@ -141,13 +141,11 @@ void Inventory::deviceManagement() {
 	}
 }
 
-//Graphic item which follow mouse when selected in inventory menu
 void Inventory::updateSelectedItemPos() {
 	(*changingItemPosition).g_position.x = (float) ((float) (GetMouseX())-((float) g_itemSquare)/2);
 	(*changingItemPosition).g_position.y = (float) ((float) (GetMouseY())-((float) g_itemSquare)/2);
 }
 
-//Inventory drawing
 void Inventory::inGameInventory() {
 	//Inventory background
 	DrawRectangle(
@@ -199,7 +197,6 @@ void Inventory::inGameInventory() {
 	}
 }
 
-//Global function for draw inventory in game
 void Inventory::drawInventory() {
 	if (isInventoryMenu() && changingItemPosition != nullptr) {
 		updateSelectedItemPos();

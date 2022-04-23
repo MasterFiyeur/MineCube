@@ -9,6 +9,8 @@
 #include "Game.h"
 #include "Block.h"
 #include "WorldSave.h"
+#include "Player.h"
+#include "Utils.h"
 
 #define initial_square 8
 
@@ -16,12 +18,21 @@
 Game::Game() {
     // Define the camera to look into our 3d world
     this->camera = { 0 };
-    camera.position = (Vector3){ 0.0f, 3.0f, 0.0f }; // Camera position
     camera.target = (Vector3){ -1.0f, 0.0f, 0.0f };      // Camera looking at point
     camera.up = (Vector3){ 0.0f, 1.0f, 0.0f };          // Camera up vector (rotation towards target)
     camera.fovy = 40.0f;                                // Camera field-of-view Y
     camera.projection = CAMERA_PERSPECTIVE;                   // Camera mode type
-    this->world = WorldSave::load();
+    auto save = WorldSave::load();
+    this->world = save.first;
+    this->player.setPosition(save.second);
+    this->last_save = std::time(nullptr);
+}
+
+void Game::save() {
+    std::cout << "Saving world..." << std::endl;
+    WorldSave::save(this);
+    this->last_save = std::time(nullptr);
+    std::cout << "World saved!" << std::endl;
 }
 
 void Game::drawCursor() {
@@ -51,20 +62,16 @@ std::string Game::getCameraDirection() const {
 
 const std::pair<const Vector3, Block>* Game::getTargetedBlock() const {
     const std::pair<const Vector3, Block>* selected_block = nullptr;
-    float selection_distance = 15.0f;
+    float selection_distance = 7.0f;
 
     Ray mouseRay = {
             camera.position,
-            (Vector3){camera.target.x - camera.position.x, camera.target.y - camera.position.y, camera.target.z - camera.position.z}
+            normalize({camera.target.x - camera.position.x, camera.target.y - camera.position.y, camera.target.z - camera.position.z})
     };
-    for (const auto& block : world.get_blocks())
-    {
-        Vector3 p1 = {block.first.x - 0.5f, block.first.y - 0.5f, block.first.z - 0.5f};
-        Vector3 p2 = {block.first.x + 0.5f, block.first.y + 0.5f, block.first.z + 0.5f};
-        BoundingBox object_bounding_box = {p1, p2};
-        RayCollision collision = GetRayCollisionBox(mouseRay, object_bounding_box);
-        if (collision.hit && collision.distance < selection_distance)
-        {
+    for (const auto& block : world.get_blocks({camera.position.x - selection_distance, camera.position.y - selection_distance, camera.position.z - selection_distance},
+                                              {camera.position.x + selection_distance, camera.position.y + selection_distance, camera.position.z + selection_distance})) {
+        RayCollision collision = GetRayCollisionBox(mouseRay, block.second.getBoundingBox(block.first));
+        if (collision.hit && collision.distance < selection_distance) {
             selected_block = &block;
             selection_distance = collision.distance;
         }
@@ -77,7 +84,7 @@ void Game::drawDebugText(const std::pair<const Vector3, Block>* selected_block) 
     char upperText[200];
     sprintf(upperText, "FPS: %d\nPosition: %.1f, %.1f, %.1f\nLooking at: %.1f, %.1f, %.1f (%s)",
             GetFPS(),
-            camera.position.x, camera.position.y, camera.position.z,
+            player.getPosition().x, player.getPosition().y, player.getPosition().z,
             camera.target.x, camera.target.y, camera.target.z, this->getCameraDirection().c_str()
             );
     if (selected_block != nullptr) {
@@ -138,35 +145,59 @@ void Game::start() {
 
         Block dirt = Block("dirt");
         world.add_block(dirt, {0, 1, 0});
+        // init player position above the dirt block
+        player.setPosition({0, 3, 0});
     }
 
     // setup camera and max FPS
     SetCameraMode(camera, CAMERA_FIRST_PERSON);
     SetTargetFPS(60);
 
-    player.setPosition(camera.position);
+	Vector3 saved_position;
+
 
     const std::pair<const Vector3, Block>* selected_block;
-
     while (!WindowShouldClose()) {
-        // Update
+        // Update camera and player position
+        Vector3 oldpos = camera.position;
         if (!player.hasInventoryOpen()) {
             UpdateCamera(&camera);
         }
 
-        if (IsKeyDown(KEY_SPACE)){
-            player.move(0, 0.1f, 0);
+        // double press SPACE to enter/leave fly mode
+        if (IsKeyPressed(KEY_SPACE)) {
+            if (GetTime() - last_key_space_pressed < 0.2) {
+                player.applyGravity(!player.shouldApplyGravity());
+            }
+            last_key_space_pressed = GetTime();
         }
-        if (IsKeyDown(KEY_LEFT_SHIFT)){
+        if (IsKeyDown(KEY_SPACE)) {
+            if (player.shouldApplyGravity())
+                player.jump(&world);
+            else
+                player.move(0, 0.1f, 0);
+        }
+        if (IsKeyDown(KEY_LEFT_SHIFT) && !player.shouldApplyGravity()) {
             player.move(0, -0.1f, 0);
         }
+        if (oldpos.x != camera.position.x) {
+            player.move(camera.position.x - oldpos.x, 0, 0);
+        }
+        if (oldpos.z != camera.position.z) {
+            player.move(0, 0, camera.position.z - oldpos.z);
+        }
+
+		    player.gravity(&world);
+
         blockBreak(getTargetedBlock());
         blockPlace(getTargetedBlock());
 
         //Inventory keyboard and mouse management
         player.handleInventoryGestures();
 
-        camera.position.y = player.getPosition().y;
+        player.checkCollisions(&world);
+
+        camera.position = player.getPosition();
 
         // Draw
         BeginDrawing();
@@ -175,18 +206,17 @@ void Game::start() {
 
         world.draw();
 
-        DrawGrid(15, 1.0f);
+		DrawGrid(15, 1.0f);
 
         // check for block highlighting
         selected_block = getTargetedBlock();
         if (selected_block != nullptr) {
-            DrawCubeWires(selected_block->first, 1.0f, 1.0f, 1.0f, WHITE);
+            DrawBoundingBox(selected_block->second.getBoundingBox(selected_block->first), WHITE);
         }
-
         EndMode3D();
 
-		    //Inventory bar
-		    player.drawInventory();
+        //Inventory bar
+        player.drawInventory();
 
         drawDebugText(selected_block);
         drawCursor();
@@ -194,5 +224,13 @@ void Game::start() {
         EndDrawing();
     }
 
-    this->world.save();
+    this->save();
+}
+
+Player* Game::getPlayer() {
+    return &(this->player);
+}
+
+World Game::getWorld() const {
+    return this->world;
 }

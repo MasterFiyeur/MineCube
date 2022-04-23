@@ -7,7 +7,6 @@
 #include <unordered_map>
 #include <set>
 #include <string>
-#include "raylib.h"
 
 class TexturesManager {
 private:

@@ -2,14 +2,11 @@
 // Created by Arthur on 26/02/2022.
 //
 
-#include <iostream>
 #include <utility>
 #include "World.h"
-#include "WorldSave.h"
+#include "Utils.h"
 
-World::World() {
-    this->last_save = std::time(nullptr);
-}
+World::World() {}
 
 World::~World() {
     this->blocks.clear();
@@ -49,31 +46,28 @@ std::map<Vector3, Block> World::get_blocks() const {
     return this->blocks;
 }
 
+std::map<Vector3, Block> World::get_blocks(Vector3 start, Vector3 end) const {
+    std::map<Vector3, Block> blocks_in_range;
+    for (auto &block : this->blocks) {
+        if (block.first.x >= start.x && block.first.x <= end.x &&
+            block.first.y >= start.y && block.first.y <= end.y &&
+            block.first.z >= start.z && block.first.z <= end.z) {
+            blocks_in_range[block.first] = block.second;
+        }
+    }
+    return blocks_in_range;
+}
+
 void World::draw() const {
     auto
         mit (blocks.begin()),
         mend(blocks.end());
     for(; mit!=mend; ++mit) {
         mit->second.draw(mit->first);
+//        DrawBoundingBox(mit->second.getBoundingBox(mit->first), YELLOW);
     }
 }
 
-void World::save() {
-    std::cout << "Saving world..." << std::endl;
-    WorldSave::save(this);
-    this->last_save = std::time(nullptr);
-}
-
-bool World::isempty() {
+bool World::isempty() const {
     return this->blocks.empty();
-}
-
-bool operator<(const Vector3& o1, const Vector3 o2) {
-    if (o1.x != o2.x) return o1.x < o2.x;
-    if (o1.y != o2.y) return o1.y < o2.y;
-    return o1.z < o2.z;
-}
-
-bool operator==(const Vector3& o1, const Vector3 o2) {
-    return o1.x == o2.x && o1.y == o2.y && o1.z == o2.z;
 }
