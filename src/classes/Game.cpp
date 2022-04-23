@@ -6,12 +6,13 @@
 #include <iostream>
 #include "raylib.h"
 
+
 #include "Game.h"
 #include "Block.h"
 #include "WorldSave.h"
 
 #define initial_square 16
-#define initial_chunk 1
+//#define initial_chunk 1
 
 
 Game::Game() {
@@ -90,14 +91,24 @@ void Game::drawDebugText(const std::pair<const Vector3, Block>* selected_block) 
 
 
 void Game::start() {
+
+    // setup camera and max FPS
+    SetCameraMode(camera, CAMERA_FIRST_PERSON);
+    SetTargetFPS(60);
+
+    player.setPosition(camera.position);
+
+
     if (world.isempty()) {
         std::cout << "Initializing world...." << std::endl;
         // fill world with static blocks
 
-        world.fill(Block("stone"), {-initial_square * initial_chunk, 0, -initial_square * initial_chunk}, {initial_square * initial_chunk, 0, initial_square * initial_chunk});
+        //Vector3 positionPlayer = player.getPosition();
 
-        Block dirt = Block("dirt", 1);
-        world.add_block(dirt, {0, 1, 0});
+        world.fill(Block("grass", 1), {-initial_square, 0, -initial_square}, {initial_square, 0, initial_square});
+
+        Block stone = Block("stone");
+        world.add_block(stone, {0, 1, 0});
     }
 
     // setup camera and max FPS
@@ -152,5 +163,5 @@ void Game::start() {
         EndDrawing();
     }
 
-//    this->world.save();
+    //this->world.save();
 }

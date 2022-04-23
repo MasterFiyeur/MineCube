@@ -13,20 +13,17 @@ class TexturesManager {
 private:
     TexturesManager();
     std::unordered_map<std::string, Texture2D> textures;
-    std::unordered_map<std::string, TextureCubemap> texturesCube;
     std::set<std::string> unknownTextures;
     Texture2D defaultTexture{};
-    TextureCubemap defaultTextureCube{};
     void loadTexture(const std::string& name);
 public:
     TexturesManager(const TexturesManager&) = delete;
-
     static auto& instance(){
         static TexturesManager manager;
         return manager;
     }
     static Texture2D getTexture(const std::string& name);
-    static TextureCubemap getTextureCube(const std::string& name);
+
 
 
 };
