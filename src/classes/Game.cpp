@@ -23,8 +23,10 @@ Game::Game() {
     camera.fovy = 40.0f;                                // Camera field-of-view Y
     camera.projection = CAMERA_PERSPECTIVE;                   // Camera mode type
     auto save = WorldSave::load();
-    this->world = save.first;
-    this->player.setPosition(save.second);
+    this->world = save.world;
+    this->player.setPosition(save.playerPosition);
+    this->player.setOrientation(save.playerOrientation);
+    this->player.applyGravity(!save.playerIsFlying);
     this->last_save = std::time(nullptr);
 }
 
@@ -152,8 +154,8 @@ void Game::start() {
     // setup camera and max FPS
     SetCameraMode(camera, CAMERA_FIRST_PERSON);
     SetTargetFPS(60);
-
-	Vector3 saved_position;
+    camera.position = player.getPosition();
+    camera.target = player.getOrientation();
 
 	// Sky clouds image
 	Image img_sky = LoadImage("../assets/sun.png");
@@ -168,7 +170,6 @@ void Game::start() {
 
         if (!player.hasInventoryOpen()) {
             // Update camera and player position
-            Vector3 oldpos = camera.position;
             UpdateCamera(&camera);
 
             // double press SPACE to enter/leave fly mode
@@ -187,12 +188,13 @@ void Game::start() {
             if (IsKeyDown(KEY_LEFT_SHIFT) && !player.shouldApplyGravity()) {
                 player.move(0, -0.1f, 0);
             }
-            if (oldpos.x != camera.position.x) {
-                player.move(camera.position.x - oldpos.x, 0, 0);
+            if (player.getPosition().x != camera.position.x) {
+                player.move(camera.position.x - player.getPosition().x, 0, 0);
             }
-            if (oldpos.z != camera.position.z) {
-                player.move(0, 0, camera.position.z - oldpos.z);
+            if (player.getPosition().z != camera.position.z) {
+                player.move(0, 0, camera.position.z - player.getPosition().z);
             }
+            player.setOrientation(camera.target);
         }
 
         player.gravity(&world);
@@ -209,10 +211,10 @@ void Game::start() {
         ClearBackground(SKYBLUE);
         BeginMode3D(camera);
 
-		//Drawing coulds in sky
+		// Draw clouds in sky
 
-		DrawCubeTexture(sun,{230,140,170},250,0.1,250,YELLOW);
-		DrawCubeTexture(clouds, {0,100,0}, 1000.0, 0.1, 1000.0, WHITE); // Draw cube textured
+		DrawCubeTexture(sun,{-140,240,240},250,0.1,250,YELLOW);
+		DrawCubeTexture(clouds, {0,200,0}, 3000.0, 0.1, 3000.0, WHITE); // Draw cube textured
 
 
 		world.draw();

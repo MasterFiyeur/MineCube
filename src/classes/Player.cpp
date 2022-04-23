@@ -98,6 +98,14 @@ void Player::move(float x, float y, float z) {
     position.z += z;
 }
 
+Vector3 Player::getOrientation() const {
+    return orientation;
+}
+
+void Player::setOrientation(Vector3 target) {
+    this->orientation = target;
+}
+
 float Player::distance_ground_block(World *world) const {
 	float ground = 1, distance_feet_block = 1;
     BoundingBox hitbox = {position.x-0.7f,position.y-2.8f,position.z-0.7f, position.x+0.7f,position.y-1.5f,position.z+0.7f};

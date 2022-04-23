@@ -7,6 +7,7 @@
 #include <string>
 #include <sys/stat.h>
 #include <math.h>
+#include <iostream>
 
 static bool file_exists(const std::string& name) {
     struct stat buffer{};
@@ -16,6 +17,17 @@ static bool file_exists(const std::string& name) {
 static Vector3 normalize(Vector3 v) {
     float length = sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
     return { v.x / length, v.y / length, v.z / length };
+}
+
+static std::string Vector3toChar(Vector3 v) {
+    char res[50];
+    snprintf(res, sizeof res, "%.1f,%.1f,%.1f", v.x, v.y, v.z);
+    return res;
+}
+
+static std::ostream& operator<<(std::ostream& out, const Vector3& v) {
+    out << "(" << Vector3toChar(v) << ")";
+    return out;
 }
 
 static bool operator<(const Vector3& o1, const Vector3 o2) {

@@ -11,12 +11,13 @@ class Player {
 private:
     Inventory inventory; // Inventory of the player
     Vector3 position; // Position of the player
+    Vector3 orientation; // Orientation of the player (where he's looking at)
     int jump_credit = 0; // Jump credit for gain Y position
     bool apply_gravity = true; // If player should jump or fly
 
 	const int added_jump_credit = 13; //Number of frame that the player.y will up
 	const float jump_force = 0.1f; //Y-axis number the player will gain for each jump credit
-	const float gravity_force = -0.07f; //Y-axis number the player will loose for each frame
+	const float gravity_force = -0.07f; //Y-axis number the player will lose for each frame
 public:
     /**
     *\brief Construct a new Player object
@@ -73,6 +74,19 @@ public:
     *\param z Z-axis move
     */
     void move(float x, float y, float z);
+
+    /**
+    *\brief Get the player orientation (where the player is looking at)
+    *
+    *\return Vector3 Orientation of the player
+    */
+    [[nodiscard]] Vector3 getOrientation() const;
+    /**
+    *\brief Define a new orientation for the player
+    *
+    *\param pos New player orientation
+    */
+    void setOrientation(Vector3 target);
 
     /**
     *\brief Get distance betweek player's foot and floor
