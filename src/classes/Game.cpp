@@ -12,8 +12,16 @@
 #include "Player.h"
 #include "Utils.h"
 
-#define initial_square 8
+#define initial_square 100
 
+#if defined(PLATFORM_DESKTOP)
+#define GLSL_VERSION            330
+#else   // PLATFORM_RPI, PLATFORM_ANDROID, PLATFORM_WEB
+#define GLSL_VERSION            100
+#endif
+#include "TexturesManager.h"
+#define RLIGHTS_IMPLEMENTATION
+#include "rlights.h"
 
 Game::Game() {
     // Define the camera to look into our 3d world
@@ -153,10 +161,36 @@ void Game::start() {
     SetCameraMode(camera, CAMERA_FIRST_PERSON);
     SetTargetFPS(60);
 
-	Vector3 saved_position;
 
-	// Sky clouds image
-	Texture2D clouds = LoadTextureFromImage(LoadImage("../assets/clouds.png"));
+    Model modelDirt = LoadModelFromMesh(GenMeshCube(1.0f, 1.0f, 1.0f));
+    modelDirt.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = TexturesManager::getTexture("dirt");
+    Model modelStone = LoadModelFromMesh(GenMeshCube(1.0f, 1.0f, 1.0f));
+    modelStone.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = TexturesManager::getTexture("stone");
+    // Sky clouds image
+    Texture2D clouds = TexturesManager::getTexture("clouds");
+//    modelStone.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = LoadTextureFromImage(LoadImage("../assets/clouds.png"));
+
+    Shader shader = LoadShader(TextFormat("../assets/shaders/glsl%i/base_lighting.vs", GLSL_VERSION),
+                               TextFormat("../assets/shaders/glsl%i/fog.fs", GLSL_VERSION));
+    shader.locs[SHADER_LOC_MATRIX_MODEL] = GetShaderLocation(shader, "matModel");
+    shader.locs[SHADER_LOC_VECTOR_VIEW] = GetShaderLocation(shader, "viewPos");
+
+    int ambientLoc = GetShaderLocation(shader, "ambient");
+    float ambientColor[4] = {1.0f, 1.0f, 1.0f, 1.0f };
+    SetShaderValue(shader, ambientLoc, ambientColor, SHADER_UNIFORM_VEC4);
+
+    float fogDensity = 0.02f;
+    int fogDensityLoc = GetShaderLocation(shader, "fogDensity");
+    SetShaderValue(shader, fogDensityLoc, &fogDensity, SHADER_UNIFORM_FLOAT);
+    float fogColor[4] = {0.4f, 0.75f, 1.0f, 1.0f }; // skyblue color
+    int fogColorLoc = GetShaderLocation(shader, "fogColor");
+    SetShaderValue(shader, fogColorLoc, fogColor, SHADER_UNIFORM_VEC4);
+
+    modelDirt.materials[0].shader = shader;
+    modelStone.materials[0].shader = shader;
+
+    // Using just 1 point lights
+//    CreateLight(LIGHT_POINT, (Vector3){ 0, 4, 6 }, {0, 1, 0}, BLUE, shader);
 
     const std::pair<const Vector3, Block>* selected_block;
     while (!WindowShouldClose()) {
@@ -199,18 +233,34 @@ void Game::start() {
 
         camera.position = player.getPosition();
 
+        // Update the light shader with the camera view position
+        SetShaderValue(shader, shader.locs[SHADER_LOC_VECTOR_VIEW], &camera.position, SHADER_UNIFORM_VEC3);
+
         // Draw
         BeginDrawing();
         ClearBackground(SKYBLUE);
         BeginMode3D(camera);
 
-		//Drawing coulds in sky
-		DrawCubeTexture(clouds, {0,100,0}, 1000.0, 0.1, 1000.0, WHITE); // Draw cube textured
+		//Drawing clouds in sky
+		DrawCubeTexture(clouds, {0,200,0}, 5000.0, 0.1, 5000.0, WHITE); // Draw cube textured
 
 
-		world.draw();
+//		world.draw();
+        auto blocks = world.get_blocks();
+        auto
+            mit (blocks.begin()),
+            mend (blocks.end());
+        for (; mit != mend; ++mit) {
+            if (mit->second.getName() == "dirt") {
+                DrawModel(modelDirt, mit->first, 1.0f, WHITE);
+            } else {
+                DrawModel(modelStone, mit->first, 1.0f, WHITE);
+            }
+        }
 
 		DrawGrid(15, 1.0f);
+
+        DrawModel(modelDirt, (Vector3){-2.6f, 2, 0 }, 1.0f, WHITE);
 
         // check for block highlighting
         selected_block = getTargetedBlock();
@@ -227,6 +277,9 @@ void Game::start() {
 
         EndDrawing();
     }
+
+    UnloadModel(modelDirt);
+    UnloadModel(modelStone);
 
     this->save();
 }
