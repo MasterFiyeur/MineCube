@@ -160,39 +160,37 @@ void Game::start() {
 
     const std::pair<const Vector3, Block>* selected_block;
     while (!WindowShouldClose()) {
-        // Update camera and player position
-        Vector3 oldpos = camera.position;
+
         if (!player.hasInventoryOpen()) {
+            // Update camera and player position
+            Vector3 oldpos = camera.position;
             UpdateCamera(&camera);
-        }
 
-        // double press SPACE to enter/leave fly mode
-        if (IsKeyPressed(KEY_SPACE)) {
-            if (GetTime() - last_key_space_pressed < 0.2) {
-                player.applyGravity(!player.shouldApplyGravity());
+            // double press SPACE to enter/leave fly mode
+            if (IsKeyPressed(KEY_SPACE)) {
+                if (GetTime() - last_key_space_pressed < 0.2) {
+                    player.applyGravity(!player.shouldApplyGravity());
+                }
+                last_key_space_pressed = GetTime();
             }
-            last_key_space_pressed = GetTime();
-        }
-        if (IsKeyDown(KEY_SPACE)) {
-            if (player.shouldApplyGravity())
-                player.jump(&world);
-            else
-                player.move(0, 0.1f, 0);
-        }
-        if (IsKeyDown(KEY_LEFT_SHIFT) && !player.shouldApplyGravity()) {
-            player.move(0, -0.1f, 0);
-        }
-        if (oldpos.x != camera.position.x) {
-            player.move(camera.position.x - oldpos.x, 0, 0);
-        }
-        if (oldpos.z != camera.position.z) {
-            player.move(0, 0, camera.position.z - oldpos.z);
+            if (IsKeyDown(KEY_SPACE)) {
+                if (player.shouldApplyGravity())
+                    player.jump(&world);
+                else
+                    player.move(0, 0.1f, 0);
+            }
+            if (IsKeyDown(KEY_LEFT_SHIFT) && !player.shouldApplyGravity()) {
+                player.move(0, -0.1f, 0);
+            }
+            if (oldpos.x != camera.position.x) {
+                player.move(camera.position.x - oldpos.x, 0, 0);
+            }
+            if (oldpos.z != camera.position.z) {
+                player.move(0, 0, camera.position.z - oldpos.z);
+            }
         }
 
-		    player.gravity(&world);
-
-        blockBreak(getTargetedBlock());
-        blockPlace(getTargetedBlock());
+        player.gravity(&world);
 
         //Inventory keyboard and mouse management
         player.handleInventoryGestures();

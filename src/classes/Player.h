@@ -83,9 +83,9 @@ public:
     */
 	[[nodiscard]] float distance_ground_block(World *world) const;
   
-  void applyGravity(bool apply);
+    void applyGravity(bool apply);
   
-  [[nodiscard]] bool shouldApplyGravity() const;
+    [[nodiscard]] bool shouldApplyGravity() const;
   
     /**
     *\brief Management of the player gravity and jump credit to move the player on Y-axis
