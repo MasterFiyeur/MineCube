@@ -17,7 +17,7 @@ private:
 
 	const int added_jump_credit = 13; //Number of frame that the player.y will up
 	const float jump_force = 0.1f; //Y-axis number the player will gain for each jump credit
-	const float gravity_force = -0.07f; //Y-axis number the player will lose for each frame
+	const float gravity_force = -0.1f; //Y-axis number the player will lose for each frame
 public:
     /**
     *\brief Construct a new Player object
