@@ -156,7 +156,12 @@ void Game::start() {
 	Vector3 saved_position;
 
 	// Sky clouds image
-	Texture2D clouds = LoadTextureFromImage(LoadImage("../assets/clouds.png"));
+	Image img_sky = LoadImage("../assets/sun.png");
+	Texture2D sun = LoadTextureFromImage(img_sky);
+	UnloadImage(img_sky);
+	img_sky = LoadImage("../assets/clouds.png");
+	Texture2D clouds = LoadTextureFromImage(img_sky);
+	UnloadImage(img_sky);
 
     const std::pair<const Vector3, Block>* selected_block;
     while (!WindowShouldClose()) {
@@ -205,6 +210,8 @@ void Game::start() {
         BeginMode3D(camera);
 
 		//Drawing coulds in sky
+
+		DrawCubeTexture(sun,{230,140,170},250,0.1,250,YELLOW);
 		DrawCubeTexture(clouds, {0,100,0}, 1000.0, 0.1, 1000.0, WHITE); // Draw cube textured
 
 
@@ -228,6 +235,7 @@ void Game::start() {
         EndDrawing();
     }
 
+	UnloadTexture(sun);
 	UnloadTexture(clouds);
     this->save();
 }
