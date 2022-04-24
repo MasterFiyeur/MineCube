@@ -142,11 +142,16 @@ void Game::start() {
     if (world.isempty()) {
         std::cout << "Initializing world...." << std::endl;
 
+        /* Generate world */
 		WorldGeneration new_world;
 		Vector3 player_initial_pos;
-		new_world.generate((std::rand()%65534),&world, &player_initial_pos);
-        // init player position above the dirt block
+		int seed = std::rand()%65534;
+        //Generate world using random seed
+		new_world.generate(seed,&world, &player_initial_pos);
+        // init player position above the highest block on x=0 and z=0
         player.setPosition(player_initial_pos);
+		//Print seed value used
+		std::cout << "The seed used for generation is : " << seed << std::endl;
     }
 
     // setup camera and max FPS

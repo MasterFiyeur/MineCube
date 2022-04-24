@@ -6,7 +6,6 @@
 #include "WorldGeneration.h"
 #include <iostream>
 
-
 WorldGeneration::WorldGeneration() : world(World()){
 	int_noise = new int*[getNoiseHeight()];
 	for (int i = 0; i < getNoiseHeight(); ++i) {
@@ -23,7 +22,6 @@ WorldGeneration::~WorldGeneration() {
 	}
 	delete int_noise;
 }
-
 
 int WorldGeneration::getNoiseHeight() const {
 	return noise_height;
@@ -86,6 +84,7 @@ void WorldGeneration::generate(unsigned int seed, World *initial_world, Vector3 
 	double x,y,n;
 	PerlinNoise pn(seed);
 
+	/* Noise generation */
 	for (int i = 0; i < getNoiseHeight(); ++i) {
 		for (int j = 0; j < getNoiseWidth(); ++j) {
 			x = ((double) j)/((double) getNoiseWidth());
@@ -94,8 +93,11 @@ void WorldGeneration::generate(unsigned int seed, World *initial_world, Vector3 
 			int_noise[i][j] = floor(255 * n);
 		}
 	}
+	/* World processing */
 	normalize();
 	setWorld();
+
+	/* Set world and player position */
 	*initial_world = world;
 	Vector3 player_position;
 	player_position.x = 0;
