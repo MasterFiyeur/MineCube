@@ -82,7 +82,7 @@ const std::pair<const Vector3, Block>* Game::getTargetedBlock() const {
     return selected_block;
 }
 
-void Game::drawDebugText(const std::pair<const Vector3, Block>* selected_block) const {
+std::string Game::getDebugText(const std::pair<const Vector3, Block>* selected_block) const {
     char upperText[200];
     sprintf(upperText, "FPS: %d\nPosition: %.1f, %.1f, %.1f\nLooking at: %.1f, %.1f, %.1f (%s)",
             GetFPS(),
@@ -93,7 +93,7 @@ void Game::drawDebugText(const std::pair<const Vector3, Block>* selected_block) 
         sprintf(upperText, "%s\nTargeted block: %.1f %.1f %.1f (%s)",upperText,
                 selected_block->first.x,  selected_block->first.y,  selected_block->first.z, selected_block->second.getName().c_str());
     }
-    DrawText(upperText, 10, 10, 15, DARKGRAY);
+    return upperText;
 }
 
 void Game::blockPlace(const std::pair<const Vector3, Block>* target) {
@@ -166,6 +166,8 @@ void Game::start() {
 	UnloadImage(img_sky);
 
     const std::pair<const Vector3, Block>* selected_block;
+    std::string debugText = getDebugText(selected_block);
+
     while (!WindowShouldClose()) {
 
         if (!player.hasInventoryOpen()) {
@@ -199,20 +201,19 @@ void Game::start() {
 
         player.gravity(&world);
 
-        //Inventory keyboard and mouse management
+        // Inventory keyboard and mouse management
         player.handleInventoryGestures();
 
         player.checkCollisions(&world);
 
         camera.position = player.getPosition();
 
-        // Draw
+        // Start drawing things
         BeginDrawing();
         ClearBackground(SKYBLUE);
         BeginMode3D(camera);
 
-		// Draw clouds in sky
-
+		// Draw clouds and sun in sky
 		DrawCubeTexture(sun,{-140,240,240},250,0.1,250,YELLOW);
 		DrawCubeTexture(clouds, {0,200,0}, 3000.0, 0.1, 3000.0, WHITE); // Draw cube textured
 
@@ -221,17 +222,20 @@ void Game::start() {
 
 		DrawGrid(15, 1.0f);
 
-        // check for block highlighting
+        // Check for block highlighting
         selected_block = getTargetedBlock();
         if (selected_block != nullptr) {
             DrawBoundingBox(selected_block->second.getBoundingBox(selected_block->first), WHITE);
         }
-        EndMode3D();
 
-        //Inventory bar
+        // Inventory bar
         player.drawInventory();
 
-        drawDebugText(selected_block);
+        // Debug text (position, orientation, etc.)
+        debugText = getDebugText(selected_block);
+        EndMode3D();
+        DrawText(debugText.c_str(), 10, 10, 15, DARKGRAY);
+        // Player cursor
         drawCursor();
 
         EndDrawing();
