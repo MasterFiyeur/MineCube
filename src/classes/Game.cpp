@@ -143,10 +143,10 @@ void Game::start() {
         std::cout << "Initializing world...." << std::endl;
 
 		WorldGeneration new_world;
-		new_world.generate((std::rand()%65534),&world);
-		std::cout << new_world << std::endl;
+		Vector3 player_initial_pos;
+		new_world.generate((std::rand()%65534),&world, &player_initial_pos);
         // init player position above the dirt block
-        player.setPosition({0, 20, 0});
+        player.setPosition(player_initial_pos);
     }
 
     // setup camera and max FPS
