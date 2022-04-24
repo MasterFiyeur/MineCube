@@ -234,7 +234,6 @@ void Game::start() {
             DrawBoundingBox(selected_block->second.getBoundingBox(selected_block->first), WHITE);
         }
 
-//        DrawCubeTexture(sun, player.getPosition()+player.getDirection()*5, 1, 1, 1, WHITE);
 
         // Inventory bar
         player.drawInventory();
