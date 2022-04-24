@@ -14,9 +14,9 @@ private:
 	World world;
 	int** int_noise;
 
-	int height = 10;
-	int width = 10;
-	int max_dune_height = 10; //Maximum is 255
+	int height = 15;
+	int width = 15;
+	int max_dune_height = 5; //Maximum is 255
 public:
 	WorldGeneration();
 	virtual ~WorldGeneration();
@@ -26,7 +26,8 @@ public:
 	int getMaxDuneHeight() const;
 
 	void normalize();
-	void generate(unsigned int seed);
+	void setWorld();
+	void generate(unsigned int seed, World *initial_world);
 
 	friend std::ostream &operator<<(std::ostream &os, const WorldGeneration &generation);
 };

@@ -141,13 +141,12 @@ void Game::blockBreak(const std::pair<const Vector3, Block>* target) {
 void Game::start() {
     if (world.isempty()) {
         std::cout << "Initializing world...." << std::endl;
-        // fill world with static blocks
-        world.fill(Block("stone"), {-initial_square, 0, -initial_square}, {initial_square, 0, initial_square});
 
-        Block dirt = Block("dirt");
-        world.add_block(dirt, {0, 1, 0});
+		WorldGeneration new_world;
+		new_world.generate((std::rand()%65534),&world);
+		std::cout << new_world << std::endl;
         // init player position above the dirt block
-        player.setPosition({0, 3, 0});
+        player.setPosition({0, 20, 0});
     }
 
     // setup camera and max FPS
@@ -238,11 +237,6 @@ void Game::start() {
 	UnloadTexture(sun);
 	UnloadTexture(clouds);
     this->save();
-
-	WorldGeneration generate;
-	generate.generate(100);
-	std::cout << generate;
-
 }
 
 Player* Game::getPlayer() {

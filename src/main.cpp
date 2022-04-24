@@ -10,12 +10,15 @@
 ********************************************************************************************/
 
 #include "raylib.h"
+#include <cstdlib>
+#include <ctime>
 
 #include "classes/Game.h"
 
+
 int main()
 {
-
+	std::srand(std::time(nullptr));
     const int screenWidth = 960;
     const int screenHeight = 540;
     InitWindow(screenWidth, screenHeight, "Raylib tests");

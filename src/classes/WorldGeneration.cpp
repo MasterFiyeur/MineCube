@@ -4,6 +4,7 @@
 
 #include <cmath>
 #include "WorldGeneration.h"
+#include <iostream>
 
 
 WorldGeneration::WorldGeneration() : world(World()){
@@ -33,7 +34,7 @@ int WorldGeneration::getWidth() const {
 }
 
 int WorldGeneration::getMaxDuneHeight() const {
-	return max_dune_height;
+	return max_dune_height+1;
 }
 
 void WorldGeneration::normalize() {
@@ -46,7 +47,34 @@ void WorldGeneration::normalize() {
 	}
 }
 
-void WorldGeneration::generate(unsigned int seed) {
+void WorldGeneration::setWorld() {
+	int mid_x = floor(((double) getWidth()) / ((double) 2) );
+	int mid_z = floor(((double) getHeight()) / ((double) 2) );
+	Vector3 start, end, position = {0,0,0};
+
+	/* Fill the bedrock */
+	start.x = -mid_x;
+	start.y = 0;
+	start.z	= -mid_z;
+	end.x = mid_x-1;
+	end.y = 0;
+	end.z = mid_z-1;
+	world.fill(Block("stone"),start,end);
+
+	/* Make the terrain */
+	for (int i = 0; i < getHeight(); ++i) {
+		for (int j = 0; j < getWidth(); ++j) {
+			for (int k = 1; k <= int_noise[i][j]; ++k) {
+				position.x = i - mid_x;
+				position.y = k;
+				position.z = j - mid_z;
+				world.add_block(Block("dirt"),position);
+			}
+		}
+	}
+}
+
+void WorldGeneration::generate(unsigned int seed, World *initial_world) {
 	double x,y,n;
 	PerlinNoise pn(seed);
 
@@ -59,6 +87,8 @@ void WorldGeneration::generate(unsigned int seed) {
 		}
 	}
 	normalize();
+	setWorld();
+	*initial_world = world;
 }
 
 std::ostream &operator<<(std::ostream &os, const WorldGeneration &generation) {
