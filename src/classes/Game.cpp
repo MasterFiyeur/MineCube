@@ -153,8 +153,6 @@ void Game::start() {
     SetCameraMode(camera, CAMERA_FIRST_PERSON);
     SetTargetFPS(60);
 
-	Vector3 saved_position;
-
 	// Sky clouds image
 	Image img_sky = LoadImage("../assets/sun.png");
 	Texture2D sun = LoadTextureFromImage(img_sky);
@@ -162,6 +160,8 @@ void Game::start() {
 	img_sky = LoadImage("../assets/clouds.png");
 	Texture2D clouds = LoadTextureFromImage(img_sky);
 	UnloadImage(img_sky);
+
+	//Image whiteNoise = GenImageWhiteNoise(GetScreenWidth(), GetScreenHeight(), 0.5f);
 
     const std::pair<const Vector3, Block>* selected_block;
     while (!WindowShouldClose()) {

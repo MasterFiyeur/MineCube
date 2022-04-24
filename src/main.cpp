@@ -15,12 +15,12 @@
 
 int main()
 {
-    Game game;
 
     const int screenWidth = 960;
     const int screenHeight = 540;
     InitWindow(screenWidth, screenHeight, "Raylib tests");
 
+	Game game;
     game.start();
 
     // De-Initialization
