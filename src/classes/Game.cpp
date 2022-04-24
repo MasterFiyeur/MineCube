@@ -11,6 +11,7 @@
 #include "WorldSave.h"
 #include "Player.h"
 #include "Utils.h"
+#include "WorldGeneration.h"
 
 #define initial_square 8
 
@@ -149,13 +150,17 @@ void Game::blockBreak(const std::pair<const Vector3, Block>* target) {
 void Game::start() {
     if (world.isempty()) {
         std::cout << "Initializing world...." << std::endl;
-        // fill world with static blocks
-        world.fill(Block("stone"), {-initial_square, 0, -initial_square}, {initial_square, 0, initial_square});
 
-        Block dirt = Block("dirt");
-        world.add_block(dirt, {0, 1, 0});
-        // init player position above the dirt block
-        player.setPosition({0, 3, 0});
+        /* Generate world */
+		WorldGeneration new_world;
+		Vector3 player_initial_pos;
+		int seed = std::rand()%65534;
+        //Generate world using random seed
+		new_world.generate(seed,&world, &player_initial_pos);
+        // init player position above the highest block on x=0 and z=0
+        player.setPosition(player_initial_pos);
+		//Print seed value used
+		std::cout << "The seed used for generation is : " << seed << std::endl;
     }
 
     // setup camera and max FPS
@@ -170,6 +175,7 @@ void Game::start() {
 	img_sky = LoadImage("../assets/clouds.png");
 	Texture2D clouds = LoadTextureFromImage(img_sky);
 	UnloadImage(img_sky);
+
 
     const std::pair<const Vector3, Block>* selected_block;
     std::string debugText = getDebugText(selected_block);
