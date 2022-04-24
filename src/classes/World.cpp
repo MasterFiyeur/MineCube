@@ -95,13 +95,17 @@ void World::draw() const {
     }
 }
 
-void World::draw(Player *player) const {
+void World::draw(Player *player, Model modelDirt, Model modelStone) const {
     auto
             mit (blocks.begin()),
             mend(blocks.end());
     for(; mit!=mend; ++mit) {
         if (shouldBeDrawn(mit->first, player)) {
-            mit->second.draw(mit->first);
+            if (mit->second.getName() == "dirt") {
+                DrawModel(modelDirt, mit->first, 1.0f, WHITE);
+            } else {
+                DrawModel(modelStone, mit->first, 1.0f, WHITE);
+            }
         }
     }
 }

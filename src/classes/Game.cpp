@@ -13,7 +13,16 @@
 #include "Utils.h"
 #include "WorldGeneration.h"
 
-#define initial_square 8
+#define initial_square 100
+
+#if defined(PLATFORM_DESKTOP)
+#define GLSL_VERSION            330
+#else   // PLATFORM_RPI, PLATFORM_ANDROID, PLATFORM_WEB
+#define GLSL_VERSION            100
+#endif
+#include "TexturesManager.h"
+#define RLIGHTS_IMPLEMENTATION
+#include "rlights.h"
 
 
 Game::Game() {
@@ -95,7 +104,7 @@ std::string Game::getDebugText(const std::pair<const Vector3, Block>* selected_b
             player_position.x, player_position.y, player_position.z,
             chunk.x, (int) chunk.z,
             camera.target.x, camera.target.y, camera.target.z, this->getCameraDirection().c_str()
-            );
+    );
     if (selected_block != nullptr) {
         sprintf(upperText, "%s\nTargeted block: %.1f %.1f %.1f (%s)",upperText,
                 selected_block->first.x,  selected_block->first.y,  selected_block->first.z, selected_block->second.getName().c_str());
@@ -170,14 +179,38 @@ void Game::start() {
     SetCameraMode(camera, CAMERA_FIRST_PERSON);
     SetTargetFPS(60);
 
-	// Sky clouds image
-	Image img_sky = LoadImage("../assets/sun.png");
-	Texture2D sun = LoadTextureFromImage(img_sky);
-	UnloadImage(img_sky);
-	img_sky = LoadImage("../assets/clouds.png");
-	Texture2D clouds = LoadTextureFromImage(img_sky);
-	UnloadImage(img_sky);
+    Model modelDirt = LoadModelFromMesh(GenMeshCube(1.0f, 1.0f, 1.0f));
+    modelDirt.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = TexturesManager::getTexture("dirt");
+    Model modelStone = LoadModelFromMesh(GenMeshCube(1.0f, 1.0f, 1.0f));
+    modelStone.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = TexturesManager::getTexture("stone");
 
+    // Sky clouds image
+    Image img_sky = LoadImage("../assets/sun.png");
+    Texture2D sun = LoadTextureFromImage(img_sky);
+    UnloadImage(img_sky);
+	Texture2D clouds = LoadTextureFromImage(LoadImage("../assets/clouds.png"));
+
+    Shader shader = LoadShader(TextFormat("../assets/shaders/glsl%i/base_lighting.vs", GLSL_VERSION),
+                               TextFormat("../assets/shaders/glsl%i/fog.fs", GLSL_VERSION));
+    shader.locs[SHADER_LOC_MATRIX_MODEL] = GetShaderLocation(shader, "matModel");
+    shader.locs[SHADER_LOC_VECTOR_VIEW] = GetShaderLocation(shader, "viewPos");
+
+    int ambientLoc = GetShaderLocation(shader, "ambient");
+    float ambientColor[4] = {1.0f, 1.0f, 1.0f, 1.0f };
+    SetShaderValue(shader, ambientLoc, ambientColor, SHADER_UNIFORM_VEC4);
+
+    float fogDensity = 0.03f;
+    int fogDensityLoc = GetShaderLocation(shader, "fogDensity");
+    SetShaderValue(shader, fogDensityLoc, &fogDensity, SHADER_UNIFORM_FLOAT);
+    float fogColor[4] = {0.4f, 0.75f, 1.0f, 1.0f }; // skyblue color
+    int fogColorLoc = GetShaderLocation(shader, "fogColor");
+    SetShaderValue(shader, fogColorLoc, fogColor, SHADER_UNIFORM_VEC4);
+
+    modelDirt.materials[0].shader = shader;
+    modelStone.materials[0].shader = shader;
+
+//    How to add a light point
+//    CreateLight(LIGHT_POINT, (Vector3){ 0, 4, 6 }, {0, 1, 0}, BLUE, shader);
 
     const std::pair<const Vector3, Block>* selected_block = nullptr;
     std::string debugText = getDebugText(selected_block);
@@ -215,26 +248,31 @@ void Game::start() {
 
         player.gravity(&world);
 
-        // Inventory keyboard and mouse management
+        //Inventory keyboard and mouse management
         player.handleInventoryGestures();
 
         player.checkCollisions(&world);
 
         camera.position = player.getPosition();
 
+        // Update the light shader with the camera view position
+        SetShaderValue(shader, shader.locs[SHADER_LOC_VECTOR_VIEW], &camera.position, SHADER_UNIFORM_VEC3);
+
         // Start drawing things
         BeginDrawing();
         ClearBackground(SKYBLUE);
         BeginMode3D(camera);
 
-		// Draw clouds and sun in sky
-		DrawCubeTexture(sun,{-140,240,240},250,0.1,250,YELLOW);
-		DrawCubeTexture(clouds, {0,200,0}, 3000.0, 0.1, 3000.0, WHITE); // Draw cube textured
+        // Draw clouds and sun in sky
+        DrawCubeTexture(sun,{-140,240,240},250,0.1,250,YELLOW);
+        DrawCubeTexture(clouds, {0,200,0}, 3000.0, 0.1, 3000.0, WHITE); // Draw cube textured
 
 
-		world.draw(&player);
+        world.draw(&player, modelDirt, modelStone);
 
 		DrawGrid(15, 1.0f);
+
+        DrawModel(modelDirt, (Vector3){-2.6f, 2, 0 }, 1.0f, WHITE);
 
         // Check for block highlighting
         selected_block = getTargetedBlock();
@@ -255,8 +293,11 @@ void Game::start() {
         EndDrawing();
     }
 
-	UnloadTexture(sun);
-	UnloadTexture(clouds);
+    UnloadModel(modelDirt);
+    UnloadModel(modelStone);
+    UnloadTexture(sun);
+    UnloadTexture(clouds);
+
     this->save();
 }
 
