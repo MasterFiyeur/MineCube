@@ -73,7 +73,7 @@ void main()
     finalColor += texelColor*(ambient/1.0);
 
     // Gamma correction
-    finalColor = pow(finalColor, vec4(1.0/2.2));
+    finalColor = pow(finalColor, vec4(1.0/1.1));
 
     // Fog calculation
     float dist = length(viewPos - fragPosition);
@@ -82,8 +82,8 @@ void main()
 //     float fogFactor = 1.0/exp((dist*fogDensity)*(dist*fogDensity));
 
     // Linear fog (less nice)
-    const float fogStart = 40.0;
-    const float fogEnd = 50.0;
+    const float fogStart = 20.0;
+    const float fogEnd = 30.0;
     float fogFactor = (fogEnd - dist)/(fogEnd - fogStart);
 
     fogFactor = clamp(fogFactor, 0.0, 1.0);
