@@ -18,8 +18,8 @@
 Game::Game() {
     // Define the camera to look into our 3d world
     this->camera = { 0 };
-    camera.target = (Vector3){ -1.0f, 0.0f, 0.0f };      // Camera looking at point
-    camera.up = (Vector3){ 0.0f, 1.0f, 0.0f };          // Camera up vector (rotation towards target)
+//    camera.target = (Vector3){ -1.0f, 0.0f, 0.0f };      // Camera looking at point
+//    camera.up = (Vector3){ 0.0f, 1.0f, 0.0f };          // Camera up vector (rotation towards target)
     camera.fovy = 40.0f;                                // Camera field-of-view Y
     camera.projection = CAMERA_PERSPECTIVE;                   // Camera mode type
     auto save = WorldSave::load();
@@ -28,6 +28,9 @@ Game::Game() {
     this->player.setOrientation(save.playerOrientation);
     this->player.applyGravity(!save.playerIsFlying);
     this->last_save = std::time(nullptr);
+
+    camera.position = player.getPosition();
+    camera.up = player.getUp();
 }
 
 void Game::save() {
@@ -45,16 +48,17 @@ void Game::drawCursor() {
 
 std::string Game::getCameraDirection() const {
     std::string n_s, e_w;
-    if (std::abs(camera.target.x - camera.position.x) < 0.01) {
+    Vector3 direction = player.getDirection();
+    if (std::abs(direction.x) < 0.01) {
         n_s = "";
-    } else if (camera.target.x > camera.position.x) {
+    } else if (direction.x > 0) {
         n_s = "N";
     } else {
         n_s = "S";
     }
-    if (std::abs(camera.target.z - camera.position.z) < 0.01) {
+    if (std::abs(direction.z) < 0.01) {
         e_w = "";
-    } else if (camera.target.z > camera.position.z) {
+    } else if (direction.z > 0) {
         e_w = "E";
     } else {
         e_w = "W";
@@ -67,8 +71,8 @@ const std::pair<const Vector3, Block>* Game::getTargetedBlock() const {
     float selection_distance = 7.0f;
 
     Ray mouseRay = {
-            camera.position,
-            normalize({camera.target.x - camera.position.x, camera.target.y - camera.position.y, camera.target.z - camera.position.z})
+            player.getPosition(),
+            player.getDirection()
     };
     for (const auto& block : world.get_blocks({camera.position.x - selection_distance, camera.position.y - selection_distance, camera.position.z - selection_distance},
                                               {camera.position.x + selection_distance, camera.position.y + selection_distance, camera.position.z + selection_distance})) {
@@ -84,9 +88,12 @@ const std::pair<const Vector3, Block>* Game::getTargetedBlock() const {
 
 std::string Game::getDebugText(const std::pair<const Vector3, Block>* selected_block) const {
     char upperText[200];
-    sprintf(upperText, "FPS: %d\nPosition: %.1f, %.1f, %.1f\nLooking at: %.1f, %.1f, %.1f (%s)",
+    Vector3 player_position = player.getPosition();
+    CHUNK chunk =  world.get_chunk_coo(player_position);
+    sprintf(upperText, "FPS: %d\nPosition: %.1f, %.1f, %.1f  (%d %d)\nLooking at: %.1f, %.1f, %.1f (%s)",
             GetFPS(),
-            player.getPosition().x, player.getPosition().y, player.getPosition().z,
+            player_position.x, player_position.y, player_position.z,
+            chunk.x, (int) chunk.z,
             camera.target.x, camera.target.y, camera.target.z, this->getCameraDirection().c_str()
             );
     if (selected_block != nullptr) {
@@ -154,7 +161,6 @@ void Game::start() {
     // setup camera and max FPS
     SetCameraMode(camera, CAMERA_FIRST_PERSON);
     SetTargetFPS(60);
-    camera.position = player.getPosition();
     camera.target = player.getOrientation();
 
 	// Sky clouds image
@@ -218,7 +224,7 @@ void Game::start() {
 		DrawCubeTexture(clouds, {0,200,0}, 3000.0, 0.1, 3000.0, WHITE); // Draw cube textured
 
 
-		world.draw();
+		world.draw(&player);
 
 		DrawGrid(15, 1.0f);
 
@@ -227,6 +233,7 @@ void Game::start() {
         if (selected_block != nullptr) {
             DrawBoundingBox(selected_block->second.getBoundingBox(selected_block->first), WHITE);
         }
+
 
         // Inventory bar
         player.drawInventory();

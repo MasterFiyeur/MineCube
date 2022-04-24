@@ -89,6 +89,19 @@ public:
     void setOrientation(Vector3 target);
 
     /**
+    *\brief Get the player "up" vector (used by the camera)
+    *
+    *\return Vector3
+    */
+    [[nodiscard]] Vector3 getUp() const;
+
+    /**
+     * @brief Get the player direction vector
+     * @return The normalized vector (orientation-position)
+     */
+    [[nodiscard]] Vector3 getDirection() const;
+
+    /**
     *\brief Get distance betweek player's foot and floor
     * Result is between 0 and 1 (if there is no block, it will be 1)
     *
