@@ -30,7 +30,6 @@ Game::Game() {
     this->player.applyGravity(!save.playerIsFlying);
     this->last_save = std::time(nullptr);
 
-    camera.position = player.getPosition();
     camera.up = player.getUp();
 }
 
@@ -159,14 +158,17 @@ void Game::start() {
 		new_world.generate(seed,&world, &player_initial_pos);
         // init player position above the highest block on x=0 and z=0
         player.setPosition(player_initial_pos);
+        camera.position = player_initial_pos;
 		//Print seed value used
 		std::cout << "The seed used for generation is : " << seed << std::endl;
+    } else {
+        camera.position = player.getPosition();
+        camera.target = player.getOrientation();
     }
 
     // setup camera and max FPS
     SetCameraMode(camera, CAMERA_FIRST_PERSON);
     SetTargetFPS(60);
-    camera.target = player.getOrientation();
 
 	// Sky clouds image
 	Image img_sky = LoadImage("../assets/sun.png");
