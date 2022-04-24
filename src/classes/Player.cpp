@@ -98,6 +98,22 @@ void Player::move(float x, float y, float z) {
     position.z += z;
 }
 
+Vector3 Player::getOrientation() const {
+    return orientation;
+}
+
+void Player::setOrientation(Vector3 target) {
+    this->orientation = target;
+}
+
+Vector3 Player::getUp() const {
+    return {0.0f, 1.0f, 0.0f};
+}
+
+Vector3 Player::getDirection() const {
+    return normalize(getOrientation() - getPosition());
+}
+
 float Player::distance_ground_block(World *world) const {
 	float ground = 1, distance_feet_block = 1;
     BoundingBox hitbox = {position.x-0.7f,position.y-2.8f,position.z-0.7f, position.x+0.7f,position.y-1.5f,position.z+0.7f};
@@ -132,7 +148,7 @@ void Player::gravity(World *world) {
     }
     if (jump_credit == 0) {
         float ground = distance_ground_block(world);
-
+		if(this->getPosition().y<-50) this->setPosition({0,8,0});
         if (ground > 0) { // Player isn't on the ground
             if (ground < (-gravity_force)) {
                 this->move(0, -ground, 0);

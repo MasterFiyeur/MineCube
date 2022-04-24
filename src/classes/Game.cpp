@@ -23,17 +23,23 @@
 #define RLIGHTS_IMPLEMENTATION
 #include "rlights.h"
 
+
 Game::Game() {
     // Define the camera to look into our 3d world
     this->camera = { 0 };
-    camera.target = (Vector3){ -1.0f, 0.0f, 0.0f };      // Camera looking at point
-    camera.up = (Vector3){ 0.0f, 1.0f, 0.0f };          // Camera up vector (rotation towards target)
+//    camera.target = (Vector3){ -1.0f, 0.0f, 0.0f };      // Camera looking at point
+//    camera.up = (Vector3){ 0.0f, 1.0f, 0.0f };          // Camera up vector (rotation towards target)
     camera.fovy = 40.0f;                                // Camera field-of-view Y
     camera.projection = CAMERA_PERSPECTIVE;                   // Camera mode type
     auto save = WorldSave::load();
-    this->world = save.first;
-    this->player.setPosition(save.second);
+    this->world = save.world;
+    this->player.setPosition(save.playerPosition);
+    this->player.setOrientation(save.playerOrientation);
+    this->player.applyGravity(!save.playerIsFlying);
     this->last_save = std::time(nullptr);
+
+    camera.position = player.getPosition();
+    camera.up = player.getUp();
 }
 
 void Game::save() {
@@ -51,16 +57,17 @@ void Game::drawCursor() {
 
 std::string Game::getCameraDirection() const {
     std::string n_s, e_w;
-    if (std::abs(camera.target.x - camera.position.x) < 0.01) {
+    Vector3 direction = player.getDirection();
+    if (std::abs(direction.x) < 0.01) {
         n_s = "";
-    } else if (camera.target.x > camera.position.x) {
+    } else if (direction.x > 0) {
         n_s = "N";
     } else {
         n_s = "S";
     }
-    if (std::abs(camera.target.z - camera.position.z) < 0.01) {
+    if (std::abs(direction.z) < 0.01) {
         e_w = "";
-    } else if (camera.target.z > camera.position.z) {
+    } else if (direction.z > 0) {
         e_w = "E";
     } else {
         e_w = "W";
@@ -73,8 +80,8 @@ const std::pair<const Vector3, Block>* Game::getTargetedBlock() const {
     float selection_distance = 7.0f;
 
     Ray mouseRay = {
-            camera.position,
-            normalize({camera.target.x - camera.position.x, camera.target.y - camera.position.y, camera.target.z - camera.position.z})
+            player.getPosition(),
+            player.getDirection()
     };
     for (const auto& block : world.get_blocks({camera.position.x - selection_distance, camera.position.y - selection_distance, camera.position.z - selection_distance},
                                               {camera.position.x + selection_distance, camera.position.y + selection_distance, camera.position.z + selection_distance})) {
@@ -88,18 +95,21 @@ const std::pair<const Vector3, Block>* Game::getTargetedBlock() const {
     return selected_block;
 }
 
-void Game::drawDebugText(const std::pair<const Vector3, Block>* selected_block) const {
+std::string Game::getDebugText(const std::pair<const Vector3, Block>* selected_block) const {
     char upperText[200];
-    sprintf(upperText, "FPS: %d\nPosition: %.1f, %.1f, %.1f\nLooking at: %.1f, %.1f, %.1f (%s)",
+    Vector3 player_position = player.getPosition();
+    CHUNK chunk =  world.get_chunk_coo(player_position);
+    sprintf(upperText, "FPS: %d\nPosition: %.1f, %.1f, %.1f  (%d %d)\nLooking at: %.1f, %.1f, %.1f (%s)",
             GetFPS(),
-            player.getPosition().x, player.getPosition().y, player.getPosition().z,
+            player_position.x, player_position.y, player_position.z,
+            chunk.x, (int) chunk.z,
             camera.target.x, camera.target.y, camera.target.z, this->getCameraDirection().c_str()
-            );
+    );
     if (selected_block != nullptr) {
         sprintf(upperText, "%s\nTargeted block: %.1f %.1f %.1f (%s)",upperText,
                 selected_block->first.x,  selected_block->first.y,  selected_block->first.z, selected_block->second.getName().c_str());
     }
-    DrawText(upperText, 10, 10, 15, DARKGRAY);
+    return upperText;
 }
 
 void Game::blockPlace(const std::pair<const Vector3, Block>* target) {
@@ -160,15 +170,18 @@ void Game::start() {
     // setup camera and max FPS
     SetCameraMode(camera, CAMERA_FIRST_PERSON);
     SetTargetFPS(60);
-
+    camera.target = player.getOrientation();
 
     Model modelDirt = LoadModelFromMesh(GenMeshCube(1.0f, 1.0f, 1.0f));
     modelDirt.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = TexturesManager::getTexture("dirt");
     Model modelStone = LoadModelFromMesh(GenMeshCube(1.0f, 1.0f, 1.0f));
     modelStone.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = TexturesManager::getTexture("stone");
+
     // Sky clouds image
-    Texture2D clouds = TexturesManager::getTexture("clouds");
-//    modelStone.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = LoadTextureFromImage(LoadImage("../assets/clouds.png"));
+    Image img_sky = LoadImage("../assets/sun.png");
+    Texture2D sun = LoadTextureFromImage(img_sky);
+    UnloadImage(img_sky);
+	Texture2D clouds = LoadTextureFromImage(LoadImage("../assets/clouds.png"));
 
     Shader shader = LoadShader(TextFormat("../assets/shaders/glsl%i/base_lighting.vs", GLSL_VERSION),
                                TextFormat("../assets/shaders/glsl%i/fog.fs", GLSL_VERSION));
@@ -193,11 +206,12 @@ void Game::start() {
 //    CreateLight(LIGHT_POINT, (Vector3){ 0, 4, 6 }, {0, 1, 0}, BLUE, shader);
 
     const std::pair<const Vector3, Block>* selected_block;
+    std::string debugText = getDebugText(selected_block);
+
     while (!WindowShouldClose()) {
 
         if (!player.hasInventoryOpen()) {
             // Update camera and player position
-            Vector3 oldpos = camera.position;
             UpdateCamera(&camera);
 
             // double press SPACE to enter/leave fly mode
@@ -216,12 +230,13 @@ void Game::start() {
             if (IsKeyDown(KEY_LEFT_SHIFT) && !player.shouldApplyGravity()) {
                 player.move(0, -0.1f, 0);
             }
-            if (oldpos.x != camera.position.x) {
-                player.move(camera.position.x - oldpos.x, 0, 0);
+            if (player.getPosition().x != camera.position.x) {
+                player.move(camera.position.x - player.getPosition().x, 0, 0);
             }
-            if (oldpos.z != camera.position.z) {
-                player.move(0, 0, camera.position.z - oldpos.z);
+            if (player.getPosition().z != camera.position.z) {
+                player.move(0, 0, camera.position.z - player.getPosition().z);
             }
+            player.setOrientation(camera.target);
         }
 
         player.gravity(&world);
@@ -236,20 +251,21 @@ void Game::start() {
         // Update the light shader with the camera view position
         SetShaderValue(shader, shader.locs[SHADER_LOC_VECTOR_VIEW], &camera.position, SHADER_UNIFORM_VEC3);
 
-        // Draw
+        // Start drawing things
         BeginDrawing();
         ClearBackground(SKYBLUE);
         BeginMode3D(camera);
 
-		//Drawing clouds in sky
-		DrawCubeTexture(clouds, {0,200,0}, 5000.0, 0.1, 5000.0, WHITE); // Draw cube textured
+        // Draw clouds and sun in sky
+        DrawCubeTexture(sun,{-140,240,240},250,0.1,250,YELLOW);
+        DrawCubeTexture(clouds, {0,200,0}, 3000.0, 0.1, 3000.0, WHITE); // Draw cube textured
 
 
-//		world.draw();
+//        world.draw(&player);
         auto blocks = world.get_blocks();
         auto
-            mit (blocks.begin()),
-            mend (blocks.end());
+                mit (blocks.begin()),
+                mend (blocks.end());
         for (; mit != mend; ++mit) {
             if (mit->second.getName() == "dirt") {
                 DrawModel(modelDirt, mit->first, 1.0f, WHITE);
@@ -262,17 +278,20 @@ void Game::start() {
 
         DrawModel(modelDirt, (Vector3){-2.6f, 2, 0 }, 1.0f, WHITE);
 
-        // check for block highlighting
+        // Check for block highlighting
         selected_block = getTargetedBlock();
         if (selected_block != nullptr) {
             DrawBoundingBox(selected_block->second.getBoundingBox(selected_block->first), WHITE);
         }
-        EndMode3D();
 
-        //Inventory bar
+        // Inventory bar
         player.drawInventory();
 
-        drawDebugText(selected_block);
+        // Debug text (position, orientation, etc.)
+        debugText = getDebugText(selected_block);
+        EndMode3D();
+        DrawText(debugText.c_str(), 10, 10, 15, DARKGRAY);
+        // Player cursor
         drawCursor();
 
         EndDrawing();
@@ -280,6 +299,8 @@ void Game::start() {
 
     UnloadModel(modelDirt);
     UnloadModel(modelStone);
+    UnloadTexture(sun);
+    UnloadTexture(clouds);
 
     this->save();
 }
