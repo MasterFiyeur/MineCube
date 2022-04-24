@@ -71,3 +71,9 @@ void World::draw() const {
 bool World::isempty() const {
     return this->blocks.empty();
 }
+
+CHUNK World::get_chunk_coo(Vector3 position) const {
+    int x = position.x >= 0 ? (int) position.x / 10 : (int) position.x / 10 - 1;
+    int z = position.z >= 0 ? (int) position.z / 10 : (int) position.z / 10 - 1;
+    return {x, z};
+}

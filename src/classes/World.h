@@ -10,19 +10,41 @@
 #include "raylib.h"
 #include "Player.h"
 
+struct CHUNK {
+    int x;
+    int z;
+};
 
 class World {
 private:
     std::map<Vector3, Block> blocks;
+
 public:
     World();
     ~World();
+
     void add_block(Block block, Vector3 position);
     void fill(const Block& block, Vector3 start, Vector3 end);
     void remove_block(Vector3 position);
     Block *get_block(Vector3 position);
     [[nodiscard]] std::map<Vector3, Block> get_blocks() const;
     [[nodiscard]] std::map<Vector3, Block> get_blocks(Vector3 start, Vector3 end) const;
+
+    /**
+     * @brief Check if the world does not contain any block
+     * @return true if the world is empty
+     */
     [[nodiscard]] bool isempty() const;
+
+    /**
+     * @brief Calculate the chunk coordinates (x,z) of a given position in the world
+     * @param position
+     * @return Chunk coordinates
+     */
+    [[nodiscard]] CHUNK get_chunk_coo(Vector3 position) const;
+
+    /**
+     * @brief Draw each block of the world using raylib functions
+     */
     void draw() const;
 };

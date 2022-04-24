@@ -84,9 +84,12 @@ const std::pair<const Vector3, Block>* Game::getTargetedBlock() const {
 
 std::string Game::getDebugText(const std::pair<const Vector3, Block>* selected_block) const {
     char upperText[200];
-    sprintf(upperText, "FPS: %d\nPosition: %.1f, %.1f, %.1f\nLooking at: %.1f, %.1f, %.1f (%s)",
+    Vector3 player_position = player.getPosition();
+    CHUNK chunk =  world.get_chunk_coo(player_position);
+    sprintf(upperText, "FPS: %d\nPosition: %.1f, %.1f, %.1f (%d %d)\nLooking at: %.1f, %.1f, %.1f (%s)",
             GetFPS(),
-            player.getPosition().x, player.getPosition().y, player.getPosition().z,
+            player_position.x, player_position.y, player_position.z,
+            chunk.x, (int) chunk.z,
             camera.target.x, camera.target.y, camera.target.z, this->getCameraDirection().c_str()
             );
     if (selected_block != nullptr) {
