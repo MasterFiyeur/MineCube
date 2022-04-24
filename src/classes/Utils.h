@@ -19,6 +19,18 @@ static Vector3 normalize(Vector3 v) {
     return { v.x / length, v.y / length, v.z / length };
 }
 
+static float dotProduct(Vector3 v1, Vector3 v2) {
+    float result = (v1.x*v2.x + v1.y*v2.y + v1.z*v2.z);
+    return result;
+}
+
+static Vector3 crossProduct(Vector3 v1, Vector3 v2) {
+    float x = v1.y * v2.z - v1.z * v2.y;
+    float y = v1.z * v2.x - v1.x * v2.z;
+    float z = v1.x * v2.y - v1.y * v2.x;
+    return { x, y, z };
+}
+
 static std::string Vector3toChar(Vector3 v) {
     char res[50];
     snprintf(res, sizeof res, "%.1f,%.1f,%.1f", v.x, v.y, v.z);
@@ -46,4 +58,8 @@ static Vector3 operator+(const Vector3& o1, const Vector3 o2) {
 
 static Vector3 operator-(const Vector3& o1, const Vector3 o2) {
     return (Vector3) {o1.x - o2.x, o1.y - o2.y, o1.z - o2.z};
+}
+
+static Vector3 operator*(const Vector3& o1, const int v) {
+    return (Vector3) {o1.x*v, o1.y*v, o1.z*v};
 }

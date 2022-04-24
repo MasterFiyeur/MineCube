@@ -224,7 +224,7 @@ void Game::start() {
 		DrawCubeTexture(clouds, {0,200,0}, 3000.0, 0.1, 3000.0, WHITE); // Draw cube textured
 
 
-		world.draw();
+		world.draw(&player);
 
 		DrawGrid(15, 1.0f);
 
@@ -233,6 +233,8 @@ void Game::start() {
         if (selected_block != nullptr) {
             DrawBoundingBox(selected_block->second.getBoundingBox(selected_block->first), WHITE);
         }
+
+//        DrawCubeTexture(sun, player.getPosition()+player.getDirection()*5, 1, 1, 1, WHITE);
 
         // Inventory bar
         player.drawInventory();

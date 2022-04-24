@@ -10,6 +10,8 @@
 #include "raylib.h"
 #include "Player.h"
 
+#define RENDER_DISTANCE 50
+
 struct CHUNK {
     int x;
     int z;
@@ -18,6 +20,14 @@ struct CHUNK {
 class World {
 private:
     std::map<Vector3, Block> blocks;
+
+    /**
+     * @brief Check if a position in the world should be drawn according to a player camera
+     * @param pos The position to check
+     * @param player The player to check the position from
+     * @return
+     */
+    [[nodiscard]] bool shouldBeDrawn(Vector3 pos, Player *player) const;
 
 public:
     World();
@@ -47,4 +57,9 @@ public:
      * @brief Draw each block of the world using raylib functions
      */
     void draw() const;
+
+    /**
+     * @brief Draw each block of the world using raylib functions while optimizing the drawing
+     */
+    void draw(Player *player) const;
 };
