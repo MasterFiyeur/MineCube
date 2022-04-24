@@ -107,7 +107,7 @@ void Game::start() {
 
         world.fill(Grass("grass"), {-initial_square, 0, -initial_square}, {initial_square, 0, initial_square});
 
-        Block stone = Block("stone");
+        FullBlock stone = FullBlock("stone");
         world.add_block(stone, {0, 1, 0});
 
         Flower tulip = Flower("white_tulip");

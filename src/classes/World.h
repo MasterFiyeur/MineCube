@@ -21,7 +21,7 @@ public:
     void fill(const Block& block, Vector3 start, Vector3 end);
     void remove_block(Vector3 position);
     Block* get_block(Vector3 position);
-    std::map<Vector3, Block> get_blocks() const;
+    [[nodiscard]] std::map<Vector3, Block> get_blocks() const;
     bool isempty();
     void draw() const;
     void save();

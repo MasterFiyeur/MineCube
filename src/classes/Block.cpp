@@ -10,16 +10,16 @@ Block::Block(std::string name) {
     this->_name = std::move(name);
 }
 
-void Block::draw(Vector3 position) const {
-     DrawCubeTexture(TexturesManager::getTexture(_name), position, 1.0f, 1.0f, 1.0f, WHITE);
-}
-
 std::string Block::getName() const {
     return this->_name;
 }
 
-Grass::Grass(std::string name) {
-    this->_name = std::move(name);
+void Block::draw(Vector3 position) const {
+
+}
+
+void FullBlock::draw(Vector3 position) const {
+    DrawCubeTexture(TexturesManager::getTexture(_name), position, 1.0f, 1.0f, 1.0f, WHITE);
 }
 
 void Grass::draw(Vector3 position) const {
@@ -49,10 +49,6 @@ void Grass::draw(Vector3 position) const {
 
 }
 
-
-Flower::Flower(std::string name) {
-    this->_name = std::move(name);
-}
 
 void Flower::draw(Vector3 position) const {
     DrawCubeTexture(TexturesManager::getTexture("white_tulip"), position, 0, -1.0f, 1.0f, WHITE);

@@ -17,16 +17,20 @@ public:
     [[nodiscard]] std::string getName() const;
 };
 
-class Grass : public Block {
+class FullBlock : public Block {
+    using Block::Block;
 public:
-    Grass(): Grass("stone") {}
-    explicit Grass(std::string name);
+    void draw(Vector3 position) const override;
+};
+
+class Grass : public Block {
+    using Block::Block;
+public:
     void draw(Vector3 position) const override;
 };
 
 class Flower : public Block {
+    using Block::Block;
 public:
-    Flower(): Flower("stone") {}
-    explicit Flower(std::string name);
     void draw(Vector3 position) const override;
 };
