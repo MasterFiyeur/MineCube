@@ -79,13 +79,12 @@ void main()
     float dist = length(viewPos - fragPosition);
 
     // Exponential fog
-    float fogFactor = 1.0/exp((dist*fogDensity)*(dist*fogDensity));
-    if (dist < 40.0) fogFactor = 1.0;
+//     float fogFactor = 1.0/exp((dist*fogDensity)*(dist*fogDensity));
 
     // Linear fog (less nice)
-    //const float fogStart = 2.0;
-    //const float fogEnd = 10.0;
-    //float fogFactor = (fogEnd - dist)/(fogEnd - fogStart);
+    const float fogStart = 40.0;
+    const float fogEnd = 50.0;
+    float fogFactor = (fogEnd - dist)/(fogEnd - fogStart);
 
     fogFactor = clamp(fogFactor, 0.0, 1.0);
 

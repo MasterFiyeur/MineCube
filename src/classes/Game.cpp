@@ -192,7 +192,7 @@ void Game::start() {
     float ambientColor[4] = {1.0f, 1.0f, 1.0f, 1.0f };
     SetShaderValue(shader, ambientLoc, ambientColor, SHADER_UNIFORM_VEC4);
 
-    float fogDensity = 0.02f;
+    float fogDensity = 0.03f;
     int fogDensityLoc = GetShaderLocation(shader, "fogDensity");
     SetShaderValue(shader, fogDensityLoc, &fogDensity, SHADER_UNIFORM_FLOAT);
     float fogColor[4] = {0.4f, 0.75f, 1.0f, 1.0f }; // skyblue color
@@ -205,7 +205,7 @@ void Game::start() {
     // Using just 1 point lights
 //    CreateLight(LIGHT_POINT, (Vector3){ 0, 4, 6 }, {0, 1, 0}, BLUE, shader);
 
-    const std::pair<const Vector3, Block>* selected_block;
+    const std::pair<const Vector3, Block>* selected_block = nullptr;
     std::string debugText = getDebugText(selected_block);
 
     while (!WindowShouldClose()) {
@@ -261,18 +261,7 @@ void Game::start() {
         DrawCubeTexture(clouds, {0,200,0}, 3000.0, 0.1, 3000.0, WHITE); // Draw cube textured
 
 
-//        world.draw(&player);
-        auto blocks = world.get_blocks();
-        auto
-                mit (blocks.begin()),
-                mend (blocks.end());
-        for (; mit != mend; ++mit) {
-            if (mit->second.getName() == "dirt") {
-                DrawModel(modelDirt, mit->first, 1.0f, WHITE);
-            } else {
-                DrawModel(modelStone, mit->first, 1.0f, WHITE);
-            }
-        }
+        world.draw(&player, modelDirt, modelStone);
 
 		DrawGrid(15, 1.0f);
 
