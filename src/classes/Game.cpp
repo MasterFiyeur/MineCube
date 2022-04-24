@@ -177,7 +177,7 @@ void Game::start() {
 	UnloadImage(img_sky);
 
 
-    const std::pair<const Vector3, Block>* selected_block;
+    const std::pair<const Vector3, Block>* selected_block = nullptr;
     std::string debugText = getDebugText(selected_block);
 
     while (!WindowShouldClose()) {
@@ -240,16 +240,15 @@ void Game::start() {
             DrawBoundingBox(selected_block->second.getBoundingBox(selected_block->first), WHITE);
         }
 
-
-        // Inventory bar
-        player.drawInventory();
-
         // Debug text (position, orientation, etc.)
         debugText = getDebugText(selected_block);
         EndMode3D();
         DrawText(debugText.c_str(), 10, 10, 15, DARKGRAY);
         // Player cursor
         drawCursor();
+
+		// Inventory bar
+		player.drawInventory();
 
         EndDrawing();
     }
