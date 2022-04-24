@@ -11,7 +11,7 @@
 #include "Player.h"
 #include "Utils.h"
 
-#define RENDER_DISTANCE 50
+#define RENDER_DISTANCE 30
 
 struct CHUNK {
     int x;

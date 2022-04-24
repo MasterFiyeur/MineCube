@@ -83,7 +83,7 @@ void main()
 
     // Linear fog (less nice)
     const float fogStart = 20.0;
-    const float fogEnd = 30.0;
+    const float fogEnd = 29.0;
     float fogFactor = (fogEnd - dist)/(fogEnd - fogStart);
 
     fogFactor = clamp(fogFactor, 0.0, 1.0);

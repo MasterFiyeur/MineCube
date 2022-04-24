@@ -16,8 +16,8 @@ private:
 
 	int noise_height = 200; // Noise generated height
 	int noise_width = 200; // Noise generated width
-	int map_height = 20; // added blocks to the world on X-axis (must be inferior to noise_height)
-	int map_width = 20; // added blocks to the world on Z-axis (must be inferior to noise_width)
+	int map_height = 50; // added blocks to the world on X-axis (must be inferior to noise_height)
+	int map_width = 50; // added blocks to the world on Z-axis (must be inferior to noise_width)
 
 	int max_dune_height = 15; //Maximum is 255
 public:
