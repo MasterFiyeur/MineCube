@@ -11,6 +11,7 @@
 #include "WorldSave.h"
 #include "Player.h"
 #include "Utils.h"
+#include "WorldGeneration.h"
 
 #define initial_square 8
 
@@ -161,7 +162,6 @@ void Game::start() {
 	Texture2D clouds = LoadTextureFromImage(img_sky);
 	UnloadImage(img_sky);
 
-	//Image whiteNoise = GenImageWhiteNoise(GetScreenWidth(), GetScreenHeight(), 0.5f);
 
     const std::pair<const Vector3, Block>* selected_block;
     while (!WindowShouldClose()) {
@@ -238,6 +238,11 @@ void Game::start() {
 	UnloadTexture(sun);
 	UnloadTexture(clouds);
     this->save();
+
+	WorldGeneration generate;
+	generate.generate(100);
+	std::cout << generate;
+
 }
 
 Player* Game::getPlayer() {
