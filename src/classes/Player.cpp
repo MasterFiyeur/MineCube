@@ -142,7 +142,7 @@ bool Player::shouldApplyGravity() const {
     return this->apply_gravity;
 }
 
-void Player::gravity(World *world) {
+void Player::gravity(World *world){
     if (!apply_gravity) {
         return;
     }

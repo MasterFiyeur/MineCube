@@ -11,6 +11,7 @@
 #include "WorldSave.h"
 #include "Player.h"
 #include "Utils.h"
+#include "WorldGeneration.h"
 
 #define initial_square 100
 
@@ -38,7 +39,6 @@ Game::Game() {
     this->player.applyGravity(!save.playerIsFlying);
     this->last_save = std::time(nullptr);
 
-    camera.position = player.getPosition();
     camera.up = player.getUp();
 }
 
@@ -158,19 +158,26 @@ void Game::blockBreak(const std::pair<const Vector3, Block>* target) {
 void Game::start() {
     if (world.isempty()) {
         std::cout << "Initializing world...." << std::endl;
-        // fill world with static blocks
-        world.fill(Block("stone"), {-initial_square, 0, -initial_square}, {initial_square, 0, initial_square});
 
-        Block dirt = Block("dirt");
-        world.add_block(dirt, {0, 1, 0});
-        // init player position above the dirt block
-        player.setPosition({0, 3, 0});
+        /* Generate world */
+		WorldGeneration new_world;
+		Vector3 player_initial_pos;
+		int seed = std::rand()%65534;
+        //Generate world using random seed
+		new_world.generate(seed,&world, &player_initial_pos);
+        // init player position above the highest block on x=0 and z=0
+        player.setPosition(player_initial_pos);
+        camera.position = player_initial_pos;
+		//Print seed value used
+		std::cout << "The seed used for generation is : " << seed << std::endl;
+    } else {
+        camera.position = player.getPosition();
+        camera.target = player.getOrientation();
     }
 
     // setup camera and max FPS
     SetCameraMode(camera, CAMERA_FIRST_PERSON);
     SetTargetFPS(60);
-    camera.target = player.getOrientation();
 
     Model modelDirt = LoadModelFromMesh(GenMeshCube(1.0f, 1.0f, 1.0f));
     modelDirt.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = TexturesManager::getTexture("dirt");
@@ -202,7 +209,7 @@ void Game::start() {
     modelDirt.materials[0].shader = shader;
     modelStone.materials[0].shader = shader;
 
-    // Using just 1 point lights
+//    How to add a light point
 //    CreateLight(LIGHT_POINT, (Vector3){ 0, 4, 6 }, {0, 1, 0}, BLUE, shader);
 
     const std::pair<const Vector3, Block>* selected_block = nullptr;
@@ -273,15 +280,15 @@ void Game::start() {
             DrawBoundingBox(selected_block->second.getBoundingBox(selected_block->first), WHITE);
         }
 
-        // Inventory bar
-        player.drawInventory();
-
         // Debug text (position, orientation, etc.)
         debugText = getDebugText(selected_block);
         EndMode3D();
         DrawText(debugText.c_str(), 10, 10, 15, DARKGRAY);
         // Player cursor
         drawCursor();
+
+		// Inventory bar
+		player.drawInventory();
 
         EndDrawing();
     }

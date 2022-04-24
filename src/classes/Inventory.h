@@ -4,6 +4,8 @@
 
 #pragma once
 #include "Block.h"
+#include "raylib.h"
+#include "iostream"
 
 struct Item{
 	Block* block;
@@ -19,8 +21,8 @@ private:
 	const unsigned short bar_size = 6; //Size of the item bar
 
 	//Graphic informations
-	const int g_screenWidth = 960;
-	const int g_screenHeight = 540;
+	const int g_screenWidth = GetScreenWidth();
+	const int g_screenHeight = GetScreenHeight();
 	const int g_inventoryMargin = 10; //Margin around all items in item bar
 	const int g_itemSquare = (int) (g_screenWidth/24); //Item size
 	const int g_itemMargin = 10; //Margin between items

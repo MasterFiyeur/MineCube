@@ -9,6 +9,7 @@
 #include "Block.h"
 #include "raylib.h"
 #include "Player.h"
+#include "Utils.h"
 
 #define RENDER_DISTANCE 50
 
