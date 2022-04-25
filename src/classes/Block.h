@@ -28,7 +28,7 @@ public:
 class Grass : public Block {
     using Block::Block;
 public:
-    Grass(): Grass("grass") {};
+    Grass(): Grass("grass_block") {};
     void draw(Vector3 position) const override;
 };
 
