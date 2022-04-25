@@ -86,7 +86,7 @@ Vector3 stringToVector(const std::string& str) {
 }
 
 static void add_block_by_name(World& world, const std::string& name, const Vector3& pos) {
-    if (name == "grass") {
+    if (name == "grass_block") {
         world.add_block(new Grass(), pos);
     } else if (name == "white_tulip") {
         world.add_block(new Flower(name), pos);
