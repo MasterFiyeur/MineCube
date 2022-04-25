@@ -62,5 +62,5 @@ public:
     /**
      * @brief Draw each block of the world using raylib functions while optimizing the drawing
      */
-    void draw(Player *player, Model modelDirt, Model modelStone) const;
+    void draw(Player *player) const;
 };

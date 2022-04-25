@@ -11,6 +11,16 @@
 TexturesManager::TexturesManager() {
     loadTexture("missing_texture");
     this->defaultTexture = this->textures["missing_texture"];
+    this->defaultModel = LoadModelFromMesh(GenMeshCube(1.0f, 1.0f, 1.0f));
+}
+
+TexturesManager::~TexturesManager() {
+    for (auto &texture : this->textures) {
+        UnloadTexture(texture.second);
+    }
+    for (auto &model : this->models) {
+        UnloadModel(model.second);
+    }
 }
 
 void TexturesManager::loadTexture(const std::string& name) {
@@ -32,7 +42,33 @@ Texture2D TexturesManager::getTexture(const std::string& name) {
         return instance().textures[name];
     } else {
         instance().unknownTextures.insert(name);
-        std::cout << "NOPE" << std::endl;
+        std::cout << "ERROR: unknown texture " << name << std::endl;
         return instance().defaultTexture;
     }
+}
+
+Model TexturesManager::getModel(const std::string& name) {
+    if (instance().unknownTextures.count(name) == 1) {
+        return instance().defaultModel;
+    }
+    try {
+        return instance().models.at(name);
+    } catch (const std::out_of_range& e) {
+        // unknown model
+         if (file_exists("../assets/"+name+".png")) {
+            Model model = LoadModelFromMesh(GenMeshCube(1.0f, 1.0f, 1.0f));
+            model.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = getTexture(name);
+            model.materials[0].shader = *(instance().shader);
+            instance().models[name] = model;
+            return model;
+        } else {
+             instance().unknownTextures.insert(name);
+             std::cout << "ERROR: unknown model " << name << std::endl;
+             return instance().defaultModel;
+         }
+    }
+}
+
+void TexturesManager::setShader(Shader *shader) {
+    instance().shader = shader;
 }

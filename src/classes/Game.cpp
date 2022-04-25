@@ -179,11 +179,6 @@ void Game::start() {
     SetCameraMode(camera, CAMERA_FIRST_PERSON);
     SetTargetFPS(60);
 
-    Model modelDirt = LoadModelFromMesh(GenMeshCube(1.0f, 1.0f, 1.0f));
-    modelDirt.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = TexturesManager::getTexture("dirt");
-    Model modelStone = LoadModelFromMesh(GenMeshCube(1.0f, 1.0f, 1.0f));
-    modelStone.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = TexturesManager::getTexture("stone");
-
     // Sky clouds image
     Image img_sky = LoadImage("../assets/sun.png");
     Texture2D sun = LoadTextureFromImage(img_sky);
@@ -194,6 +189,7 @@ void Game::start() {
                                TextFormat("../assets/shaders/glsl%i/fog.fs", GLSL_VERSION));
     shader.locs[SHADER_LOC_MATRIX_MODEL] = GetShaderLocation(shader, "matModel");
     shader.locs[SHADER_LOC_VECTOR_VIEW] = GetShaderLocation(shader, "viewPos");
+    TexturesManager::setShader(&shader);
 
     int ambientLoc = GetShaderLocation(shader, "ambient");
     float ambientColor[4] = {1.0f, 1.0f, 1.0f, 1.0f };
@@ -205,9 +201,6 @@ void Game::start() {
     float fogColor[4] = {0.4f, 0.75f, 1.0f, 1.0f }; // skyblue color
     int fogColorLoc = GetShaderLocation(shader, "fogColor");
     SetShaderValue(shader, fogColorLoc, fogColor, SHADER_UNIFORM_VEC4);
-
-    modelDirt.materials[0].shader = shader;
-    modelStone.materials[0].shader = shader;
 
 //    How to add a light point
 //    CreateLight(LIGHT_POINT, (Vector3){ 0, 4, 6 }, {0, 1, 0}, BLUE, shader);
@@ -268,11 +261,9 @@ void Game::start() {
         DrawCubeTexture(clouds, {0,200,0}, 3000.0, 0.1, 3000.0, WHITE); // Draw cube textured
 
 
-        world.draw(&player, modelDirt, modelStone);
+        world.draw(&player);
 
 		DrawGrid(15, 1.0f);
-
-        DrawModel(modelDirt, (Vector3){-2.6f, 2, 0 }, 1.0f, WHITE);
 
         // Check for block highlighting
         selected_block = getTargetedBlock();
@@ -293,8 +284,6 @@ void Game::start() {
         EndDrawing();
     }
 
-    UnloadModel(modelDirt);
-    UnloadModel(modelStone);
     UnloadTexture(sun);
     UnloadTexture(clouds);
 

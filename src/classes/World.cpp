@@ -91,21 +91,16 @@ void World::draw() const {
         mend(blocks.end());
     for(; mit!=mend; ++mit) {
         mit->second.draw(mit->first);
-//        DrawBoundingBox(mit->second.getBoundingBox(mit->first), YELLOW);
     }
 }
 
-void World::draw(Player *player, Model modelDirt, Model modelStone) const {
+void World::draw(Player *player) const {
     auto
             mit (blocks.begin()),
             mend(blocks.end());
     for(; mit!=mend; ++mit) {
         if (shouldBeDrawn(mit->first, player)) {
-            if (mit->second.getName() == "dirt") {
-                DrawModel(modelDirt, mit->first, 1.0f, WHITE);
-            } else {
-                DrawModel(modelStone, mit->first, 1.0f, WHITE);
-            }
+            mit->second.draw(mit->first);
         }
     }
 }
