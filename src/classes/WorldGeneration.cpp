@@ -65,7 +65,7 @@ void WorldGeneration::setWorld() {
 	end.x = (float) mid_x - 1;
 	end.y = 0;
 	end.z = (float) mid_z - 1;
-	world.fill(new Block("bedrock"),start,end);
+	world.fill(new FullBlock("bedrock"),start,end);
 
 	/* Make the terrain */
 	for (int i = 0; i < getMapHeight(); ++i) {
@@ -74,9 +74,12 @@ void WorldGeneration::setWorld() {
 				position.x = i - mid_x;
 				position.y = k;
 				position.z = j - mid_z;
-				auto *b = new Block("stone");
-				if(k > int_noise[i][j]-3) b = new Block("dirt");
-				world.add_block(b, position);
+                if (k > int_noise[i][j]-1)
+                    world.add_block(new Grass(), position);
+                else if (k > int_noise[i][j]-3)
+                    world.add_block(new FullBlock("dirt"), position);
+                else
+                    world.add_block(new FullBlock("stone"), position);
 			}
 		}
 	}

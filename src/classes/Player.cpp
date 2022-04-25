@@ -8,11 +8,11 @@
 
 
 Player::Player() {
-    inventory.setItem(0,*(new Block("dirt")));
-    inventory.setItem(1,*(new Block("stone")));
-    inventory.setItem(2,*(new Block("glass")));
-    inventory.setItem(4,*(new Block("sponge")));
-    inventory.setItem(5,*(new Block("soul_soil")));
+    inventory.setItem(0,*(new FullBlock("dirt")));
+    inventory.setItem(1,*(new FullBlock("stone")));
+    inventory.setItem(2,*(new FullBlock("glass")));
+    inventory.setItem(4,*(new FullBlock("sponge")));
+    inventory.setItem(5,*(new Grass()));
 }
 
 

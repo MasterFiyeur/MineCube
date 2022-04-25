@@ -39,11 +39,11 @@ bool World::shouldBeDrawn(Vector3 pos, Player *player) const {
     return true;
 }
 
-void World::add_block(B *block, Vector3 position) {
+void World::add_block(Block *block, Vector3 position) {
     this->blocks[position] = block;
 }
 
-void World::fill(B *block, Vector3 start, Vector3 end) {
+void World::fill(Block *block, Vector3 start, Vector3 end) {
     int xmin, xmax, ymin, ymax, zmin, zmax;
     xmin = (int) std::min(start.x, end.x);
     xmax = (int) std::max(start.x, end.x);
@@ -65,16 +65,16 @@ void World::remove_block(Vector3 position) {
     this->blocks.erase(position);
 }
 
-B* World::get_block(Vector3 position) {
+Block* World::get_block(Vector3 position) {
     return this->blocks.at(position);
 }
 
-std::map<Vector3, B*> World::get_blocks() const {
+std::map<Vector3, Block*> World::get_blocks() const {
     return this->blocks;
 }
 
-std::map<Vector3, B*> World::get_blocks(Vector3 start, Vector3 end) const {
-    std::map<Vector3, B*> blocks_in_range;
+std::map<Vector3, Block*> World::get_blocks(Vector3 start, Vector3 end) const {
+    std::map<Vector3, Block*> blocks_in_range;
     for (auto &block : this->blocks) {
         if (block.first.x >= start.x && block.first.x <= end.x &&
             block.first.y >= start.y && block.first.y <= end.y &&

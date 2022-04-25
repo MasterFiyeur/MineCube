@@ -10,15 +10,6 @@ Block::Block(std::string name) {
     this->_name = std::move(name);
 }
 
-std::string Block::getName() const {
-    return this->_name;
-}
-
-void Block::draw(Vector3 position) const {
-    DrawModel(TexturesManager::getModel(_name), position, 1.0f, WHITE);
-//    DrawCubeTexture(TexturesManager::getTexture(_name), position, 1.0f, 1.0f, 1.0f, WHITE);
-}
-
 BoundingBox Block::getBoundingBox(Vector3 position) const {
     return (BoundingBox) {
             (Vector3) {
@@ -36,7 +27,8 @@ BoundingBox Block::getBoundingBox(Vector3 position) const {
 
 
 void FullBlock::draw(Vector3 position) const {
-    DrawCubeTexture(TexturesManager::getTexture(_name), position, 1.0f, 1.0f, 1.0f, WHITE);
+    DrawModel(TexturesManager::getModel(_name), position, 1.0f, WHITE);
+//    DrawCubeTexture(TexturesManager::getTexture(_name), position, 1.0f, 1.0f, 1.0f, WHITE);
 }
 
 void Grass::draw(Vector3 position) const {

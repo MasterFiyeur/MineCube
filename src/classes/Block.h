@@ -7,24 +7,16 @@
 #include <string>
 #include "raylib.h"
 
-class B {
-protected:
-    std::string _name;
-public:
-    virtual void draw(Vector3 position) const = 0;
-    [[nodiscard]] virtual std::string getName() const {return _name;};
-    [[nodiscard]] virtual BoundingBox getBoundingBox(Vector3 position) const = 0;
-};
-
-class Block: public B {
+class Block {
 protected:
     std::string _name;
 public:
     Block(): Block("stone") {}
     explicit Block(std::string name);
-    void draw(Vector3 position) const override;
-    [[nodiscard]] std::string getName() const override;
-    [[nodiscard]] BoundingBox getBoundingBox(Vector3 position) const override;
+    virtual ~Block() = default;
+    virtual void draw(Vector3 position) const = 0;
+    [[nodiscard]] virtual std::string getName() const {return _name;};
+    [[nodiscard]] virtual BoundingBox getBoundingBox(Vector3 position) const;
 };
 
 class FullBlock : public Block {
@@ -36,6 +28,7 @@ public:
 class Grass : public Block {
     using Block::Block;
 public:
+    Grass(): Grass("grass") {};
     void draw(Vector3 position) const override;
 };
 

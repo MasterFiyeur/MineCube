@@ -75,8 +75,8 @@ std::string Game::getCameraDirection() const {
     return n_s + e_w;
 }
 
-const std::pair<const Vector3, B*>* Game::getTargetedBlock() const {
-    const std::pair<const Vector3, B*>* selected_block = nullptr;
+const std::pair<const Vector3, Block*>* Game::getTargetedBlock() const {
+    const std::pair<const Vector3, Block*>* selected_block = nullptr;
     float selection_distance = 7.0f;
 
     Ray mouseRay = {
@@ -95,7 +95,7 @@ const std::pair<const Vector3, B*>* Game::getTargetedBlock() const {
     return selected_block;
 }
 
-std::string Game::getDebugText(const std::pair<const Vector3, B*>* selected_block) const {
+std::string Game::getDebugText(const std::pair<const Vector3, Block*>* selected_block) const {
     char upperText[200];
     Vector3 player_position = player.getPosition();
     CHUNK chunk =  world.get_chunk_coo(player_position);
@@ -112,7 +112,7 @@ std::string Game::getDebugText(const std::pair<const Vector3, B*>* selected_bloc
     return upperText;
 }
 
-void Game::blockPlace(const std::pair<const Vector3, Block>* target) {
+void Game::blockPlace(const std::pair<const Vector3, Block*>* target) {
     if (target != nullptr) {
         Vector3 place;
         RayCollision collision;
@@ -144,12 +144,12 @@ void Game::blockPlace(const std::pair<const Vector3, Block>* target) {
             place = {target->first.x, target->first.y, target->first.z + 1};
         }
         if (IsMouseButtonPressed(MOUSE_RIGHT_BUTTON)) {
-            world.add_block(new Block(player.getCurrentItem()->block->getName()), place);
+            world.add_block(new FullBlock(player.getCurrentItem()->block->getName()), place);
         }
     }
 }
 
-void Game::blockBreak(const std::pair<const Vector3, Block>* target) {
+void Game::blockBreak(const std::pair<const Vector3, Block*>* target) {
     if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && (target != nullptr)){
         world.remove_block(target->first);
     }
@@ -169,7 +169,7 @@ void Game::start() {
         player.setPosition(player_initial_pos);
         camera.position = player_initial_pos;
 
-        world.fill(new Grass("grass"), {-5, 9, -5}, {5, 9, 5});
+        world.fill(new Grass(), {-5, 9, -5}, {5, 9, 5});
 
         auto stone = new FullBlock("stone");
         world.add_block(stone, {0, 11, 3});
@@ -215,7 +215,7 @@ void Game::start() {
 //    How to add a light point
 //    CreateLight(LIGHT_POINT, (Vector3){ 0, 4, 6 }, {0, 1, 0}, BLUE, shader);
 
-    const std::pair<const Vector3, B*>* selected_block = nullptr;
+    const std::pair<const Vector3, Block*>* selected_block = nullptr;
     std::string debugText = getDebugText(selected_block);
 
     while (!WindowShouldClose()) {
