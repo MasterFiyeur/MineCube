@@ -15,6 +15,7 @@ public:
     explicit Block(std::string name);
     virtual void draw(Vector3 position) const;
     [[nodiscard]] std::string getName() const;
+    [[nodiscard]] BoundingBox getBoundingBox(Vector3 position) const;
 };
 
 class FullBlock : public Block {

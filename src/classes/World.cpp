@@ -2,17 +2,41 @@
 // Created by Arthur on 26/02/2022.
 //
 
-#include <iostream>
 #include <utility>
 #include "World.h"
-#include "WorldSave.h"
+#include "Utils.h"
 
-World::World() {
-    this->last_save = std::time(nullptr);
-}
+World::World() {}
 
 World::~World() {
     this->blocks.clear();
+}
+
+bool World::shouldBeDrawn(Vector3 pos, Player *player) const {
+    Vector3 playerPos = player->getPosition();
+
+    Vector3 dir = pos - playerPos;
+    if (sqrt(dir.x* dir.x + dir.y * dir.y + dir.z * dir.z) > RENDER_DISTANCE) {
+        return false;
+    }
+//    Vector3 playerDir = player->getDirection();
+//    Vector3 playerUp = player->getUp();
+//    Vector3 ndir = normalize(dir);
+//
+//    // remove half-circle behind the player
+//    float angle = acos(dotProduct(ndir, playerDir));
+//    if (angle > (M_PI / 2)) {
+//        return false;
+//    }
+//
+//    Vector3 cross = crossProduct(ndir, playerDir);
+//    float dot = dotProduct(cross, playerUp);
+//    std::cout << pos << " " << cross << "  " << dot << std::endl;
+//    if (dot < 0) {
+//        return false;
+//    }
+
+    return true;
 }
 
 void World::add_block(Block block, Vector3 position) {
@@ -49,6 +73,18 @@ std::map<Vector3, Block> World::get_blocks() const {
     return this->blocks;
 }
 
+std::map<Vector3, Block> World::get_blocks(Vector3 start, Vector3 end) const {
+    std::map<Vector3, Block> blocks_in_range;
+    for (auto &block : this->blocks) {
+        if (block.first.x >= start.x && block.first.x <= end.x &&
+            block.first.y >= start.y && block.first.y <= end.y &&
+            block.first.z >= start.z && block.first.z <= end.z) {
+            blocks_in_range[block.first] = block.second;
+        }
+    }
+    return blocks_in_range;
+}
+
 void World::draw() const {
     auto
         mit (blocks.begin()),
@@ -58,22 +94,23 @@ void World::draw() const {
     }
 }
 
-void World::save() {
-    std::cout << "Saving world..." << std::endl;
-    WorldSave::save(this);
-    this->last_save = std::time(nullptr);
+void World::draw(Player *player) const {
+    auto
+            mit (blocks.begin()),
+            mend(blocks.end());
+    for(; mit!=mend; ++mit) {
+        if (shouldBeDrawn(mit->first, player)) {
+            mit->second.draw(mit->first);
+        }
+    }
 }
 
-bool World::isempty() {
+bool World::isempty() const {
     return this->blocks.empty();
 }
 
-bool operator<(const Vector3& o1, const Vector3 o2) {
-    if (o1.x != o2.x) return o1.x < o2.x;
-    if (o1.y != o2.y) return o1.y < o2.y;
-    return o1.z < o2.z;
-}
-
-bool operator==(const Vector3& o1, const Vector3 o2) {
-    return o1.x == o2.x && o1.y == o2.y && o1.z == o2.z;
+CHUNK World::get_chunk_coo(Vector3 position) const {
+    int x = position.x >= 0 ? (int) position.x / 10 : (int) position.x / 10 - 1;
+    int z = position.z >= 0 ? (int) position.z / 10 : (int) position.z / 10 - 1;
+    return {x, z};
 }
