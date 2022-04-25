@@ -265,7 +265,6 @@ void Game::start() {
         DrawCubeTexture(sun,{-140,240,240},250,0.1,250,YELLOW);
         DrawCubeTexture(clouds, {0,200,0}, 3000.0, 0.1, 3000.0, WHITE); // Draw cube textured
 
-
         world.draw(&player);
 
 		DrawGrid(15, 1.0f);
