@@ -169,13 +169,8 @@ void Game::start() {
         player.setPosition(player_initial_pos);
         camera.position = player_initial_pos;
 
-        world.fill(new Grass(), {-5, 9, -5}, {5, 9, 5});
-
-        auto stone = new FullBlock("stone");
-        world.add_block(stone, {0, 11, 3});
-
         auto tulip = new Flower("white_tulip");
-        world.add_block(tulip, {0, 10, 0});
+        world.add_block(tulip, player_initial_pos - (Vector3){0, 2, 0});
 
 		// Print seed value used
 		std::cout << "The seed used for generation is : " << seed << std::endl;
