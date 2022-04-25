@@ -15,8 +15,8 @@ private:
     std::time_t last_save;
     double last_key_space_pressed;
     void drawCursor();
-    std::string getDebugText(const std::pair<const Vector3, Block>* selected_block) const;
-    [[nodiscard]] const std::pair<const Vector3, Block>* getTargetedBlock() const;
+    std::string getDebugText(const std::pair<const Vector3, B*>* selected_block) const;
+    [[nodiscard]] const std::pair<const Vector3, B*>* getTargetedBlock() const;
 
 public:
     Game();

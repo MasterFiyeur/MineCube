@@ -34,7 +34,7 @@ void WorldSave::save(Game* game) {
     data["date"] = getISOCurrentTimestamp();
     data["blocks"] = json::object();
     for (const auto& kv : game->getWorld().get_blocks()) {
-        data["blocks"].emplace(Vector3toChar(kv.first), kv.second.getName());
+        data["blocks"].emplace(Vector3toChar(kv.first), kv.second->getName());
     }
 
     data["player"] = {
@@ -89,7 +89,7 @@ SAVE WorldSave::load_v1(json data) {
     SAVE save;
     for (auto& el: data["blocks"].items()) {
         Vector3 pos = stringToVector(el.key());
-        save.world.add_block(Block(el.value().get<std::string>()), pos);
+        save.world.add_block(new Block(el.value().get<std::string>()), pos);
     }
     save.playerPosition = DEFAULT_PLAYER_POSITION;
     save.playerOrientation = DEFAULT_PLAYER_ORIENTATION;
@@ -102,7 +102,7 @@ SAVE WorldSave::load_v2(json data) {
     Vector3 pos;
     for (auto& el: data["blocks"].items()) {
         pos = stringToVector(el.key());
-        save.world.add_block(Block(el.value().get<std::string>()), pos);
+        save.world.add_block(new Block(el.value().get<std::string>()), pos);
     }
     save.playerPosition = stringToVector(data["player"]["position"]);
     save.playerOrientation = DEFAULT_PLAYER_ORIENTATION;
@@ -115,7 +115,14 @@ SAVE WorldSave::load_v3(json data) {
     Vector3 pos;
     for (auto& el: data["blocks"].items()) {
         pos = stringToVector(el.key());
-        save.world.add_block(Block(el.value().get<std::string>()), pos);
+        std::string name = el.value().get<std::string>();
+        if (name == "grass") {
+            save.world.add_block(new Grass(name), pos);
+        } else if (name == "white_tulip") {
+            save.world.add_block(new Flower(name), pos);
+        } else {
+            save.world.add_block(new Block(name), pos);
+        }
     }
     save.playerPosition = stringToVector(data["player"]["position"]);
     save.playerOrientation = stringToVector(data["player"]["orientation"]);
