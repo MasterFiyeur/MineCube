@@ -176,8 +176,9 @@ void Game::start() {
 		std::cout << "The seed used for generation is : " << seed << std::endl;
     } else {
         camera.position = player.getPosition();
-        camera.target = player.getOrientation();
-
+        if (norm(player.getPosition() - player.getOrientation()) < .1f) {
+            camera.target = player.getOrientation();
+        }
     }
 
     // setup camera and max FPS
@@ -221,7 +222,7 @@ void Game::start() {
 
             // double press SPACE to enter/leave fly mode
             if (IsKeyPressed(KEY_SPACE)) {
-                if (GetTime() - last_key_space_pressed < 0.2) {
+                if (GetTime() - last_key_space_pressed < 0.25) {
                     player.applyGravity(!player.shouldApplyGravity());
                 }
                 last_key_space_pressed = GetTime();
@@ -251,7 +252,7 @@ void Game::start() {
 
         player.checkCollisions(&world);
 
-      camera.position = player.getPosition();
+        camera.position = player.getPosition();
       
         // check for block highlighting
         selected_block = getTargetedBlock();
@@ -273,7 +274,7 @@ void Game::start() {
 
         world.draw(&player);
 
-		    DrawGrid(15, 1.0f);
+        DrawGrid(15, 1.0f);
 
 
         // Check for block highlighting

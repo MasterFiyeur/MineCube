@@ -19,6 +19,10 @@ static Vector3 normalize(Vector3 v) {
     return { v.x / length, v.y / length, v.z / length };
 }
 
+static float norm(Vector3 v) {
+    return sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
+}
+
 static float dotProduct(Vector3 v1, Vector3 v2) {
     float result = (v1.x*v2.x + v1.y*v2.y + v1.z*v2.z);
     return result;

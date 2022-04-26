@@ -16,7 +16,7 @@ bool World::shouldBeDrawn(Vector3 pos, Player *player) const {
     Vector3 playerPos = player->getPosition();
 
     Vector3 dir = pos - playerPos;
-    if (sqrt(dir.x* dir.x + dir.y * dir.y + dir.z * dir.z) > RENDER_DISTANCE) {
+    if (norm(dir) > RENDER_DISTANCE) {
         return false;
     }
     Vector3 playerDir = player->getDirection();
@@ -28,7 +28,7 @@ bool World::shouldBeDrawn(Vector3 pos, Player *player) const {
     if (angle > (M_PI / 2)) {
         return false;
     }
-//
+
 //    Vector3 cross = crossProduct(ndir, playerDir);
 //    float dot = dotProduct(cross, playerUp);
 //    std::cout << pos << " " << cross << "  " << dot << std::endl;
