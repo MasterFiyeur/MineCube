@@ -32,8 +32,8 @@ void FullBlock::draw(Vector3 position) const {
 }
 
 void Grass::draw(Vector3 position) const {
-//    DrawModel(*TexturesManager::getModel(_name), position, 1.0f, WHITE);
-//    return;
+    DrawModel(*TexturesManager::getModel(_name), position, 1.0f, WHITE);
+    return;
     Vector3 position1 = position;
     position1.y = position1.y + 0.5f;
     DrawCubeTexture(*TexturesManager::getTexture("grass_block_top"), position1, 1.0f, 0, 1.0f, WHITE);
