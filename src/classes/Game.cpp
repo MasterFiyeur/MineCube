@@ -112,40 +112,40 @@ std::string Game::getDebugText(const std::pair<const Vector3, Block*>* selected_
     return upperText;
 }
 
-void Game::blockPlace(const std::pair<const Vector3, Block*>* target) {
-    if (target != nullptr) {
+void Game::blockPlace(const std::pair<const Vector3, Block>* target) {
+    if (IsMouseButtonPressed(MOUSE_RIGHT_BUTTON) && target != nullptr && player.getCurrentItem()->block != nullptr) {
         Vector3 place;
         RayCollision collision;
-        Ray mouseRay{
+        Ray mouseRay = {
                 camera.position,
-                (Vector3) {camera.target.x - camera.position.x, camera.target.y - camera.position.y,
-                           camera.target.z - camera.position.z}
+                normalize({camera.target.x - camera.position.x, camera.target.y - camera.position.y, camera.target.z - camera.position.z})
         };
         Vector3 p1 = {target->first.x - 0.5f, target->first.y - 0.5f, target->first.z - 0.5f};
         Vector3 p2 = {target->first.x + 0.5f, target->first.y + 0.5f, target->first.z + 0.5f};
         BoundingBox object_bounding_box = {p1, p2};
         collision = GetRayCollisionBox(mouseRay, object_bounding_box);
-        if (collision.point.x == target->first.x - 0.5f) {
+        if (abs(collision.point.x - (target->first.x - 0.5f)) < .01f) {
             place = {target->first.x - 1, target->first.y, target->first.z};
         }
-        if (collision.point.x == target->first.x + 0.5f) {
+        else if (abs(collision.point.x - (target->first.x + 0.5f)) < .01f) {
             place = {target->first.x + 1, target->first.y, target->first.z};
         }
-        if (collision.point.y == target->first.y - 0.5f) {
+        else if (abs(collision.point.y - (target->first.y - 0.5f)) < .01f) {
             place = {target->first.x, target->first.y - 1, target->first.z};
         }
-        if (collision.point.y == target->first.y + 0.5f) {
+        else if (abs(collision.point.y - (target->first.y + 0.5f)) < .01f) {
             place = {target->first.x, target->first.y + 1, target->first.z};
         }
-        if (collision.point.z == target->first.z - 0.5f) {
+        else if (abs(collision.point.z - (target->first.z - 0.5f)) < .01f) {
             place = {target->first.x, target->first.y, target->first.z - 1};
         }
-        if (collision.point.z == target->first.z + 0.5f) {
+        else if (abs(collision.point.z - (target->first.z + 0.5f)) < .01f) {
             place = {target->first.x, target->first.y, target->first.z + 1};
         }
-        if (IsMouseButtonPressed(MOUSE_RIGHT_BUTTON)) {
-            world.add_block(new FullBlock(player.getCurrentItem()->block->getName()), place);
+        else {
+            return;
         }
+        world.add_block(Block(player.getCurrentItem()->block->getName()), place);
     }
 }
 
@@ -251,12 +251,18 @@ void Game::start() {
 
         player.checkCollisions(&world);
 
-        camera.position = player.getPosition();
+      camera.position = player.getPosition();
+      
+        // check for block highlighting
+        selected_block = getTargetedBlock();
 
+        blockBreak(selected_block);
+        blockPlace(selected_block);
+
+        // Draw
         // Update the light shader with the camera view position
         SetShaderValue(shader, shader.locs[SHADER_LOC_VECTOR_VIEW], &camera.position, SHADER_UNIFORM_VEC3);
 
-        // Start drawing things
         BeginDrawing();
         ClearBackground(SKYBLUE);
         BeginMode3D(camera);
@@ -267,7 +273,8 @@ void Game::start() {
 
         world.draw(&player);
 
-		DrawGrid(15, 1.0f);
+		    DrawGrid(15, 1.0f);
+
 
         // Check for block highlighting
         selected_block = getTargetedBlock();
