@@ -20,7 +20,7 @@ private:
 	bool inventoryMenu = false; //Menu opened
 	const unsigned short bar_size = 6; //Size of the item bar
 
-	//Graphic informations
+	//Graphic information
 	const int g_screenWidth = GetScreenWidth();
 	const int g_screenHeight = GetScreenHeight();
 	const int g_inventoryMargin = 10; //Margin around all items in item bar

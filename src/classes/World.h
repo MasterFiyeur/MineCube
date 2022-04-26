@@ -20,7 +20,7 @@ struct CHUNK {
 
 class World {
 private:
-    std::map<Vector3, Block> blocks;
+    std::map<Vector3, Block*> blocks;
 
     /**
      * @brief Check if a position in the world should be drawn according to a player camera
@@ -34,12 +34,12 @@ public:
     World();
     ~World();
 
-    void add_block(Block block, Vector3 position);
-    void fill(const Block& block, Vector3 start, Vector3 end);
+    void add_block(Block *block, Vector3 position);
+    void fill(Block *block, Vector3 start, Vector3 end);
     void remove_block(Vector3 position);
-    Block *get_block(Vector3 position);
-    [[nodiscard]] std::map<Vector3, Block> get_blocks() const;
-    [[nodiscard]] std::map<Vector3, Block> get_blocks(Vector3 start, Vector3 end) const;
+    [[nodiscard]] Block *get_block(Vector3 position);
+    [[nodiscard]] std::map<Vector3, Block*> get_blocks() const;
+    [[nodiscard]] std::map<Vector3, Block*> get_blocks(Vector3 start, Vector3 end) const;
 
     /**
      * @brief Check if the world does not contain any block

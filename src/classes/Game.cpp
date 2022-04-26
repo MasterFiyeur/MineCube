@@ -75,8 +75,8 @@ std::string Game::getCameraDirection() const {
     return n_s + e_w;
 }
 
-const std::pair<const Vector3, Block>* Game::getTargetedBlock() const {
-    const std::pair<const Vector3, Block>* selected_block = nullptr;
+const std::pair<const Vector3, Block*>* Game::getTargetedBlock() const {
+    const std::pair<const Vector3, Block*>* selected_block = nullptr;
     float selection_distance = 7.0f;
 
     Ray mouseRay = {
@@ -85,7 +85,7 @@ const std::pair<const Vector3, Block>* Game::getTargetedBlock() const {
     };
     for (const auto& block : world.get_blocks({camera.position.x - selection_distance, camera.position.y - selection_distance, camera.position.z - selection_distance},
                                               {camera.position.x + selection_distance, camera.position.y + selection_distance, camera.position.z + selection_distance})) {
-        RayCollision collision = GetRayCollisionBox(mouseRay, block.second.getBoundingBox(block.first));
+        RayCollision collision = GetRayCollisionBox(mouseRay, block.second->getBoundingBox(block.first));
         if (collision.hit && collision.distance < selection_distance) {
             selected_block = &block;
             selection_distance = collision.distance;
@@ -95,7 +95,7 @@ const std::pair<const Vector3, Block>* Game::getTargetedBlock() const {
     return selected_block;
 }
 
-std::string Game::getDebugText(const std::pair<const Vector3, Block>* selected_block) const {
+std::string Game::getDebugText(const std::pair<const Vector3, Block*>* selected_block) const {
     char upperText[200];
     Vector3 player_position = player.getPosition();
     CHUNK chunk =  world.get_chunk_coo(player_position);
@@ -107,7 +107,7 @@ std::string Game::getDebugText(const std::pair<const Vector3, Block>* selected_b
     );
     if (selected_block != nullptr) {
         sprintf(upperText, "%s\nTargeted block: %.1f %.1f %.1f (%s)",upperText,
-                selected_block->first.x,  selected_block->first.y,  selected_block->first.z, selected_block->second.getName().c_str());
+                selected_block->first.x,  selected_block->first.y,  selected_block->first.z, selected_block->second->getName().c_str());
     }
     return upperText;
 }
@@ -149,7 +149,7 @@ void Game::blockPlace(const std::pair<const Vector3, Block>* target) {
     }
 }
 
-void Game::blockBreak(const std::pair<const Vector3, Block>* target) {
+void Game::blockBreak(const std::pair<const Vector3, Block*>* target) {
     if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && (target != nullptr)){
         world.remove_block(target->first);
     }
@@ -163,16 +163,21 @@ void Game::start() {
 		WorldGeneration new_world;
 		Vector3 player_initial_pos;
 		int seed = std::rand()%65534;
-        //Generate world using random seed
+        // Generate world using random seed
 		new_world.generate(seed,&world, &player_initial_pos);
         // init player position above the highest block on x=0 and z=0
         player.setPosition(player_initial_pos);
         camera.position = player_initial_pos;
-		//Print seed value used
+
+        auto tulip = new Flower("white_tulip");
+        world.add_block(tulip, player_initial_pos - (Vector3){0, 2, 0});
+
+		// Print seed value used
 		std::cout << "The seed used for generation is : " << seed << std::endl;
     } else {
         camera.position = player.getPosition();
         camera.target = player.getOrientation();
+
     }
 
     // setup camera and max FPS
@@ -205,7 +210,7 @@ void Game::start() {
 //    How to add a light point
 //    CreateLight(LIGHT_POINT, (Vector3){ 0, 4, 6 }, {0, 1, 0}, BLUE, shader);
 
-    const std::pair<const Vector3, Block>* selected_block = nullptr;
+    const std::pair<const Vector3, Block*>* selected_block = nullptr;
     std::string debugText = getDebugText(selected_block);
 
     while (!WindowShouldClose()) {
@@ -266,7 +271,6 @@ void Game::start() {
         DrawCubeTexture(sun,{-140,240,240},250,0.1,250,YELLOW);
         DrawCubeTexture(clouds, {0,200,0}, 3000.0, 0.1, 3000.0, WHITE); // Draw cube textured
 
-
         world.draw(&player);
 
 		    DrawGrid(15, 1.0f);
@@ -275,13 +279,13 @@ void Game::start() {
         // Check for block highlighting
         selected_block = getTargetedBlock();
         if (selected_block != nullptr) {
-            DrawBoundingBox(selected_block->second.getBoundingBox(selected_block->first), WHITE);
+            DrawBoundingBox(selected_block->second->getBoundingBox(selected_block->first), WHITE);
         }
 
         // Debug text (position, orientation, etc.)
         debugText = getDebugText(selected_block);
         EndMode3D();
-        DrawText(debugText.c_str(), 10, 10, 15, DARKGRAY);
+        DrawText(debugText.c_str(), 10, 10, 15, {230, 220, 220, 250});
         // Player cursor
         drawCursor();
 

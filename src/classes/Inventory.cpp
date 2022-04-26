@@ -184,7 +184,7 @@ void Inventory::inGameInventory() {
 		}
 		//Items inventory
 		if(item->block != nullptr) {
-			item_texture = TexturesManager::getTexture(item->block->getName());
+			item_texture = *TexturesManager::getTexture(item->block->getName());
 			item_texture.height = g_itemSquare;
 			item_texture.width = g_itemSquare;
 			DrawTexture(

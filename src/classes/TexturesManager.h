@@ -14,6 +14,7 @@ private:
     std::unordered_map<std::string, Texture2D> textures;
     std::unordered_map<std::string, Model> models;
     std::set<std::string> unknownTextures;
+    std::set<std::string> unknownModels;
     Texture2D defaultTexture{};
     Model defaultModel{};
     Shader *shader;
@@ -26,7 +27,7 @@ public:
         static TexturesManager manager;
         return manager;
     }
-    static Texture2D getTexture(const std::string& name);
-    static Model getModel(const std::string& name);
+    static Texture2D* getTexture(const std::string& name);
+    static Model* getModel(const std::string& name);
     static void setShader(Shader *shader);
 };

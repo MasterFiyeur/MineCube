@@ -75,6 +75,12 @@ void main()
     // Gamma correction
     finalColor = pow(finalColor, vec4(1.0/1.1));
 
+    // Avoid transparency issues
+    if (finalColor.a <= 0.0)
+    {
+        discard;
+    }
+
     // Fog calculation
     float dist = length(viewPos - fragPosition);
 

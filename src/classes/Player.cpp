@@ -8,11 +8,11 @@
 
 
 Player::Player() {
-    inventory.setItem(0,*(new Block("dirt")));
-    inventory.setItem(1,*(new Block("stone")));
-    inventory.setItem(2,*(new Block("glass")));
-    inventory.setItem(4,*(new Block("sponge")));
-    inventory.setItem(5,*(new Block("soul_soil")));
+    inventory.setItem(0,*(new FullBlock("dirt")));
+    inventory.setItem(1,*(new FullBlock("stone")));
+    inventory.setItem(2,*(new FullBlock("glass")));
+    inventory.setItem(4,*(new FullBlock("sponge")));
+    inventory.setItem(5,*(new Grass()));
 }
 
 
@@ -45,9 +45,9 @@ BoundingBox Player::getBoundingBox() const {
 
 void Player::checkCollisions(World *world) {
     BoundingBox playerBox = this->getBoundingBox();
-    std::map<Vector3,Block> blocks = world->get_blocks({position.x-2,position.y-3,position.z-2},{position.x+2,position.y+2,position.z+2});
+    auto blocks = world->get_blocks({position.x-2,position.y-3,position.z-2},{position.x+2,position.y+2,position.z+2});
     for (auto &block : blocks) {
-        if (CheckCollisionBoxes(playerBox, block.second.getBoundingBox(block.first))) {
+        if (CheckCollisionBoxes(playerBox, block.second->getBoundingBox(block.first))) {
             Vector3 faces[6] = {
                     Vector3 {1, 0, 0} , Vector3 {-1, 0, 0},
                     Vector3 {0, 1, 0} , Vector3 {0, -1, 0},
@@ -56,8 +56,8 @@ void Player::checkCollisions(World *world) {
             // A is player, B is block
             Vector3 maxA = playerBox.max;
             Vector3 minA = playerBox.min;
-            Vector3 maxB = block.second.getBoundingBox(block.first).max;
-            Vector3 minB = block.second.getBoundingBox(block.first).min;
+            Vector3 maxB = block.second->getBoundingBox(block.first).max;
+            Vector3 minB = block.second->getBoundingBox(block.first).min;
 
             float distances[6] = {
                     maxB.x - minA.x,
@@ -120,9 +120,9 @@ float Player::distance_ground_block(World *world) const {
 
 	//Position entre -1.5 et 2.8 sachant qu'il faut 0.5 pour prendre en compte le block
 	//je ne garantie pas la bonne gestion pour des descentes à plus de 0.8f par frame
-	std::map<Vector3,Block> blocks = world->get_blocks({position.x-0.7f,position.y-2.8f,position.z-0.7f},{position.x+0.7f,position.y-1.5f,position.z+0.7f});
+	auto blocks = world->get_blocks({position.x-0.7f,position.y-2.8f,position.z-0.7f},{position.x+0.7f,position.y-1.5f,position.z+0.7f});
     for (const auto &block: blocks) {
-        BoundingBox bb = block.second.getBoundingBox(block.first);
+        BoundingBox bb = block.second->getBoundingBox(block.first);
         if (CheckCollisionBoxes(hitbox, bb)) {
             //Distance between player's feet and compared block
             distance_feet_block = ((position.y - 1.5f) - (bb.max.y));

@@ -34,7 +34,7 @@ void WorldSave::save(Game* game) {
     data["date"] = getISOCurrentTimestamp();
     data["blocks"] = json::object();
     for (const auto& kv : game->getWorld().get_blocks()) {
-        data["blocks"].emplace(Vector3toChar(kv.first), kv.second.getName());
+        data["blocks"].emplace(Vector3toChar(kv.first), kv.second->getName());
     }
 
     data["player"] = {
@@ -85,11 +85,21 @@ Vector3 stringToVector(const std::string& str) {
     return { std::stof(x), std::stof(y), std::stof(z) };
 }
 
+static void add_block_by_name(World& world, const std::string& name, const Vector3& pos) {
+    if (name == "grass_block") {
+        world.add_block(new Grass(), pos);
+    } else if (name == "white_tulip") {
+        world.add_block(new Flower(name), pos);
+    } else {
+        world.add_block(new FullBlock(name), pos);
+    }
+}
+
 SAVE WorldSave::load_v1(json data) {
     SAVE save;
     for (auto& el: data["blocks"].items()) {
         Vector3 pos = stringToVector(el.key());
-        save.world.add_block(Block(el.value().get<std::string>()), pos);
+        add_block_by_name(save.world, el.value().get<std::string>(), pos);
     }
     save.playerPosition = DEFAULT_PLAYER_POSITION;
     save.playerOrientation = DEFAULT_PLAYER_ORIENTATION;
@@ -102,7 +112,7 @@ SAVE WorldSave::load_v2(json data) {
     Vector3 pos;
     for (auto& el: data["blocks"].items()) {
         pos = stringToVector(el.key());
-        save.world.add_block(Block(el.value().get<std::string>()), pos);
+        add_block_by_name(save.world, el.value().get<std::string>(), pos);
     }
     save.playerPosition = stringToVector(data["player"]["position"]);
     save.playerOrientation = DEFAULT_PLAYER_ORIENTATION;
@@ -115,7 +125,7 @@ SAVE WorldSave::load_v3(json data) {
     Vector3 pos;
     for (auto& el: data["blocks"].items()) {
         pos = stringToVector(el.key());
-        save.world.add_block(Block(el.value().get<std::string>()), pos);
+        add_block_by_name(save.world, el.value().get<std::string>(), pos);
     }
     save.playerPosition = stringToVector(data["player"]["position"]);
     save.playerOrientation = stringToVector(data["player"]["orientation"]);
