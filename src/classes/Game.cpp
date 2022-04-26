@@ -95,7 +95,7 @@ void Game::drawDebugText(const std::pair<const Vector3, Block>* selected_block) 
 }
 
 void Game::blockPlace(const std::pair<const Vector3, Block>* target) {
-    if (IsMouseButtonPressed(MOUSE_RIGHT_BUTTON) && target != nullptr) {
+    if (IsMouseButtonPressed(MOUSE_RIGHT_BUTTON) && target != nullptr && player.getCurrentItem()->block != nullptr) {
         Vector3 place;
         RayCollision collision;
         Ray mouseRay = {
