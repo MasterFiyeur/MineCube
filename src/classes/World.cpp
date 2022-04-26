@@ -19,15 +19,15 @@ bool World::shouldBeDrawn(Vector3 pos, Player *player) const {
     if (sqrt(dir.x* dir.x + dir.y * dir.y + dir.z * dir.z) > RENDER_DISTANCE) {
         return false;
     }
-//    Vector3 playerDir = player->getDirection();
+    Vector3 playerDir = player->getDirection();
 //    Vector3 playerUp = player->getUp();
-//    Vector3 ndir = normalize(dir);
-//
-//    // remove half-circle behind the player
-//    float angle = acos(dotProduct(ndir, playerDir));
-//    if (angle > (M_PI / 2)) {
-//        return false;
-//    }
+    Vector3 ndir = normalize(dir);
+
+    // remove half-circle behind the player
+    float angle = acos(dotProduct(ndir, playerDir));
+    if (angle > (M_PI / 2)) {
+        return false;
+    }
 //
 //    Vector3 cross = crossProduct(ndir, playerDir);
 //    float dot = dotProduct(cross, playerUp);
