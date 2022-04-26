@@ -112,7 +112,7 @@ std::string Game::getDebugText(const std::pair<const Vector3, Block*>* selected_
     return upperText;
 }
 
-void Game::blockPlace(const std::pair<const Vector3, Block>* target) {
+void Game::blockPlace(const std::pair<const Vector3, Block*>* target) {
     if (IsMouseButtonPressed(MOUSE_RIGHT_BUTTON) && target != nullptr && player.getCurrentItem()->block != nullptr) {
         Vector3 place;
         RayCollision collision;
@@ -145,7 +145,7 @@ void Game::blockPlace(const std::pair<const Vector3, Block>* target) {
         else {
             return;
         }
-        world.add_block(Block(player.getCurrentItem()->block->getName()), place);
+        world.add_block(new FullBlock(player.getCurrentItem()->block->getName()), place);
     }
 }
 
