@@ -12,6 +12,33 @@ World::~World() {
     this->blocks.clear();
 }
 
+bool World::shouldBeDrawn(Vector3 pos, Player *player) const {
+    Vector3 playerPos = player->getPosition();
+
+    Vector3 dir = pos - playerPos;
+    if (sqrt(dir.x* dir.x + dir.y * dir.y + dir.z * dir.z) > RENDER_DISTANCE) {
+        return false;
+    }
+//    Vector3 playerDir = player->getDirection();
+//    Vector3 playerUp = player->getUp();
+//    Vector3 ndir = normalize(dir);
+//
+//    // remove half-circle behind the player
+//    float angle = acos(dotProduct(ndir, playerDir));
+//    if (angle > (M_PI / 2)) {
+//        return false;
+//    }
+//
+//    Vector3 cross = crossProduct(ndir, playerDir);
+//    float dot = dotProduct(cross, playerUp);
+//    std::cout << pos << " " << cross << "  " << dot << std::endl;
+//    if (dot < 0) {
+//        return false;
+//    }
+
+    return true;
+}
+
 void World::add_block(Block block, Vector3 position) {
     this->blocks[position] = std::move(block);
 }
@@ -64,10 +91,26 @@ void World::draw() const {
         mend(blocks.end());
     for(; mit!=mend; ++mit) {
         mit->second.draw(mit->first);
-//        DrawBoundingBox(mit->second.getBoundingBox(mit->first), YELLOW);
+    }
+}
+
+void World::draw(Player *player) const {
+    auto
+            mit (blocks.begin()),
+            mend(blocks.end());
+    for(; mit!=mend; ++mit) {
+        if (shouldBeDrawn(mit->first, player)) {
+            mit->second.draw(mit->first);
+        }
     }
 }
 
 bool World::isempty() const {
     return this->blocks.empty();
+}
+
+CHUNK World::get_chunk_coo(Vector3 position) const {
+    int x = position.x >= 0 ? (int) position.x / 10 : (int) position.x / 10 - 1;
+    int z = position.z >= 0 ? (int) position.z / 10 : (int) position.z / 10 - 1;
+    return {x, z};
 }

@@ -11,7 +11,8 @@ Block::Block(std::string name) {
 }
 
 void Block::draw(Vector3 position) const {
-    DrawCubeTexture(TexturesManager::getTexture(_name), position, 1.0f, 1.0f, 1.0f, WHITE);
+    DrawModel(TexturesManager::getModel(_name), position, 1.0f, WHITE);
+//    DrawCubeTexture(TexturesManager::getTexture(_name), position, 1.0f, 1.0f, 1.0f, WHITE);
 }
 
 std::string Block::getName() const {
