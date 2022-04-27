@@ -21,7 +21,7 @@ int main()
 	std::srand(std::time(nullptr));
     const int screenWidth = 960;
     const int screenHeight = 540;
-    InitWindow(screenWidth, screenHeight, "Raylib tests");
+    InitWindow(screenWidth, screenHeight, "Minecube");
 
 	Game game;
     game.start();
