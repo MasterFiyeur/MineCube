@@ -98,10 +98,11 @@ const std::pair<const Vector3, Block*>* Game::getTargetedBlock() const {
 std::string Game::getDebugText(const std::pair<const Vector3, Block*>* selected_block) const {
     char upperText[200];
     Vector3 player_position = player.getPosition();
-    sprintf(upperText, "FPS: %d\nPosition: %.1f, %.1f, %.1f\nLooking at: %.1f, %.1f, %.1f (%s)",
+    sprintf(upperText, "FPS: %d\nPosition: %.1f, %.1f, %.1f\nLooking at: %.1f, %.1f, %.1f (%s)\nHour: %d:%d",
             GetFPS(),
             player_position.x, player_position.y, player_position.z,
-            camera.target.x, camera.target.y, camera.target.z, this->getCameraDirection().c_str()
+            camera.target.x, camera.target.y, camera.target.z, this->getCameraDirection().c_str(),
+            getDayHour(), getDayMinute()
     );
     if (selected_block != nullptr) {
         sprintf(upperText, "%s\nTargeted block: %.1f %.1f %.1f (%s)",upperText,
@@ -169,9 +170,11 @@ void Game::start() {
         // init player position above the highest block on x=0 and z=0
         player.setPosition(player_initial_pos);
         camera.position = player_initial_pos;
-
+        // add a single flower
         auto tulip = new Flower("white_tulip");
         world.add_block(tulip, player_initial_pos - (Vector3){0, 2, 0});
+        // set hour to 6 am
+        world.setTime(DAY_LENGTH/4);
 
 		// Print seed value used
 		std::cout << "The seed used for generation is : " << seed << std::endl;
@@ -202,8 +205,8 @@ void Game::start() {
     TexturesManager::setShader(&shader);
 
     int ambientLoc = GetShaderLocation(shader, "ambient");
-    float ambientColor[4] = {1.0f, 1.0f, 1.0f, 1.0f };
-    SetShaderValue(shader, ambientLoc, ambientColor, SHADER_UNIFORM_VEC4);
+    float brightness = getSkyBrightness();
+    SetShaderValue(shader, ambientLoc, (float[4]) {brightness, brightness, brightness, brightness}, SHADER_UNIFORM_VEC4);
 
     // get sky color for fog color
     float fogColor[4];
@@ -282,6 +285,9 @@ void Game::start() {
         // Update the light shader with the fog color (world time)
         colorToFloat(getSkyColor(), fogColor);
         SetShaderValue(shader, fogColorLoc, fogColor, SHADER_UNIFORM_VEC4);
+        // update the light shader with the sky brightness
+        brightness = getSkyBrightness();
+        SetShaderValue(shader, ambientLoc, (float[4]) {brightness, brightness, brightness, brightness}, SHADER_UNIFORM_VEC4);
 
         BeginDrawing();
         ClearBackground(getSkyColor());
@@ -329,17 +335,34 @@ World Game::getWorld() const {
     return this->world;
 }
 
-Color Game::getSkyColor() const {
+float Game::getSkyBrightness() const {
     // calculate hour of the day
-    auto daytime = (float) (world.getTime() % 1440);
+    float daytime = getDaytime();
     // calculate sky brightness
-    auto world_daylight = (float) sin((daytime-1440.0f/4.0f) * 2.0f*M_PI / 1440.0f)/2.0f + 0.5f;
+    float brightness = (float) sin((daytime - DAY_LENGTH_D / 4.0f) * 2.0f * M_PI / DAY_LENGTH_D) / 2.0f + 0.5f;
     // make the minimum a bit higher (0.1)
-    world_daylight = world_daylight*0.9f + 0.1f;
+    brightness = brightness * 0.9f + 0.1f;
+    return brightness;
+}
+
+Color Game::getSkyColor() const {
+    float world_daylight = getSkyBrightness();
     // SKYBLUE = {102, 191, 255} = {0.4, 0.75, 1.0}
     float red = world_daylight * 0.4f;
     float green = world_daylight * 0.75f;
     float blue = world_daylight * 1.0f;
     float hey[4] = {red, green, blue, 1.0f};
     return floatToColor(hey);
+}
+
+float Game::getDaytime() const {
+    return (float) fmod(world.getTime(), DAY_LENGTH);
+}
+
+int Game::getDayHour() const {
+    return (int) floor(getDaytime() * HOUR_LENGTH);
+}
+
+int Game::getDayMinute() const {
+    return (int) ((getDaytime() * HOUR_LENGTH - (float) getDayHour())*60.0f);
 }

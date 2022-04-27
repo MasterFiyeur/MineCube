@@ -20,6 +20,7 @@ private:
     std::string getDebugText(const std::pair<const Vector3, Block*>* selected_block) const;
     [[nodiscard]] const std::pair<const Vector3, Block*>* getTargetedBlock() const;
 
+    [[nodiscard]] float getSkyBrightness() const;
     [[nodiscard]] Color getSkyColor() const;
 
 public:
@@ -34,5 +35,9 @@ public:
     void blockBreak(const std::pair<const Vector3, Block*> *target);
 
     void blockPlace(const std::pair<const Vector3, Block*> *target);
+
+    [[nodiscard]] float getDaytime() const;
+    [[nodiscard]] int getDayHour() const;
+    [[nodiscard]] int getDayMinute() const;
 };
 

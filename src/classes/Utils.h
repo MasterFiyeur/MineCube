@@ -9,6 +9,10 @@
 #include <cmath>
 #include <iostream>
 
+#define DAY_LENGTH 140
+#define DAY_LENGTH_D (double) DAY_LENGTH
+#define HOUR_LENGTH 24.0f / DAY_LENGTH
+
 static bool file_exists(const std::string& name) {
     struct stat buffer{};
     return (stat (name.c_str(), &buffer) == 0);

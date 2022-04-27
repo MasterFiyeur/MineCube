@@ -58,7 +58,7 @@ public:
      * @brief Return the world time since its creation
      * One day is 1440 units (so 1 unit = 1 game minute)
      */
-    [[nodiscard]] int getTime() const { return time + GetTime(); };
+    [[nodiscard]] double getTime() const { return time + GetTime(); };
 
-    void setTime(int new_time) { this->time = new_time - GetTime(); };
+    void setTime(double new_time) { this->time = new_time - GetTime(); };
 };
