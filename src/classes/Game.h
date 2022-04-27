@@ -6,6 +6,7 @@
 
 #include "World.h"
 #include "Player.h"
+#include "AudioManager.h"
 
 class Game {
 private:
@@ -13,6 +14,7 @@ private:
     World world;
     Player player;
     std::time_t last_save;
+    AudioManager audio;
     double last_key_space_pressed;
     void drawCursor();
     std::string getDebugText(const std::pair<const Vector3, Block*>* selected_block) const;
