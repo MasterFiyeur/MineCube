@@ -79,8 +79,20 @@ void Inventory::updateSelectedItem() {
 }
 
 void Inventory::editSelectedItem(Block *block) {
-	delete currentItem->block;
-	currentItem->block = block;
+    Item *olditem = nullptr;
+    if (block != nullptr) {
+        for (int i = 0; i < bar_size; ++i) {
+            if (items[i].block != nullptr && items[i].block->getName() == block->getName()) {
+                olditem = &items[i];
+                break;
+            }
+        }
+    }
+    if (olditem != nullptr) {
+        std::swap(olditem->block, currentItem->block);
+    } else {
+        currentItem->block = block;
+    }
 }
 
 void Inventory::inventoryDisplay() {
