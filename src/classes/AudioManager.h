@@ -6,10 +6,17 @@
 
 #include <map>
 #include "raylib.h"
+#include <string>
 
 enum SoundType {
-    SOUND_BLOCK_BREAK,
-    SOUND_BLOCK_PLACE
+    SOUND_BLOCK_BREAK_STONE,
+    SOUND_BLOCK_PLACE_STONE,
+    SOUND_BLOCK_BREAK_DIRT,
+    SOUND_BLOCK_PLACE_DIRT,
+    SOUND_BLOCK_BREAK_GLASS,
+    SOUND_BLOCK_PLACE_GLASS,
+    SOUND_BLOCK_BREAK_GRASS,
+    SOUND_BLOCK_PLACE_GRASS,
 };
 
 class AudioManager {
@@ -31,6 +38,20 @@ public:
      * @param soundType The sound to play
      */
     void playSound(SoundType soundType);
+
+    /**
+     * Find which sound should be played for a block break
+     * @param block The block being broken
+     * @return The corresponding sound
+     */
+    static SoundType getSoundTypeBreak(const std::string& block);
+
+    /**
+     * Find which sound should be played for a block placing
+     * @param block The block being placed
+     * @return The corresponding sound
+     */
+    static SoundType getSoundTypePlace(const std::string& block);
 
     /**
      * Update music buffer with new stream data

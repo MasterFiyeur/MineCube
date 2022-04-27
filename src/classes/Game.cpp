@@ -145,14 +145,15 @@ void Game::blockPlace(const std::pair<const Vector3, Block*>* target) {
         else {
             return;
         }
-        audio.playSound(SOUND_BLOCK_PLACE);
-        world.add_block(new FullBlock(player.getCurrentItem()->block->getName()), place);
+        std::string block_name = player.getCurrentItem()->block->getName();
+        audio.playSound(AudioManager::getSoundTypePlace(block_name));
+        world.add_block(new FullBlock(block_name), place);
     }
 }
 
 void Game::blockBreak(const std::pair<const Vector3, Block*>* target) {
     if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && (target != nullptr)) {
-        audio.playSound(SOUND_BLOCK_BREAK);
+        audio.playSound(AudioManager::getSoundTypeBreak(target->second->getName()));
         world.remove_block(target->first);
     }
 }
