@@ -98,11 +98,9 @@ const std::pair<const Vector3, Block*>* Game::getTargetedBlock() const {
 std::string Game::getDebugText(const std::pair<const Vector3, Block*>* selected_block) const {
     char upperText[200];
     Vector3 player_position = player.getPosition();
-    CHUNK chunk =  world.get_chunk_coo(player_position);
-    sprintf(upperText, "FPS: %d\nPosition: %.1f, %.1f, %.1f  (%d %d)\nLooking at: %.1f, %.1f, %.1f (%s)",
+    sprintf(upperText, "FPS: %d\nPosition: %.1f, %.1f, %.1f\nLooking at: %.1f, %.1f, %.1f (%s)",
             GetFPS(),
             player_position.x, player_position.y, player_position.z,
-            chunk.x, (int) chunk.z,
             camera.target.x, camera.target.y, camera.target.z, this->getCameraDirection().c_str()
     );
     if (selected_block != nullptr) {
@@ -207,12 +205,13 @@ void Game::start() {
     float ambientColor[4] = {1.0f, 1.0f, 1.0f, 1.0f };
     SetShaderValue(shader, ambientLoc, ambientColor, SHADER_UNIFORM_VEC4);
 
+    // get sky color for fog color
+    float fogColor[4];
+    colorToFloat(getSkyColor(), fogColor);
+    int fogColorLoc = GetShaderLocation(shader, "fogColor");
     float fogDensity = 0.03f;
     int fogDensityLoc = GetShaderLocation(shader, "fogDensity");
     SetShaderValue(shader, fogDensityLoc, &fogDensity, SHADER_UNIFORM_FLOAT);
-    float fogColor[4] = {0.4f, 0.75f, 1.0f, 1.0f }; // skyblue color
-    int fogColorLoc = GetShaderLocation(shader, "fogColor");
-    SetShaderValue(shader, fogColorLoc, fogColor, SHADER_UNIFORM_VEC4);
 
 //    How to add a light point
 //    CreateLight(LIGHT_POINT, (Vector3){ 0, 4, 6 }, {0, 1, 0}, BLUE, shader);
@@ -280,9 +279,12 @@ void Game::start() {
         // Draw
         // Update the light shader with the camera view position
         SetShaderValue(shader, shader.locs[SHADER_LOC_VECTOR_VIEW], &camera.position, SHADER_UNIFORM_VEC3);
+        // Update the light shader with the fog color (world time)
+        colorToFloat(getSkyColor(), fogColor);
+        SetShaderValue(shader, fogColorLoc, fogColor, SHADER_UNIFORM_VEC4);
 
         BeginDrawing();
-        ClearBackground(SKYBLUE);
+        ClearBackground(getSkyColor());
         BeginMode3D(camera);
 
         // Draw clouds and sun in sky
@@ -325,4 +327,19 @@ Player* Game::getPlayer() {
 
 World Game::getWorld() const {
     return this->world;
+}
+
+Color Game::getSkyColor() const {
+    // calculate hour of the day
+    auto daytime = (float) (world.getTime() % 1440);
+    // calculate sky brightness
+    auto world_daylight = (float) sin((daytime-1440.0f/4.0f) * 2.0f*M_PI / 1440.0f)/2.0f + 0.5f;
+    // make the minimum a bit higher (0.1)
+    world_daylight = world_daylight*0.9f + 0.1f;
+    // SKYBLUE = {102, 191, 255} = {0.4, 0.75, 1.0}
+    float red = world_daylight * 0.4f;
+    float green = world_daylight * 0.75f;
+    float blue = world_daylight * 1.0f;
+    float hey[4] = {red, green, blue, 1.0f};
+    return floatToColor(hey);
 }

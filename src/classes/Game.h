@@ -20,6 +20,8 @@ private:
     std::string getDebugText(const std::pair<const Vector3, Block*>* selected_block) const;
     [[nodiscard]] const std::pair<const Vector3, Block*>* getTargetedBlock() const;
 
+    [[nodiscard]] Color getSkyColor() const;
+
 public:
     Game();
 
