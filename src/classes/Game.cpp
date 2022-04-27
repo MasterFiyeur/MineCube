@@ -147,7 +147,7 @@ void Game::blockPlace(const std::pair<const Vector3, Block*>* target) {
         }
         std::string block_name = player.getCurrentItem()->block->getName();
         audio.playSound(AudioManager::getSoundTypePlace(block_name));
-        world.add_block(new FullBlock(block_name), place);
+        add_block_by_name(world, block_name, place);
     }
 }
 
