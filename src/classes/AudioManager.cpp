@@ -23,6 +23,8 @@ void AudioManager::init() {
     this->sounds[SOUND_BLOCK_PLACE_GLASS] = LoadSound("../assets/sounds/glass_place.ogg");
     this->sounds[SOUND_BLOCK_BREAK_GRASS] = LoadSound("../assets/sounds/grass_break.ogg");
     this->sounds[SOUND_BLOCK_PLACE_GRASS] = LoadSound("../assets/sounds/grass_place.ogg");
+    this->sounds[SOUND_BLOCK_BREAK_SOUL_SOIL] = LoadSound("../assets/sounds/soulsoil_break.ogg");
+    this->sounds[SOUND_BLOCK_PLACE_SOUL_SOIL] = LoadSound("../assets/sounds/soulsoil_place.ogg");
     this->ambient = LoadMusicStream("../assets/sounds/ambient.ogg");
 
     // launch ambient music
@@ -38,8 +40,10 @@ SoundType AudioManager::getSoundTypeBreak(const std::string& block) {
         return SOUND_BLOCK_BREAK_DIRT;
     } else if (block == "glass") {
         return SOUND_BLOCK_BREAK_GLASS;
-    } else if (block == "grass_block" || block == "sponge") {
+    } else if (block == "grass_block" || block == "sponge" || block == "white_tulip") {
         return SOUND_BLOCK_BREAK_GRASS;
+    } else if (block == "soul_soil") {
+        return SOUND_BLOCK_BREAK_SOUL_SOIL;
     } else {
         // default
         return SOUND_BLOCK_BREAK_STONE;
@@ -51,8 +55,10 @@ SoundType AudioManager::getSoundTypePlace(const std::string& block) {
         return SOUND_BLOCK_PLACE_DIRT;
     } else if (block == "glass") {
         return SOUND_BLOCK_PLACE_GLASS;
-    } else if (block == "grass_block" || block == "sponge") {
+    } else if (block == "grass_block" || block == "sponge" || block == "white_tulip") {
         return  SOUND_BLOCK_PLACE_GRASS;
+    } else if (block == "soul_soil") {
+        return SOUND_BLOCK_PLACE_SOUL_SOIL;
     } else {
         // default
         return SOUND_BLOCK_PLACE_STONE;
