@@ -25,7 +25,7 @@ bool World::shouldBeDrawn(Vector3 pos, Player *player) const {
 
     // remove half-circle behind the player
     float angle = acos(dotProduct(ndir, playerDir));
-    if (angle > (M_PI / 2)) {
+    if (angle > (M_PI / 4)) {
         return false;
     }
 
