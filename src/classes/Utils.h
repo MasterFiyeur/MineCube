@@ -6,7 +6,7 @@
 
 #include <string>
 #include <sys/stat.h>
-#include <math.h>
+#include <cmath>
 #include <iostream>
 
 static bool file_exists(const std::string& name) {

@@ -85,16 +85,6 @@ Vector3 stringToVector(const std::string& str) {
     return { std::stof(x), std::stof(y), std::stof(z) };
 }
 
-static void add_block_by_name(World& world, const std::string& name, const Vector3& pos) {
-    if (name == "grass_block") {
-        world.add_block(new Grass(), pos);
-    } else if (name == "white_tulip") {
-        world.add_block(new Flower(name), pos);
-    } else {
-        world.add_block(new FullBlock(name), pos);
-    }
-}
-
 SAVE WorldSave::load_v1(json data) {
     SAVE save;
     for (auto& el: data["blocks"].items()) {
