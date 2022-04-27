@@ -12,15 +12,8 @@
 #include "Player.h"
 #include "Utils.h"
 #include "WorldGeneration.h"
-
-#define initial_square 100
-
-#if defined(PLATFORM_DESKTOP)
-#define GLSL_VERSION            330
-#else   // PLATFORM_RPI, PLATFORM_ANDROID, PLATFORM_WEB
-#define GLSL_VERSION            100
-#endif
 #include "TexturesManager.h"
+
 #define RLIGHTS_IMPLEMENTATION
 #include "rlights.h"
 
@@ -192,38 +185,26 @@ void Game::start() {
     SetCameraMode(camera, CAMERA_FIRST_PERSON);
     SetTargetFPS(60);
 
-    // Sky clouds image
-    Image img_sky = LoadImage("../assets/sun.png");
-    Texture2D sun = LoadTextureFromImage(img_sky);
-    UnloadImage(img_sky);
-	Texture2D clouds = LoadTextureFromImage(LoadImage("../assets/clouds.png"));
+    // Sky clouds + sun models
+    Model sun = LoadModelFromMesh(GenMeshCube(250,0.1,250));
+    sun.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = *(TexturesManager::getTexture("sun"));
+    sun.materials[0].shader = *TexturesManager::getClassicShader();
+    Model clouds = LoadModelFromMesh(GenMeshCube(3000.0, 0.1, 3000.0));
+    clouds.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = *(TexturesManager::getTexture("clouds"));
+    clouds.materials[0].shader = *TexturesManager::getClassicShader();
 
-    Shader shader = LoadShader(TextFormat("../assets/shaders/glsl%i/base_lighting.vs", GLSL_VERSION),
-                               TextFormat("../assets/shaders/glsl%i/fog.fs", GLSL_VERSION));
-    shader.locs[SHADER_LOC_MATRIX_MODEL] = GetShaderLocation(shader, "matModel");
-    shader.locs[SHADER_LOC_VECTOR_VIEW] = GetShaderLocation(shader, "viewPos");
-    TexturesManager::setShader(&shader);
+    TexturesManager::setShaderBrightness(getSkyBrightness());
 
-    int ambientLoc = GetShaderLocation(shader, "ambient");
-    float brightness = getSkyBrightness();
-    SetShaderValue(shader, ambientLoc, (float[4]) {brightness, brightness, brightness, brightness}, SHADER_UNIFORM_VEC4);
-
-    // get sky color for fog color
-    float fogColor[4];
-    colorToFloat(getSkyColor(), fogColor);
-    int fogColorLoc = GetShaderLocation(shader, "fogColor");
-    float fogDensity = 0.03f;
-    int fogDensityLoc = GetShaderLocation(shader, "fogDensity");
-    SetShaderValue(shader, fogDensityLoc, &fogDensity, SHADER_UNIFORM_FLOAT);
+    float fogColor[4]; // sky + fog color
 
 //    How to add a light point
 //    CreateLight(LIGHT_POINT, (Vector3){ 0, 4, 6 }, {0, 1, 0}, BLUE, shader);
+
 
     const std::pair<const Vector3, Block*>* selected_block = nullptr;
     std::string debugText = getDebugText(selected_block);
 
     while (!WindowShouldClose()) {
-
         // update music
         audio.updateMusic();
 
@@ -272,7 +253,7 @@ void Game::start() {
         player.checkCollisions(&world);
 
         camera.position = player.getPosition();
-      
+
         // check for block highlighting
         selected_block = getTargetedBlock();
 
@@ -281,21 +262,22 @@ void Game::start() {
 
         // Draw
         // Update the light shader with the camera view position
-        SetShaderValue(shader, shader.locs[SHADER_LOC_VECTOR_VIEW], &camera.position, SHADER_UNIFORM_VEC3);
+        TexturesManager::setShaderPosition(camera.position);
         // Update the light shader with the fog color (world time)
         colorToFloat(getSkyColor(), fogColor);
-        SetShaderValue(shader, fogColorLoc, fogColor, SHADER_UNIFORM_VEC4);
+        TexturesManager::setShaderColor(fogColor);
         // update the light shader with the sky brightness
-        brightness = getSkyBrightness();
-        SetShaderValue(shader, ambientLoc, (float[4]) {brightness, brightness, brightness, brightness}, SHADER_UNIFORM_VEC4);
+        TexturesManager::setShaderBrightness(getSkyBrightness());
 
         BeginDrawing();
         ClearBackground(getSkyColor());
         BeginMode3D(camera);
 
         // Draw clouds and sun in sky
-        DrawCubeTexture(sun,{-140,240,240},250,0.1,250,YELLOW);
-        DrawCubeTexture(clouds, {0,200,0}, 3000.0, 0.1, 3000.0, WHITE); // Draw cube textured
+//        DrawCubeTexture(sun,{-140,240,240},250,0.1,250,YELLOW);
+//        DrawCubeTexture(clouds, {0,200,0}, 3000.0, 0.1, 3000.0, WHITE); // Draw cube textured
+        DrawModel(sun, {-140, 240, 240}, 1.0f, WHITE);
+        DrawModel(clouds, {0,200,0}, 1.0f, WHITE);
 
         world.draw(&player);
 
@@ -321,8 +303,10 @@ void Game::start() {
         EndDrawing();
     }
 
-    UnloadTexture(sun);
-    UnloadTexture(clouds);
+//    UnloadTexture(sun);
+//    UnloadTexture(clouds);
+    UnloadModel(sun);
+    UnloadModel(clouds);
 
     this->save();
 }
