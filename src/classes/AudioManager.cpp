@@ -28,6 +28,7 @@ void AudioManager::init() {
     this->ambient = LoadMusicStream("../assets/sounds/ambient.ogg");
 
     // launch ambient music
+    SetMusicVolume(ambient, 0.7);
     PlayMusicStream(ambient);
 }
 
