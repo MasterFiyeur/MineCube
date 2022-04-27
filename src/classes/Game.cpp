@@ -145,12 +145,14 @@ void Game::blockPlace(const std::pair<const Vector3, Block*>* target) {
         else {
             return;
         }
+        audio.playSound(SOUND_BLOCK_PLACE);
         world.add_block(new FullBlock(player.getCurrentItem()->block->getName()), place);
     }
 }
 
 void Game::blockBreak(const std::pair<const Vector3, Block*>* target) {
-    if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && (target != nullptr)){
+    if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && (target != nullptr)) {
+        audio.playSound(SOUND_BLOCK_BREAK);
         world.remove_block(target->first);
     }
 }
@@ -180,6 +182,9 @@ void Game::start() {
             camera.target = player.getOrientation();
         }
     }
+
+    // init audio (load sounds)
+    audio.init();
 
     // setup camera and max FPS
     SetCameraMode(camera, CAMERA_FIRST_PERSON);
@@ -215,6 +220,9 @@ void Game::start() {
     std::string debugText = getDebugText(selected_block);
 
     while (!WindowShouldClose()) {
+
+        // update music
+        audio.updateMusic();
 
         if (!player.hasInventoryOpen()) {
             // Update camera and player position
