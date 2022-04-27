@@ -32,6 +32,7 @@ void WorldSave::save(Game* game) {
     json data;
     data["version"] = 3;
     data["date"] = getISOCurrentTimestamp();
+    data["gametime"] = game->getWorld().getTime();
     data["blocks"] = json::object();
     for (const auto& kv : game->getWorld().get_blocks()) {
         data["blocks"].emplace(Vector3toChar(kv.first), kv.second->getName());
@@ -120,5 +121,6 @@ SAVE WorldSave::load_v3(json data) {
     save.playerPosition = stringToVector(data["player"]["position"]);
     save.playerOrientation = stringToVector(data["player"]["orientation"]);
     save.playerIsFlying = data["player"]["is_flying"].get<bool>();
+    save.world.setTime(data["gametime"].get<int>());
     return save;
 }
