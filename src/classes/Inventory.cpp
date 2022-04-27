@@ -11,10 +11,10 @@ Inventory::Inventory() :
 tempItemOldPosition({0,0}),
 currentItem{&items[0]},
 changingItemPosition{nullptr}{
-	for (int i = 0; i < bar_size; ++i) {
+	for (int i = 0; i < INVENTORY_SIZE; ++i) {
 		//Block in inventory position init
 		items[i].block = nullptr;
-		items[i].g_position.x = (float) ((float) (g_screenWidth-(bar_size*g_itemSquare+(bar_size-1)*g_itemMargin+2*g_inventoryMargin))/2 + (float) g_inventoryMargin + (float) i * (float)(g_itemSquare+g_itemMargin));
+		items[i].g_position.x = (float) ((float) (g_screenWidth-(INVENTORY_SIZE*g_itemSquare+(INVENTORY_SIZE-1)*g_itemMargin+2*g_inventoryMargin))/2 + (float) g_inventoryMargin + (float) i * (float)(g_itemSquare+g_itemMargin));
 		items[i].g_position.y = (float) (g_screenHeight-(g_itemSquare+g_inventoryMargin));
 	}
 }
@@ -32,7 +32,7 @@ Item *Inventory::getCurrentItem() const {
 }
 
 Item* Inventory::getItem(unsigned short p_position){
-	if (p_position > bar_size-1){
+	if (p_position > INVENTORY_SIZE-1){
 		std::cout << "The biggest position is " << getBarSize()-1 << std::endl;
 		return nullptr;
 	}else{
@@ -41,7 +41,7 @@ Item* Inventory::getItem(unsigned short p_position){
 }
 
 void Inventory::setItem(unsigned short p_position, Block &block){
-	if (p_position > bar_size-1){
+	if (p_position > INVENTORY_SIZE-1){
 		std::cerr << "Error : The biggest position is " << getBarSize()-1 << std::endl;
 	}else{
 		if (items[p_position].block != nullptr) delete items[p_position].block;
@@ -81,7 +81,7 @@ void Inventory::updateSelectedItem() {
 void Inventory::editSelectedItem(Block *block) {
     Item *olditem = nullptr;
     if (block != nullptr) {
-        for (int i = 0; i < bar_size; ++i) {
+        for (int i = 0; i < INVENTORY_SIZE; ++i) {
             if (items[i].block != nullptr && items[i].block->getName() == block->getName()) {
                 olditem = &items[i];
                 break;
@@ -114,7 +114,7 @@ void Inventory::inventoryDisplay() {
 
 void Inventory::changeItem() {
 	//Changing item position in item bar
-	for (int i = 0; i < bar_size; ++i) {
+	for (int i = 0; i < INVENTORY_SIZE; ++i) {
 		//Check if Click on item in the item bar
 		if (getItem(i)!=changingItemPosition
 			&& CheckCollisionPointRec(
@@ -166,15 +166,15 @@ void Inventory::updateSelectedItemPos() {
 void Inventory::inGameInventory() {
 	//Inventory background
 	DrawRectangle(
-			(g_screenWidth-(bar_size*g_itemSquare+(bar_size-1)*g_itemMargin+2*g_inventoryMargin))/2,
+			(g_screenWidth-(INVENTORY_SIZE*g_itemSquare+(INVENTORY_SIZE-1)*g_itemMargin+2*g_inventoryMargin))/2,
 			g_screenHeight-(g_itemSquare+2*g_inventoryMargin),
-			bar_size*g_itemSquare+(bar_size-1)*g_itemMargin+2*g_inventoryMargin,
+			INVENTORY_SIZE*g_itemSquare+(INVENTORY_SIZE-1)*g_itemMargin+2*g_inventoryMargin,
 			g_itemSquare+2*g_inventoryMargin,
 			ColorAlpha(LIGHTGRAY,0.7)
 	);
 
 	Texture2D item_texture;
-	for (int i = 0; i < bar_size; ++i) {
+	for (int i = 0; i < INVENTORY_SIZE; ++i) {
 		//Items border
 		Item* item;
 		item = getItem(i);
@@ -182,7 +182,7 @@ void Inventory::inGameInventory() {
 			//Selected Item
 			DrawRectangleLinesEx(
 				(Rectangle){
-					(float) ((float) (g_screenWidth-(bar_size*g_itemSquare+(bar_size-1)*g_itemMargin+2*g_inventoryMargin))/2 + (float) g_inventoryMargin + (float) i * (float) (g_itemSquare+g_itemMargin)-4),
+					(float) ((float) (g_screenWidth-(INVENTORY_SIZE*g_itemSquare+(INVENTORY_SIZE-1)*g_itemMargin+2*g_inventoryMargin))/2 + (float) g_inventoryMargin + (float) i * (float) (g_itemSquare+g_itemMargin)-4),
 					(float) (g_screenHeight-(g_itemSquare+g_inventoryMargin)-4),
 					(float) (g_itemSquare+8),
 					(float) (g_itemSquare+8)
@@ -192,7 +192,7 @@ void Inventory::inGameInventory() {
 			);
 		}else{
 			DrawRectangleLines(
-				(g_screenWidth-(bar_size*g_itemSquare+(bar_size-1)*g_itemMargin+2*g_inventoryMargin))/2 + g_inventoryMargin + i * (g_itemSquare+g_itemMargin)-1,
+				(g_screenWidth-(INVENTORY_SIZE*g_itemSquare+(INVENTORY_SIZE-1)*g_itemMargin+2*g_inventoryMargin))/2 + g_inventoryMargin + i * (g_itemSquare+g_itemMargin)-1,
 				g_screenHeight-(g_itemSquare+g_inventoryMargin)-1,
 				g_itemSquare+2,
 				g_itemSquare+2,

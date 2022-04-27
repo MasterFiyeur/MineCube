@@ -7,6 +7,8 @@
 #include "raylib.h"
 #include "iostream"
 
+#define INVENTORY_SIZE 8
+
 struct Item{
 	Block* block;
 	Vector2 g_position; //Graphic position in item bar
@@ -15,10 +17,9 @@ struct Item{
 class Inventory {
 private:
 	//Inventory
-	Item items[6]; //Array of item (item bar)
+	Item items[INVENTORY_SIZE]; //Array of item (item bar)
 	Item* currentItem; //Selected item
 	bool inventoryMenu = false; //Menu opened
-	const unsigned short bar_size = 6; //Size of the item bar
 
 	//Graphic information
 	const int g_screenWidth = GetScreenWidth();
@@ -67,7 +68,7 @@ public:
 	*
 	*\return unsigned short size of inventory bar
 	*/
-	[[nodiscard]] unsigned short getBarSize() const {return bar_size;};
+	[[nodiscard]] unsigned short getBarSize() const {return INVENTORY_SIZE;};
 	/**
 	*\brief Get all items from the inventory bar
 	*

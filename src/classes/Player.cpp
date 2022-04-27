@@ -13,6 +13,8 @@ Player::Player() {
     inventory.setItem(2,*(new FullBlock("glass")));
     inventory.setItem(4,*(new FullBlock("sponge")));
     inventory.setItem(5,*(new Grass()));
+    inventory.setItem(6,*(new FullBlock("planks")));
+    inventory.setItem(7,*(new Flower("white_tulip")));
 }
 
 
