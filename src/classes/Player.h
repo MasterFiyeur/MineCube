@@ -109,9 +109,17 @@ public:
     *\return float [0;1] Distance with the floor
     */
 	[[nodiscard]] float distance_ground_block(World *world) const;
-  
+
+    /**
+     * @brief Enable/disable fly mode
+     * @param apply true to disable fly mode
+     */
     void applyGravity(bool apply);
-  
+
+    /**
+     * @brief Check if the player is not flying
+     * @return true if no fly mode
+     */
     [[nodiscard]] bool shouldApplyGravity() const;
   
     /**
@@ -128,4 +136,11 @@ public:
 	void jump(World *world);
 
     Item *getCurrentItem();
+
+    /**
+     * \brief Change the type of the block in the current slot
+     * \param block
+     */
+    void editSelectedItem(Block *block) { inventory.editSelectedItem(block); }
+
 };

@@ -236,15 +236,23 @@ void Game::start() {
                 }
                 last_key_space_pressed = GetTime();
             }
+            // press mouse wheel to pick a block
+            if (IsMouseButtonPressed(MOUSE_BUTTON_MIDDLE) && selected_block != nullptr) {
+                player.editSelectedItem(selected_block->second);
+            }
+
+            // press space to go up
             if (IsKeyDown(KEY_SPACE)) {
                 if (player.shouldApplyGravity())
                     player.jump(&world);
                 else
                     player.move(0, 0.1f, 0);
             }
+            // press left shift to go down
             if (IsKeyDown(KEY_LEFT_SHIFT) && !player.shouldApplyGravity()) {
                 player.move(0, -0.1f, 0);
             }
+            // update player position from camera position
             if (player.getPosition().x != camera.position.x) {
                 player.move(camera.position.x - player.getPosition().x, 0, 0);
             }

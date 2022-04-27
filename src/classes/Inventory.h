@@ -91,10 +91,16 @@ public:
 	//Peripheral device management (keyboard,mouse)
 
 	/**
-	*\brief Change the position of the selected item in the inventory bar
+	*\brief Change the position of the selected item in the inventory bar according to the mouse wheel move
 	*
 	*/
-	void changeSelectedItem();
+	void updateSelectedItem();
+
+    /**
+     * \brief Change the type of the block in the current slot
+     * \param block The new block type
+     */
+    void editSelectedItem(Block* block);
 	/**
 	*\brief Display the inventory menu or close it if it was already opened
 	*

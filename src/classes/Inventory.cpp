@@ -61,7 +61,7 @@ void Inventory::setInventoryMenu(bool p_inventoryMenu) {
 	Inventory::inventoryMenu = p_inventoryMenu;
 }
 
-void Inventory::changeSelectedItem() {
+void Inventory::updateSelectedItem() {
 	//Item selection in item bar
 	if (GetMouseWheelMove() < 0) {
 		if (getItem(getBarSize() - 1) == getCurrentItem()) {
@@ -76,6 +76,11 @@ void Inventory::changeSelectedItem() {
 			*currentItem--;
 		}
 	}
+}
+
+void Inventory::editSelectedItem(Block *block) {
+	delete currentItem->block;
+	currentItem->block = block;
 }
 
 void Inventory::inventoryDisplay() {
@@ -127,7 +132,7 @@ void Inventory::changeItem() {
 void Inventory::deviceManagement() {
 	//Mouse management
 	if (GetMouseWheelMove() != 0) {
-		changeSelectedItem();
+		updateSelectedItem();
 	}
 
 	//Keyboard management
