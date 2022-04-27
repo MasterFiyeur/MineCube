@@ -58,7 +58,9 @@ Model* TexturesManager::getModel(const std::string& name) {
          if (file_exists("../assets/models/"+name+".obj")) {
              std::cout << "found model " << name << std::endl;
              Model model = LoadModel(("../assets/models/"+name+".obj").c_str());
-             model.materials[0].shader = *(instance().shader);
+             for (int i=0; i<model.materialCount; i++) {
+                 model.materials[i].shader = *(instance().shader);
+             }
              instance().models[name] = model;
              return &instance().models[name];
          } else if (file_exists("../assets/"+name+".png")) {
