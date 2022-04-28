@@ -335,8 +335,8 @@ Color Game::getSkyColor() const {
     float red = world_daylight * 0.4f;
     float green = world_daylight * 0.75f;
     float blue = world_daylight * 1.0f;
-    float hey[4] = {red, green, blue, 1.0f};
-    return floatToColor(hey);
+    float color[4] = {red, green, blue, 1.0f};
+    return floatToColor(color);
 }
 
 float Game::getDaytime() const {
