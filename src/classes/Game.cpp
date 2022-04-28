@@ -187,7 +187,7 @@ void Game::start() {
 
     // Sky clouds + sun models
     Model sun = LoadModelFromMesh(GenMeshSphere(10.0,10,20));
-    sun.materials[0].shader = *TexturesManager::getClassicShader();
+//    sun.materials[0].shader = *TexturesManager::getClassicShader();
 	Vector3 sunPos = {0,0,0};
     Model clouds = LoadModelFromMesh(GenMeshCube(3000.0, 0.1, 3000.0));
     clouds.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = *(TexturesManager::getTexture("clouds"));
@@ -274,13 +274,9 @@ void Game::start() {
         BeginMode3D(camera);
 
         // Draw clouds and sun in sky
-//        DrawCubeTexture(sun,{-140,240,240},250,0.1,250,YELLOW);
-//        DrawCubeTexture(clouds, {0,200,0}, 3000.0, 0.1, 3000.0, WHITE); // Draw cube textured
-
 		sunPos.z = player.getPosition().z + 240 * cos(2 * M_PI * (getDaytime() / DAY_LENGTH_D) - M_PI/2.0f);
 		sunPos.y = player.getPosition().y + 240 * sin(2 * M_PI * (getDaytime() / DAY_LENGTH_D) - M_PI/2.0f);
-		DrawModel(sun,sunPos,1.0f,BLACK);
-		sun.materials[0].maps[MATERIAL_MAP_DIFFUSE].color = getSunColor();
+		DrawModel(sun,sunPos,1.0f,getSunColor());
 		DrawModel(clouds, {0,200,0}, 1.0f, BLANK);
 
         world.draw(&player);
