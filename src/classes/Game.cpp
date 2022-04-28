@@ -112,26 +112,31 @@ void Game::blockPlace(const std::pair<const Vector3, Block*>* target) {
                 camera.position,
                 normalize({camera.target.x - camera.position.x, camera.target.y - camera.position.y, camera.target.z - camera.position.z})
         };
-        Vector3 p1 = {target->first.x - 0.5f, target->first.y - 0.5f, target->first.z - 0.5f};
-        Vector3 p2 = {target->first.x + 0.5f, target->first.y + 0.5f, target->first.z + 0.5f};
-        BoundingBox object_bounding_box = {p1, p2};
+        BoundingBox object_bounding_box = target->second->getBoundingBox(target->first);
         collision = GetRayCollisionBox(mouseRay, object_bounding_box);
-        if (abs(collision.point.x - (target->first.x - 0.5f)) < .01f) {
+        float south = fabsf(collision.point.x - (target->first.x - 0.5f));
+        float north = fabsf(collision.point.x - (target->first.x + 0.5f));
+        float up = fabsf(collision.point.y - (target->first.y - 0.5f));
+        float down = fabsf(collision.point.y - (target->first.y + 0.5f));
+        float west = fabsf(collision.point.z - (target->first.z - 0.5f));
+        float east = fabsf(collision.point.z - (target->first.z + 0.5f));
+        float minimum = std::min({south, north, up, down, west, east});
+        if (south == minimum) {
             place = {target->first.x - 1, target->first.y, target->first.z};
         }
-        else if (abs(collision.point.x - (target->first.x + 0.5f)) < .01f) {
+        else if (north == minimum) {
             place = {target->first.x + 1, target->first.y, target->first.z};
         }
-        else if (abs(collision.point.y - (target->first.y - 0.5f)) < .01f) {
+        else if (up == minimum) {
             place = {target->first.x, target->first.y - 1, target->first.z};
         }
-        else if (abs(collision.point.y - (target->first.y + 0.5f)) < .01f) {
+        else if (down == minimum) {
             place = {target->first.x, target->first.y + 1, target->first.z};
         }
-        else if (abs(collision.point.z - (target->first.z - 0.5f)) < .01f) {
+        else if (west == minimum) {
             place = {target->first.x, target->first.y, target->first.z - 1};
         }
-        else if (abs(collision.point.z - (target->first.z + 0.5f)) < .01f) {
+        else if (east == minimum) {
             place = {target->first.x, target->first.y, target->first.z + 1};
         }
         else {
