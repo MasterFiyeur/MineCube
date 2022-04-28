@@ -9,6 +9,10 @@
 #include <cmath>
 #include <iostream>
 
+#define DAY_LENGTH 400
+#define DAY_LENGTH_D (double) DAY_LENGTH
+#define HOUR_LENGTH 24.0f / DAY_LENGTH
+
 static bool file_exists(const std::string& name) {
     struct stat buffer{};
     return (stat (name.c_str(), &buffer) == 0);
@@ -66,4 +70,15 @@ static Vector3 operator-(const Vector3& o1, const Vector3 o2) {
 
 static Vector3 operator*(const Vector3& o1, const int v) {
     return (Vector3) {o1.x*v, o1.y*v, o1.z*v};
+}
+
+static Color floatToColor(const float f[4]) {
+    return {(unsigned char) (f[0]*255), (unsigned char) (f[1]*255), (unsigned char) (f[2]*255), (unsigned char) (f[3]*255)};
+}
+
+static void colorToFloat(const Color c, float* f) {
+    f[0] = (float) c.r / 255.0f;
+    f[1] = (float) c.g / 255.0f;
+    f[2] = (float) c.b / 255.0f;
+    f[3] = (float) c.a / 255.0f;
 }

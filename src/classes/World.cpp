@@ -25,7 +25,7 @@ bool World::shouldBeDrawn(Vector3 pos, Player *player) const {
 
     // remove half-circle behind the player
     float angle = acos(dotProduct(ndir, playerDir));
-    if (angle > (M_PI / 2)) {
+    if (angle > (M_PI / 3)) {
         return false;
     }
 
@@ -109,8 +109,3 @@ bool World::isempty() const {
     return this->blocks.empty();
 }
 
-CHUNK World::get_chunk_coo(Vector3 position) const {
-    int x = position.x >= 0 ? (int) position.x / 10 : (int) position.x / 10 - 1;
-    int z = position.z >= 0 ? (int) position.z / 10 : (int) position.z / 10 - 1;
-    return {x, z};
-}

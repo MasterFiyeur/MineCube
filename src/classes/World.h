@@ -13,14 +13,11 @@
 
 #define RENDER_DISTANCE 30
 
-struct CHUNK {
-    int x;
-    int z;
-};
 
 class World {
 private:
     std::map<Vector3, Block*> blocks;
+    double time = 0.0;
 
     /**
      * @brief Check if a position in the world should be drawn according to a player camera
@@ -48,13 +45,6 @@ public:
     [[nodiscard]] bool isempty() const;
 
     /**
-     * @brief Calculate the chunk coordinates (x,z) of a given position in the world
-     * @param position
-     * @return Chunk coordinates
-     */
-    [[nodiscard]] CHUNK get_chunk_coo(Vector3 position) const;
-
-    /**
      * @brief Draw each block of the world using raylib functions
      */
     void draw() const;
@@ -63,4 +53,12 @@ public:
      * @brief Draw each block of the world using raylib functions while optimizing the drawing
      */
     void draw(Player *player) const;
+
+    /**
+     * @brief Return the world time since its creation
+     * One day is 1440 units (so 1 unit = 1 game minute)
+     */
+    [[nodiscard]] double getTime() const { return time + GetTime(); };
+
+    void setTime(double new_time) { this->time = new_time - GetTime(); };
 };

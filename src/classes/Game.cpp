@@ -12,15 +12,8 @@
 #include "Player.h"
 #include "Utils.h"
 #include "WorldGeneration.h"
-
-#define initial_square 100
-
-#if defined(PLATFORM_DESKTOP)
-#define GLSL_VERSION            330
-#else   // PLATFORM_RPI, PLATFORM_ANDROID, PLATFORM_WEB
-#define GLSL_VERSION            100
-#endif
 #include "TexturesManager.h"
+
 #define RLIGHTS_IMPLEMENTATION
 #include "rlights.h"
 
@@ -98,12 +91,11 @@ const std::pair<const Vector3, Block*>* Game::getTargetedBlock() const {
 std::string Game::getDebugText(const std::pair<const Vector3, Block*>* selected_block) const {
     char upperText[200];
     Vector3 player_position = player.getPosition();
-    CHUNK chunk =  world.get_chunk_coo(player_position);
-    sprintf(upperText, "FPS: %d\nPosition: %.1f, %.1f, %.1f  (%d %d)\nLooking at: %.1f, %.1f, %.1f (%s)",
+    sprintf(upperText, "FPS: %d\nPosition: %.1f, %.1f, %.1f\nLooking at: %.1f, %.1f, %.1f (%s)\nHour: %d:%d",
             GetFPS(),
             player_position.x, player_position.y, player_position.z,
-            chunk.x, (int) chunk.z,
-            camera.target.x, camera.target.y, camera.target.z, this->getCameraDirection().c_str()
+            camera.target.x, camera.target.y, camera.target.z, this->getCameraDirection().c_str(),
+            getDayHour(), getDayMinute()
     );
     if (selected_block != nullptr) {
         sprintf(upperText, "%s\nTargeted block: %.1f %.1f %.1f (%s)",upperText,
@@ -171,9 +163,11 @@ void Game::start() {
         // init player position above the highest block on x=0 and z=0
         player.setPosition(player_initial_pos);
         camera.position = player_initial_pos;
-
+        // add a single flower
         auto tulip = new Flower("white_tulip");
         world.add_block(tulip, player_initial_pos - (Vector3){0, 2, 0});
+        // set hour to 6 am
+        world.setTime(DAY_LENGTH/4);
 
 		// Print seed value used
 		std::cout << "The seed used for generation is : " << seed << std::endl;
@@ -191,37 +185,26 @@ void Game::start() {
     SetCameraMode(camera, CAMERA_FIRST_PERSON);
     SetTargetFPS(60);
 
-    // Sky clouds image
-    Image img_sky = LoadImage("../assets/sun.png");
-    Texture2D sun = LoadTextureFromImage(img_sky);
-    UnloadImage(img_sky);
-	Texture2D clouds = LoadTextureFromImage(LoadImage("../assets/clouds.png"));
+    // Sky clouds + sun models
+    Model sun = LoadModelFromMesh(GenMeshCube(250,0.1,250));
+    sun.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = *(TexturesManager::getTexture("sun"));
+    sun.materials[0].shader = *TexturesManager::getClassicShader();
+    Model clouds = LoadModelFromMesh(GenMeshCube(3000.0, 0.1, 3000.0));
+    clouds.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = *(TexturesManager::getTexture("clouds"));
+    clouds.materials[0].shader = *TexturesManager::getClassicShader();
 
-    Shader shader = LoadShader(TextFormat("../assets/shaders/glsl%i/base_lighting.vs", GLSL_VERSION),
-                               TextFormat("../assets/shaders/glsl%i/fog.fs", GLSL_VERSION));
-    shader.locs[SHADER_LOC_MATRIX_MODEL] = GetShaderLocation(shader, "matModel");
-    shader.locs[SHADER_LOC_VECTOR_VIEW] = GetShaderLocation(shader, "viewPos");
-    TexturesManager::setShader(&shader);
+    TexturesManager::setShaderBrightness(getSkyBrightness());
 
-    int ambientLoc = GetShaderLocation(shader, "ambient");
-    float ambientColor[4] = {1.0f, 1.0f, 1.0f, 1.0f };
-    SetShaderValue(shader, ambientLoc, ambientColor, SHADER_UNIFORM_VEC4);
-
-    float fogDensity = 0.03f;
-    int fogDensityLoc = GetShaderLocation(shader, "fogDensity");
-    SetShaderValue(shader, fogDensityLoc, &fogDensity, SHADER_UNIFORM_FLOAT);
-    float fogColor[4] = {0.4f, 0.75f, 1.0f, 1.0f }; // skyblue color
-    int fogColorLoc = GetShaderLocation(shader, "fogColor");
-    SetShaderValue(shader, fogColorLoc, fogColor, SHADER_UNIFORM_VEC4);
+    float fogColor[4]; // sky + fog color
 
 //    How to add a light point
 //    CreateLight(LIGHT_POINT, (Vector3){ 0, 4, 6 }, {0, 1, 0}, BLUE, shader);
+
 
     const std::pair<const Vector3, Block*>* selected_block = nullptr;
     std::string debugText = getDebugText(selected_block);
 
     while (!WindowShouldClose()) {
-
         // update music
         audio.updateMusic();
 
@@ -270,7 +253,7 @@ void Game::start() {
         player.checkCollisions(&world);
 
         camera.position = player.getPosition();
-      
+
         // check for block highlighting
         selected_block = getTargetedBlock();
 
@@ -279,15 +262,22 @@ void Game::start() {
 
         // Draw
         // Update the light shader with the camera view position
-        SetShaderValue(shader, shader.locs[SHADER_LOC_VECTOR_VIEW], &camera.position, SHADER_UNIFORM_VEC3);
+        TexturesManager::setShaderPosition(camera.position);
+        // Update the light shader with the fog color (world time)
+        colorToFloat(getSkyColor(), fogColor);
+        TexturesManager::setShaderColor(fogColor);
+        // update the light shader with the sky brightness
+        TexturesManager::setShaderBrightness(getSkyBrightness());
 
         BeginDrawing();
-        ClearBackground(SKYBLUE);
+        ClearBackground(getSkyColor());
         BeginMode3D(camera);
 
         // Draw clouds and sun in sky
-        DrawCubeTexture(sun,{-140,240,240},250,0.1,250,YELLOW);
-        DrawCubeTexture(clouds, {0,200,0}, 3000.0, 0.1, 3000.0, WHITE); // Draw cube textured
+//        DrawCubeTexture(sun,{-140,240,240},250,0.1,250,YELLOW);
+//        DrawCubeTexture(clouds, {0,200,0}, 3000.0, 0.1, 3000.0, WHITE); // Draw cube textured
+        DrawModel(sun, {-140, 240, 240}, 1.0f, WHITE);
+        DrawModel(clouds, {0,200,0}, 1.0f, WHITE);
 
         world.draw(&player);
 
@@ -313,8 +303,10 @@ void Game::start() {
         EndDrawing();
     }
 
-    UnloadTexture(sun);
-    UnloadTexture(clouds);
+//    UnloadTexture(sun);
+//    UnloadTexture(clouds);
+    UnloadModel(sun);
+    UnloadModel(clouds);
 
     this->save();
 }
@@ -325,4 +317,36 @@ Player* Game::getPlayer() {
 
 World Game::getWorld() const {
     return this->world;
+}
+
+float Game::getSkyBrightness() const {
+    // calculate hour of the day
+    float daytime = getDaytime();
+    // calculate sky brightness
+    float brightness = (float) sin((daytime - DAY_LENGTH_D / 4.0f) * 2.0f * M_PI / DAY_LENGTH_D) / 2.0f + 0.5f;
+    // make the minimum a bit higher (0.1)
+    brightness = brightness * 0.9f + 0.1f;
+    return brightness;
+}
+
+Color Game::getSkyColor() const {
+    float world_daylight = getSkyBrightness();
+    // SKYBLUE = {102, 191, 255} = {0.4, 0.75, 1.0}
+    float red = world_daylight * 0.4f;
+    float green = world_daylight * 0.75f;
+    float blue = world_daylight * 1.0f;
+    float color[4] = {red, green, blue, 1.0f};
+    return floatToColor(color);
+}
+
+float Game::getDaytime() const {
+    return (float) fmod(world.getTime(), DAY_LENGTH);
+}
+
+int Game::getDayHour() const {
+    return (int) floor(getDaytime() * HOUR_LENGTH);
+}
+
+int Game::getDayMinute() const {
+    return (int) ((getDaytime() * HOUR_LENGTH - (float) getDayHour())*60.0f);
 }
