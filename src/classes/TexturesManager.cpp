@@ -101,8 +101,9 @@ Shader* TexturesManager::getClassicShader() {
 }
 
 void TexturesManager::setShaderBrightness(float brightness) {
-    SetShaderValue(instance().fog_ambient_shader, instance().fog_ambient_location, (float[4]) {brightness, brightness, brightness, brightness}, SHADER_UNIFORM_VEC4);
-    SetShaderValue(instance().ambient_shader, instance().ambient_ambient_location, (float[4]) {brightness, brightness, brightness, brightness}, SHADER_UNIFORM_VEC4);
+	float array[4] = {brightness,brightness,brightness,brightness};
+    SetShaderValue(instance().fog_ambient_shader, instance().fog_ambient_location, array, SHADER_UNIFORM_VEC4);
+    SetShaderValue(instance().ambient_shader, instance().ambient_ambient_location, array, SHADER_UNIFORM_VEC4);
 }
 
 void TexturesManager::setShaderColor(float color[4]) {
