@@ -186,9 +186,9 @@ void Game::start() {
     SetTargetFPS(60);
 
     // Sky clouds + sun models
-    Model sun = LoadModelFromMesh(GenMeshCube(250,0.1,250));
-    sun.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = *(TexturesManager::getTexture("sun"));
+    Model sun = LoadModelFromMesh(GenMeshSphere(10.0,10,20));
     sun.materials[0].shader = *TexturesManager::getClassicShader();
+	Vector3 sunPos = {0,0,0};
     Model clouds = LoadModelFromMesh(GenMeshCube(3000.0, 0.1, 3000.0));
     clouds.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = *(TexturesManager::getTexture("clouds"));
     clouds.materials[0].shader = *TexturesManager::getClassicShader();
@@ -276,8 +276,12 @@ void Game::start() {
         // Draw clouds and sun in sky
 //        DrawCubeTexture(sun,{-140,240,240},250,0.1,250,YELLOW);
 //        DrawCubeTexture(clouds, {0,200,0}, 3000.0, 0.1, 3000.0, WHITE); // Draw cube textured
-        DrawModel(sun, {-140, 240, 240}, 1.0f, WHITE);
-        DrawModel(clouds, {0,200,0}, 1.0f, WHITE);
+
+		sunPos.z = player.getPosition().z + 240 * cos(2 * M_PI * (getDaytime() / DAY_LENGTH_D) - M_PI/2.0f);
+		sunPos.y = player.getPosition().y + 240 * sin(2 * M_PI * (getDaytime() / DAY_LENGTH_D) - M_PI/2.0f);
+		DrawModel(sun,sunPos,1.0f,BLACK);
+		sun.materials[0].maps[MATERIAL_MAP_DIFFUSE].color = getSunColor();
+		DrawModel(clouds, {0,200,0}, 1.0f, BLANK);
 
         world.draw(&player);
 
@@ -337,6 +341,15 @@ Color Game::getSkyColor() const {
     float blue = world_daylight * 1.0f;
     float color[4] = {red, green, blue, 1.0f};
     return floatToColor(color);
+}
+
+Color Game::getSunColor() const {
+	float world_daylight = getSkyBrightness();
+	float red = 1.0f;
+	float green = world_daylight;
+	float blue = 0.0f;
+	float color[4] = {red, green, blue, 1.0f};
+	return floatToColor(color);
 }
 
 float Game::getDaytime() const {

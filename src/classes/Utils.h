@@ -9,7 +9,7 @@
 #include <cmath>
 #include <iostream>
 
-#define DAY_LENGTH 400
+#define DAY_LENGTH 20
 #define DAY_LENGTH_D (double) DAY_LENGTH
 #define HOUR_LENGTH 24.0f / DAY_LENGTH
 
