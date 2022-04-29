@@ -320,12 +320,14 @@ World Game::getWorld() const {
 }
 
 float Game::getSkyBrightness() const {
+    const float delta = 0.1f;
     // calculate hour of the day
     float daytime = getDaytime();
     // calculate sky brightness
     float brightness = (float) sin((daytime - DAY_LENGTH_D / 4.0f) * 2.0f * M_PI / DAY_LENGTH_D) / 2.0f + 0.5f;
-    // make the minimum a bit higher (0.1)
-    brightness = brightness * 0.9f + 0.1f;
+    // make the function stagnate at 0.1 during 23h-1h and 1.0 during 11h-13h
+    brightness = fmaxf(brightness - delta, 0.0f);
+    brightness = fminf(brightness * (1.0f+delta) + delta, 1.0f);
     return brightness;
 }
 
