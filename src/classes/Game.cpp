@@ -187,7 +187,7 @@ void Game::start() {
 
     // Sky clouds + sun models
     Model sun = LoadModelFromMesh(GenMeshSphere(10.0,10,20));
-//    sun.materials[0].shader = *TexturesManager::getClassicShader();
+    sun.materials[0].shader = *TexturesManager::getClassicShader();
 	Vector3 sunPos = {0,0,0};
     Model clouds = LoadModelFromMesh(GenMeshCube(3000.0, 0.1, 3000.0));
     clouds.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = *(TexturesManager::getTexture("clouds"));
@@ -342,7 +342,7 @@ Color Game::getSkyColor() const {
 Color Game::getSunColor() const {
 	float world_daylight = getSkyBrightness();
 	float red = 1.0f;
-	float green = world_daylight;
+	float green = world_daylight*0.97f;
 	float blue = 0.0f;
 	float color[4] = {red, green, blue, 1.0f};
 	return floatToColor(color);
