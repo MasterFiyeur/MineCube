@@ -166,8 +166,8 @@ void Inventory::updateSelectedItemPos() {
 void Inventory::inGameInventory() {
 	//Inventory background
 	DrawRectangle(
-			(g_screenWidth-(INVENTORY_SIZE*g_itemSquare+(INVENTORY_SIZE-1)*g_itemMargin+2*g_inventoryMargin))/2,
-			g_screenHeight-(g_itemSquare+2*g_inventoryMargin),
+            getInventoryDrawPositionX(),
+            getInventoryDrawPositionY(),
 			INVENTORY_SIZE*g_itemSquare+(INVENTORY_SIZE-1)*g_itemMargin+2*g_inventoryMargin,
 			g_itemSquare+2*g_inventoryMargin,
 			ColorAlpha(LIGHTGRAY,0.7)

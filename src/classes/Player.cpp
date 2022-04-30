@@ -170,6 +170,6 @@ void Player::jump(World *world){
 	}
 }
 
-Item *Player::getCurrentItem(){
-    return inventory.getCurrentItem();
+Inventory *Player::getInventory() {
+    return &inventory;
 }

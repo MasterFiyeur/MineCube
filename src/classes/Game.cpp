@@ -116,7 +116,7 @@ std::string Game::getHelpText() const {
 }
 
 void Game::blockPlace(const std::pair<const Vector3, Block*>* target) {
-    if (IsMouseButtonPressed(MOUSE_RIGHT_BUTTON) && target != nullptr && player.getCurrentItem()->block != nullptr) {
+    if (IsMouseButtonPressed(MOUSE_RIGHT_BUTTON) && target != nullptr && player.getInventory()->getCurrentItem()->block != nullptr) {
         Vector3 place;
         RayCollision collision;
         Ray mouseRay = {
@@ -153,7 +153,7 @@ void Game::blockPlace(const std::pair<const Vector3, Block*>* target) {
         else {
             return;
         }
-        std::string block_name = player.getCurrentItem()->block->getName();
+        std::string block_name = player.getInventory()->getCurrentItem()->block->getName();
         audio.playSound(AudioManager::getSoundTypePlace(block_name));
         add_block_by_name(world, block_name, place);
     }
@@ -311,6 +311,11 @@ void Game::start() {
         EndMode3D();
         DrawText(debugText.c_str(), 10, 10, 15, {230, 220, 220, 250});
         DrawText(getHelpText().c_str(), GetScreenWidth()-150, 10, 15, {230, 220, 220, 250});
+        if (player.getInventory()->getCurrentItem()->block != nullptr) {
+            const std::string name = player.getInventory()->getCurrentItem()->block->getName();
+            const int w = name.size() * 8;
+            DrawText(name.c_str(), (GetScreenWidth() - w) / 2, player.getInventory()->getInventoryDrawPositionY() - 30, 14, {213, 195, 195, 250});
+        }
         // Player cursor
         drawCursor();
 

@@ -135,12 +135,15 @@ public:
     */
 	void jump(World *world);
 
-    Item *getCurrentItem();
+    /**
+     * @brief Get the player inventory reference
+     * @return
+     */
+    [[nodiscard]] Inventory *getInventory();
 
     /**
      * \brief Change the type of the block in the current slot
      * \param block
      */
     void editSelectedItem(Block *block) { inventory.editSelectedItem(block); }
-
 };

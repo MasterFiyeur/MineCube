@@ -136,4 +136,12 @@ public:
 	*/
 	void drawInventory();
 
+    [[nodiscard]] int getInventoryDrawPositionX() const {
+        return (GetScreenWidth()-(INVENTORY_SIZE*g_itemSquare+(INVENTORY_SIZE-1)*g_itemMargin+2*g_inventoryMargin))/2;
+    }
+
+    [[nodiscard]] int getInventoryDrawPositionY() const {
+        return GetScreenHeight()-(g_itemSquare+2*g_inventoryMargin);
+    }
+
 };
