@@ -97,11 +97,22 @@ std::string Game::getDebugText(const std::pair<const Vector3, Block*>* selected_
             camera.target.x, camera.target.y, camera.target.z, this->getCameraDirection().c_str(),
             getDayHour(), getDayMinute()
     );
+    if (!player.shouldApplyGravity()) {
+        sprintf(upperText, "%s\nFlying mode",upperText);
+    };
     if (selected_block != nullptr) {
         sprintf(upperText, "%s\nTargeted block: %.1f %.1f %.1f (%s)",upperText,
                 selected_block->first.x,  selected_block->first.y,  selected_block->first.z, selected_block->second->getName().c_str());
     }
     return upperText;
+}
+
+std::string Game::getHelpText() const {
+    if (player.shouldApplyGravity()) { // ground mode
+        return "WASD to move\nSpace to jump\nDouble space to fly\nEsc to quit";
+    } else { // flying mode
+        return "WASD to move\nSpace to go up\nShift to go down\nEsc to quit";
+    }
 }
 
 void Game::blockPlace(const std::pair<const Vector3, Block*>* target) {
@@ -299,6 +310,7 @@ void Game::start() {
         debugText = getDebugText(selected_block);
         EndMode3D();
         DrawText(debugText.c_str(), 10, 10, 15, {230, 220, 220, 250});
+        DrawText(getHelpText().c_str(), GetScreenWidth()-150, 10, 15, {230, 220, 220, 250});
         // Player cursor
         drawCursor();
 

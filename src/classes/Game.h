@@ -18,6 +18,7 @@ private:
     double last_key_space_pressed;
     void drawCursor();
     std::string getDebugText(const std::pair<const Vector3, Block*>* selected_block) const;
+    std::string getHelpText() const;
     [[nodiscard]] const std::pair<const Vector3, Block*>* getTargetedBlock() const;
 
     [[nodiscard]] float getSkyBrightness() const;
