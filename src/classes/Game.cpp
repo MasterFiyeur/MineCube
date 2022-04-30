@@ -191,9 +191,9 @@ void Game::start() {
     SetTargetFPS(60);
 
     // Sky clouds + sun models
-    Model sun = LoadModelFromMesh(GenMeshCube(250,0.1,250));
-    sun.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = *(TexturesManager::getTexture("sun"));
+    Model sun = LoadModelFromMesh(GenMeshSphere(10.0,10,20));
     sun.materials[0].shader = *TexturesManager::getClassicShader();
+	Vector3 sunPos = {0,0,0};
     Model clouds = LoadModelFromMesh(GenMeshCube(3000.0, 0.1, 3000.0));
     clouds.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = *(TexturesManager::getTexture("clouds"));
     clouds.materials[0].shader = *TexturesManager::getClassicShader();
@@ -279,10 +279,10 @@ void Game::start() {
         BeginMode3D(camera);
 
         // Draw clouds and sun in sky
-//        DrawCubeTexture(sun,{-140,240,240},250,0.1,250,YELLOW);
-//        DrawCubeTexture(clouds, {0,200,0}, 3000.0, 0.1, 3000.0, WHITE); // Draw cube textured
-        DrawModel(sun, {-140, 240, 240}, 1.0f, WHITE);
-        DrawModel(clouds, {0,200,0}, 1.0f, WHITE);
+		sunPos.z = player.getPosition().z + 240 * cos(2 * M_PI * (getDaytime() / DAY_LENGTH_D) - M_PI/2.0f);
+		sunPos.y = player.getPosition().y + 240 * sin(2 * M_PI * (getDaytime() / DAY_LENGTH_D) - M_PI/2.0f);
+		DrawModel(sun,sunPos,1.0f,getSunColor());
+		DrawModel(clouds, {0,200,0}, 1.0f, BLANK);
 
         world.draw(&player);
 
@@ -325,12 +325,14 @@ World Game::getWorld() const {
 }
 
 float Game::getSkyBrightness() const {
+    const float delta = 0.1f;
     // calculate hour of the day
     float daytime = getDaytime();
     // calculate sky brightness
     float brightness = (float) sin((daytime - DAY_LENGTH_D / 4.0f) * 2.0f * M_PI / DAY_LENGTH_D) / 2.0f + 0.5f;
-    // make the minimum a bit higher (0.1)
-    brightness = brightness * 0.9f + 0.1f;
+    // make the function stagnate at 0.1 during 23h-1h and 1.0 during 11h-13h
+    brightness = fmaxf(brightness - delta, 0.0f);
+    brightness = fminf(brightness * (1.0f+delta) + delta, 1.0f);
     return brightness;
 }
 
@@ -342,6 +344,15 @@ Color Game::getSkyColor() const {
     float blue = world_daylight * 1.0f;
     float color[4] = {red, green, blue, 1.0f};
     return floatToColor(color);
+}
+
+Color Game::getSunColor() const {
+	float world_daylight = getSkyBrightness();
+	float red = 1.0f;
+	float green = world_daylight*0.97f;
+	float blue = 0.0f;
+	float color[4] = {red, green, blue, 1.0f};
+	return floatToColor(color);
 }
 
 float Game::getDaytime() const {

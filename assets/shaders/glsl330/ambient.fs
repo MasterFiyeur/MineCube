@@ -67,8 +67,16 @@ void main()
         }
     }
 
-    finalColor = (texelColor*((colDiffuse + vec4(specular,1))*vec4(lightDot, 1.0)));
-    finalColor += texelColor*(ambient/1.0);
+    // finalColor = (texelColor*((colDiffuse + vec4(specular,1))*vec4(lightDot, 1.0)));
+    // finalColor += texelColor*(ambient/1.0);
+    if (colDiffuse.r >= 0.1) // filter clouds and anything having a texture
+    {
+        finalColor = colDiffuse + vec4(specular,1);
+    } else
+    {
+        finalColor =  (texelColor*((colDiffuse + vec4(specular,1))*vec4(lightDot, 1.0)));
+        finalColor += texelColor*(ambient/1.0);
+    }
 
     // Gamma correction
     finalColor = pow(finalColor, vec4(1.0/1.1));

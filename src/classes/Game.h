@@ -22,6 +22,7 @@ private:
 
     [[nodiscard]] float getSkyBrightness() const;
     [[nodiscard]] Color getSkyColor() const;
+	[[nodiscard]] Color getSunColor() const;
 
 public:
     Game();
