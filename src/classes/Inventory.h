@@ -130,6 +130,11 @@ public:
 	*
 	*/
 	void inGameInventory();
+    /**
+	*\brief Draw graphics of in-menu inventory
+	*
+	*/
+    void inMenuInventory();
 	/**
 	*\brief General method called for draw inventory
 	*
