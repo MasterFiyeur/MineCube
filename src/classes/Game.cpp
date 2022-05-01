@@ -214,7 +214,7 @@ void Game::start() {
     float fogColor[4]; // sky + fog color
 
 //    How to add a light point
-//    CreateLight(LIGHT_POINT, (Vector3){ 0, 4, 6 }, {0, 1, 0}, BLUE, shader);
+//    CreateLight(LIGHT_POINT, (Vector3){ 0, 16, 6 }, {0, -1, 0}, RED, *TexturesManager::getFogShader());
 
 
     const std::pair<const Vector3, Block*>* selected_block = nullptr;
