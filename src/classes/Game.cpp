@@ -236,7 +236,8 @@ void Game::start() {
                 last_key_space_pressed = GetTime();
             }
             // press mouse wheel to pick a block
-            if (IsMouseButtonPressed(MOUSE_BUTTON_MIDDLE) && selected_block != nullptr) {
+            selected_block = getTargetedBlock();
+            if ((IsKeyDown(KEY_P) || IsMouseButtonPressed(MOUSE_BUTTON_MIDDLE)) && selected_block != nullptr) {
                 player.editSelectedItem(selected_block->second);
             }
 
