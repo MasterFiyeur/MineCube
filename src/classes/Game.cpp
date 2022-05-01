@@ -312,11 +312,6 @@ void Game::start() {
         EndMode3D();
         DrawText(debugText.c_str(), 10, 10, 15, {230, 220, 220, 250});
         DrawText(getHelpText().c_str(), GetScreenWidth()-150, 10, 15, {230, 220, 220, 250});
-        if (player.getInventory()->getCurrentItem()->block != nullptr) {
-            const std::string name = player.getInventory()->getCurrentItem()->block->getName();
-            const int w = name.size() * 8;
-            DrawText(name.c_str(), (GetScreenWidth() - w) / 2, player.getInventory()->getInventoryDrawPositionY() - 30, 14, {213, 195, 195, 250});
-        }
         // Player cursor
         drawCursor();
 

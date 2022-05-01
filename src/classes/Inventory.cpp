@@ -81,9 +81,9 @@ void Inventory::updateSelectedItem() {
 void Inventory::editSelectedItem(Block *block) {
     Item *olditem = nullptr;
     if (block != nullptr) {
-        for (int i = 0; i < INVENTORY_SIZE; ++i) {
-            if (items[i].block != nullptr && items[i].block->getName() == block->getName()) {
-                olditem = &items[i];
+        for (auto & item : items) {
+            if (item.block != nullptr && item.block->getName() == block->getName()) {
+                olditem = &item;
                 break;
             }
         }
@@ -173,7 +173,15 @@ void Inventory::inGameInventory() {
 			ColorAlpha(LIGHTGRAY,0.7)
 	);
 
-	Texture2D item_texture;
+    // Draw current item name
+    if (getCurrentItem()->block != nullptr) {
+        const std::string name = getCurrentItem()->block->getName();
+        const int w = name.size() * 8;
+        DrawText(name.c_str(), (GetScreenWidth() - w) / 2, getInventoryDrawPositionY() - 30, 14, {213, 195, 195, 250});
+    }
+
+    // Draw hotbar with textures
+    Texture2D item_texture;
 	for (int i = 0; i < INVENTORY_SIZE; ++i) {
 		//Items border
 		Item* item;
