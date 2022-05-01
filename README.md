@@ -1,3 +1,5 @@
+![Project timelapse](assets/gif/timelapse.gif)
+
 # Raylib project: Minecube
 
 Ce projet scolaire vise à se familiariser avec l'environnement C++ et la bibliothèque
